@@ -7,7 +7,7 @@ class CalendarNotifierProvider extends Notifier<CalendarModel> {
     return CalendarModel(
       selectedDay: DateTime.now(),
       focusedDay: DateTime.now(),
-      isExpaned: false,
+      isExpanded: false,
     );
   }
 
@@ -16,7 +16,7 @@ class CalendarNotifierProvider extends Notifier<CalendarModel> {
   }
 
   void onChangeExpended(bool? isExpanded) {
-    state = state.copyWith(isExpaned: isExpanded);
+    state = state.copyWith(isExpanded: isExpanded);
   }
 }
 

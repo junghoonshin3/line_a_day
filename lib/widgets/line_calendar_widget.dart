@@ -26,9 +26,8 @@ class LineCalendarWidget extends StatelessWidget {
       firstDay: DateTime(2000, 1, 1),
       lastDay: DateTime(2030, 12, 31),
       focusedDay: focusedDay,
-      formatAnimationDuration: const Duration(milliseconds: 500),
       selectedDayPredicate: (day) => isSameDay(selectedDay, day),
-      calendarFormat: isExpanded ? CalendarFormat.month : CalendarFormat.week,
+      calendarFormat: CalendarFormat.month,
       startingDayOfWeek: StartingDayOfWeek.sunday,
 
       // 한국어 헤더 설정
@@ -44,8 +43,8 @@ class LineCalendarWidget extends StatelessWidget {
           color: Colors.black,
         ),
         headerPadding: const EdgeInsets.symmetric(vertical: 8),
-        leftChevronVisible: false,
-        rightChevronVisible: false,
+        leftChevronVisible: true,
+        rightChevronVisible: true,
       ),
 
       // 요일 스타일
