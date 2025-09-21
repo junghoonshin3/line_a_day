@@ -27,9 +27,8 @@ class LineCalendarWidget extends StatelessWidget {
       lastDay: DateTime(2030, 12, 31),
       focusedDay: focusedDay,
       selectedDayPredicate: (day) => isSameDay(selectedDay, day),
-      calendarFormat: CalendarFormat.month,
+      calendarFormat: isExpanded ? CalendarFormat.month : CalendarFormat.week,
       startingDayOfWeek: StartingDayOfWeek.sunday,
-
       // 한국어 헤더 설정
       headerStyle: HeaderStyle(
         formatButtonVisible: false,
@@ -98,7 +97,7 @@ class LineCalendarWidget extends StatelessWidget {
         outsideTextStyle: const TextStyle(fontSize: 12, color: Colors.black26),
 
         // 마커 스타일 (일기가 있는 날)
-        markersMaxCount: 1,
+        markersMaxCount: 3,
         markerDecoration: const BoxDecoration(
           color: DiaryTheme.mintGreen,
           shape: BoxShape.circle,

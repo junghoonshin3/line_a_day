@@ -8,25 +8,25 @@ class ExpandedAppBarContent extends StatelessWidget {
     required this.selectedDay,
     required this.onDaySelected,
     required this.onPageChanged,
+    required this.isExpanded,
   });
   final DateTime focusedDay;
   final DateTime selectedDay;
   final Function(DateTime p1, DateTime p2) onDaySelected;
   final Function(DateTime p1) onPageChanged;
+  final bool isExpanded;
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        const SizedBox(height: 20),
         LineCalendarWidget(
           focusedDay: focusedDay,
           selectedDay: selectedDay,
-          isExpanded: true,
+          isExpanded: isExpanded,
           onDaySelected: onDaySelected,
           onPageChanged: onPageChanged,
         ),
-        const SizedBox(height: 20),
       ],
     );
   }

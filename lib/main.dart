@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:line_a_day/screens/home_screen.dart';
 import 'package:line_a_day/theme.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
   runApp(const ProviderScope(child: LineAday()));
 }
 

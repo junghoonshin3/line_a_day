@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final double expandedHeight = 400;
+  double expandedHeight = 150;
   late final ScrollController scrollController;
   late final Function() listener;
   final List<String> diaryItems = [
@@ -43,7 +43,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     scrollController = ScrollController();
     listener = () {
-      // 위젯이 아직 마운트되어 있는지 확인
       ref
           .read(calendarProvider.notifier)
           .onChangeExpended(
@@ -86,33 +85,73 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             title: AnimatedOpacity(
               duration: const Duration(milliseconds: 200),
               opacity: calendarState.isExpanded ? 1 : 0,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "하루 한 줄(김밥아님)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+              child: const CollapsedAppBar(title: "하루 한 줄"),
             ),
             backgroundColor: Colors.amber,
             flexibleSpace: FlexibleSpaceBar(
               background: ExpandedAppBarContent(
+                isExpanded: false,
                 focusedDay: calendarState.focusedDay,
                 selectedDay: calendarState.selectedDay,
-                onDaySelected: (p1, p2) {},
-                onPageChanged: (p1) {},
+                onDaySelected: (p1, p2) {
+                  ref
+                      .read(calendarProvider.notifier)
+                      .onChangeCalendarDay(p1, p2);
+                },
+                onPageChanged: (p1) {
+                  ref
+                      .read(calendarProvider.notifier)
+                      .onChangeCalendarDay(null, p1);
+                },
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.amber,
+              height: 20,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           LineDiaryList(diaryItems: diaryItems),
         ],
       ),
+    );
+  }
+}
+
+class CollapsedAppBar extends StatelessWidget {
+  final String title;
+  const CollapsedAppBar({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -125,7 +164,7 @@ class LineDiaryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      padding: const EdgeInsets.all(8.0),
       sliver: SliverList.separated(
         separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemCount: diaryItems.length,
