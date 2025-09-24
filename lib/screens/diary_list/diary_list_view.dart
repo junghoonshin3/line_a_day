@@ -1,43 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/model/diary_entity.dart';
 import 'package:line_a_day/providers/calendar_notifier_provider.dart';
+import 'package:line_a_day/screens/diary_list/diary_list_view_model.dart';
 import 'package:line_a_day/widgets/diary_card_widget.dart';
 import 'package:line_a_day/widgets/expanded_app_bar_content.dart';
-
 import 'package:intl/date_symbol_data_local.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class DiaryListView extends ConsumerStatefulWidget {
+  const DiaryListView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _DiaryListView();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _DiaryListView extends ConsumerState<DiaryListView> {
   double expandedHeight = 150;
   late final ScrollController scrollController;
   late final Function() listener;
-  final List<String> diaryItems = [
-    "1",
-    "2\n2232313413\n12312312\n\n1312312312",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-    "3",
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -59,18 +39,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void dispose() {
     scrollController.removeListener(listener);
     scrollController.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final calendarState = ref.watch(calendarProvider);
+    final diaryListState = ref.watch(diaryListViewModelProvider);
+    final diaryListViewModel = ref.read(diaryListViewModelProvider.notifier);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       floatingActionButton: IconButton(
         color: Colors.black,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed("diaryWrite");
+        },
         icon: const Icon(Icons.add_circle_rounded, size: 70),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
@@ -93,10 +76,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 isExpanded: false,
                 focusedDay: calendarState.focusedDay,
                 selectedDay: calendarState.selectedDay,
-                onDaySelected: (p1, p2) {
+                onDaySelected: (selectedDay, focusedDay) {
                   ref
                       .read(calendarProvider.notifier)
-                      .onChangeCalendarDay(p1, p2);
+                      .onChangeCalendarDay(selectedDay, focusedDay);
+                  diaryListViewModel.getDiaryList(selectedDay);
                 },
                 onPageChanged: (p1) {
                   ref
@@ -127,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
           ),
-          LineDiaryList(diaryItems: diaryItems),
+          LineDiaryList(diaryItems: diaryListState.diaryList),
         ],
       ),
     );
@@ -159,8 +143,7 @@ class CollapsedAppBar extends StatelessWidget {
 class LineDiaryList extends StatelessWidget {
   const LineDiaryList({super.key, required this.diaryItems});
 
-  final List<String> diaryItems;
-
+  final List<DiaryEntity> diaryItems;
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
@@ -169,9 +152,9 @@ class LineDiaryList extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemCount: diaryItems.length,
         itemBuilder: (context, index) => DiaryCardWidget(
-          title: diaryItems[index],
-          content: diaryItems[index],
-          date: diaryItems[index],
+          title: diaryItems[index].title,
+          content: diaryItems[index].content,
+          date: diaryItems[index].createdAt.toString(),
         ),
       ),
     );

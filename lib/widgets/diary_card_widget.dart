@@ -18,7 +18,7 @@ class DiaryCardWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: const Color(0xFFD6B488),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
