@@ -109,203 +109,232 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
       child: Scaffold(
         backgroundColor: const Color(0xFF1C2541),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 상단 헤더
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        timeGreeting,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFECEFF4),
-                        ),
+          child: Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        dateString,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF9CAAC0),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 48),
-
-                // 메인 프롬프트
-                Expanded(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 200,
-                        child: SlideTransition(
-                          position: _slideAnimation,
-                          child: FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 500),
-                              child: Text(
-                                writeState.currentPrompt,
-                                key: ValueKey(writeState.currentPrompt),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFFECEFF4),
-                                  height: 1.4,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // 텍스트 입력 필드
-                      ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          child: TextFormField(
-                            autocorrect: false,
-                            controller: _textController,
-                            focusNode: _focusNode,
-                            maxLines: 4,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF1E1E1E),
-                              height: 1.5,
-                            ),
-                            decoration: const InputDecoration(
-                              hintText: "마음을 담아 적어보세요...",
-                              hintStyle: TextStyle(
-                                color: Color(0xFFAAAAAA),
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // 작성 중일 때 추가 UI
-                      AnimatedOpacity(
-                        opacity: writeState.isWriting ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 300),
-                        child: AnimatedSlide(
-                          offset: writeState.isWriting
-                              ? Offset.zero
-                              : const Offset(0, 0.2),
-                          duration: const Duration(milliseconds: 300),
-                          child: Column(
-                            children: [
-                              Text(
-                                "솔직한 마음이 가장 아름다워요 ✨",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: const Color(
-                                    0xFF007AFF,
-                                  ).withValues(alpha: 0.8),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                      child: IntrinsicHeight(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildEmotionChip("😊", "기쁨"),
-                                  _buildEmotionChip("😔", "우울"),
-                                  _buildEmotionChip("😤", "화남"),
-                                  _buildEmotionChip("😴", "피곤"),
-                                  _buildEmotionChip("🥰", "사랑"),
+                                  Text(
+                                    timeGreeting,
+                                    style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFFECEFF4),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    dateString,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xFF9CAAC0),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  SlideTransition(
+                                    position: _slideAnimation,
+                                    child: FadeTransition(
+                                      opacity: _fadeAnimation,
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 500,
+                                        ),
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 120,
+                                          child: Text(
+                                            writeState.currentPrompt,
+                                            key: ValueKey(
+                                              writeState.currentPrompt,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFFECEFF4),
+                                              height: 1.4,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // 하단 버튼
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient: writeState.text.isNotEmpty
-                          ? const LinearGradient(
-                              colors: [Color(0xFF3A506B), Color(0xFF5BC0BE)],
-                            )
-                          : null,
-                      color: writeState.text.isNotEmpty
-                          ? const Color(0xFF3A506B)
-                          : const Color(0xFF2E3A59),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: writeState.text.isNotEmpty
-                          ? [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFF5BC0BE,
-                                ).withValues(alpha: 0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 6),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: writeState.text.isNotEmpty
-                            ? () {
-                                // 저장 로직
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("소중한 하루가 기록되었어요 💫"),
-                                    backgroundColor: Color(0xFFD6B488),
-                                  ),
-                                );
-                              }
-                            : null,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "오늘 하루 기록하기",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: writeState.text.isNotEmpty
-                                  ? Colors.white
-                                  : const Color(0xFFAAAAAA),
                             ),
-                          ),
+                            const SizedBox(height: 30),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ScaleTransition(
+                                    scale: _scaleAnimation,
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.1,
+                                            ),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: TextField(
+                                        autocorrect: false,
+                                        controller: _textController,
+                                        focusNode: _focusNode,
+                                        maxLines: 6,
+                                        minLines: 4,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF1E1E1E),
+                                          height: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // 작성 중일 때 추가 UI
+                                  const SizedBox(height: 30),
+                                  AnimatedOpacity(
+                                    opacity: writeState.isWriting ? 1.0 : 0.0,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: AnimatedSlide(
+                                      offset: writeState.isWriting
+                                          ? Offset.zero
+                                          : const Offset(0, 0.2),
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            "솔직한 마음이 가장 아름다워요 ✨",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: const Color(
+                                                0xFF007AFF,
+                                              ).withOpacity(0.8),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              _buildEmotionChip("😊", "기쁨"),
+                                              _buildEmotionChip("😔", "우울"),
+                                              _buildEmotionChip("😤", "화남"),
+                                              _buildEmotionChip("😴", "피곤"),
+                                              _buildEmotionChip("🥰", "사랑"),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ScaleTransition(
+                              scale: _scaleAnimation,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                width: double.infinity,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  gradient: writeState.text.isNotEmpty
+                                      ? const LinearGradient(
+                                          colors: [
+                                            Color(0xFF3A506B),
+                                            Color(0xFF5BC0BE),
+                                          ],
+                                        )
+                                      : null,
+                                  color: writeState.text.isNotEmpty
+                                      ? const Color(0xFF3A506B)
+                                      : const Color(0xFF2E3A59),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: writeState.text.isNotEmpty
+                                      ? [
+                                          BoxShadow(
+                                            color: const Color(
+                                              0xFF5BC0BE,
+                                            ).withOpacity(0.3),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: writeState.text.isNotEmpty
+                                        ? () {
+                                            // 저장 로직
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  "소중한 하루가 기록되었어요 💫",
+                                                ),
+                                                backgroundColor: Color(
+                                                  0xFFD6B488,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        : null,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "오늘 하루 기록하기",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: writeState.text.isNotEmpty
+                                              ? Colors.white
+                                              : const Color(0xFFAAAAAA),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
           ),
         ),

@@ -36,8 +36,8 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
   void _startPromptRotation() {
     _promptTimer?.cancel();
     _promptTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (!state.isWriting) {
-        final shuffledPrompts = [..._prompts]..shuffle();
+      final shuffledPrompts = [..._prompts]..shuffle();
+      if (mounted) {
         state = state.copyWith(currentPrompt: shuffledPrompts.first);
       }
     });
@@ -45,6 +45,8 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
 }
 
 final diaryWriteViewModelProvider =
-    StateNotifierProvider<DiaryWriteViewModel, DiaryWriteState>((ref) {
+    StateNotifierProvider.autoDispose<DiaryWriteViewModel, DiaryWriteState>((
+      ref,
+    ) {
       return DiaryWriteViewModel();
     });
