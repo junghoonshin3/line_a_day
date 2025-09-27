@@ -34,13 +34,10 @@ class DiaryEntity extends HiveObject {
   bool isPrivate; // 비공개 여부
 
   @HiveField(10)
-  List<String> tags; // 태그 목록
+  final List<String> tags; // 태그 목록
 
   @HiveField(11)
-  String? location; // 위치 정보
-
-  @HiveField(12)
-  List<String> imageUrls; // 첨부 이미지 경로들
+  final List<String> imageUrls; // 첨부 이미지 경로들
 
   DiaryEntity({
     required this.id,
@@ -49,12 +46,11 @@ class DiaryEntity extends HiveObject {
     required this.date,
     required this.createdAt,
     required this.updatedAt,
-    this.moodScore,
-    this.weather,
+    this.moodScore = 1,
+    this.weather = "",
     this.isFavorite = false,
     this.isPrivate = false,
     this.tags = const [],
-    this.location,
     this.imageUrls = const [],
   });
 
@@ -83,7 +79,6 @@ class DiaryEntity extends HiveObject {
       isFavorite: isFavorite ?? this.isFavorite,
       isPrivate: isPrivate ?? this.isPrivate,
       tags: tags ?? this.tags,
-      location: location ?? this.location,
       imageUrls: imageUrls ?? this.imageUrls,
     );
   }

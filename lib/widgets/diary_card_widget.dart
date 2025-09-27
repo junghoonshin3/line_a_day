@@ -24,6 +24,7 @@ class DiaryCardWidget extends StatelessWidget {
         child: Row(
           children: [
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(color: Colors.white)),
                 Text(content, style: const TextStyle(color: Colors.white)),

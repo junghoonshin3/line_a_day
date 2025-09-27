@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/model/diary_entity.dart';
 import 'package:line_a_day/providers/calendar_notifier_provider.dart';
 import 'package:line_a_day/screens/diary_list/diary_list_view_model.dart';
+import 'package:line_a_day/widgets/animated_button_widget.dart';
 import 'package:line_a_day/widgets/diary_card_widget.dart';
 import 'package:line_a_day/widgets/expanded_app_bar_content.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -49,14 +50,25 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
     final diaryListViewModel = ref.read(diaryListViewModelProvider.notifier);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      floatingActionButton: IconButton(
-        color: Colors.black,
-        onPressed: () {
+      floatingActionButton: AnimatedButton(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.create_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        onTap: () {
           Navigator.of(context).pushNamed("diaryWrite");
         },
-        icon: const Icon(Icons.add_circle_rounded, size: 70),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: CustomScrollView(
         controller: scrollController,
         slivers: [
@@ -111,7 +123,14 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
               ),
             ),
           ),
-          LineDiaryList(diaryItems: diaryListState.diaryList),
+          diaryListState.diaryList.isNotEmpty
+              ? LineDiaryList(diaryItems: diaryListState.diaryList)
+              : SliverToBoxAdapter(
+                  child: Container(
+                    alignment: AlignmentGeometry.center,
+                    child: const Text("일기가 없어요"),
+                  ),
+                ),
         ],
       ),
     );

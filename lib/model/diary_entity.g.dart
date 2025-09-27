@@ -28,15 +28,14 @@ class DiaryEntityAdapter extends TypeAdapter<DiaryEntity> {
       isFavorite: fields[8] as bool,
       isPrivate: fields[9] as bool,
       tags: (fields[10] as List).cast<String>(),
-      location: fields[11] as String?,
-      imageUrls: (fields[12] as List).cast<String>(),
+      imageUrls: (fields[11] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, DiaryEntity obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -60,8 +59,6 @@ class DiaryEntityAdapter extends TypeAdapter<DiaryEntity> {
       ..writeByte(10)
       ..write(obj.tags)
       ..writeByte(11)
-      ..write(obj.location)
-      ..writeByte(12)
       ..write(obj.imageUrls);
   }
 
