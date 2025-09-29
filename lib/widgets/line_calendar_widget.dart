@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:line_a_day/theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class LineCalendarWidget extends StatelessWidget {
@@ -73,7 +72,7 @@ class LineCalendarWidget extends StatelessWidget {
 
         // 선택된 날짜 스타일
         selectedDecoration: const BoxDecoration(
-          color: DiaryTheme.warmOrange,
+          color: Colors.amber,
           shape: BoxShape.circle,
         ),
         selectedTextStyle: const TextStyle(
@@ -84,7 +83,7 @@ class LineCalendarWidget extends StatelessWidget {
 
         // 오늘 날짜 스타일
         todayDecoration: BoxDecoration(
-          color: DiaryTheme.coralPink.withValues(alpha: 0.7),
+          color: Colors.amber.withValues(alpha: 0.7),
           shape: BoxShape.circle,
         ),
         todayTextStyle: const TextStyle(
@@ -99,7 +98,7 @@ class LineCalendarWidget extends StatelessWidget {
         // 마커 스타일 (일기가 있는 날)
         markersMaxCount: 3,
         markerDecoration: const BoxDecoration(
-          color: DiaryTheme.mintGreen,
+          color: Colors.greenAccent,
           shape: BoxShape.circle,
         ),
         markerMargin: const EdgeInsets.symmetric(horizontal: 1),

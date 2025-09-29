@@ -50,6 +50,16 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
     final diaryListViewModel = ref.read(diaryListViewModelProvider.notifier);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.list), label: "목록"),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.auto_graph_rounded),
+            label: "통계",
+          ),
+        ],
+        onTap: (index) {},
+      ),
       floatingActionButton: AnimatedButton(
         child: Container(
           decoration: const BoxDecoration(
@@ -65,10 +75,11 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
           ),
         ),
         onTap: () {
-          Navigator.of(context).pushNamed("diaryWrite");
+          Navigator.of(context).pushNamed("diaryMood");
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
       body: CustomScrollView(
         controller: scrollController,
         slivers: [

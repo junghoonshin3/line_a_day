@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/screens/diary_list/diary_list_view.dart';
 import 'package:line_a_day/helper/hive_helper.dart';
-import 'package:line_a_day/screens/diary_write/diary_write_view.dart';
-import 'package:line_a_day/theme.dart';
+import 'package:line_a_day/screens/diary_write/write/diary_write_view.dart';
+import 'package:line_a_day/screens/diary_write/mood/diary_mood_view.dart';
+import 'package:line_a_day/screens/emoji/emoji_select_view.dart';
 
 void main() async {
   await init();
@@ -21,13 +22,13 @@ class LineAday extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
+        "emojiSelect": (context) => const EmojiSelectView(),
         "diaryList": (context) => const DiaryListView(),
+        "diaryMood": (context) => const DiaryMoodView(),
         "diaryWrite": (context) => const DiaryWriteView(),
       },
-      theme: DiaryTheme.lightTheme,
-      darkTheme: DiaryTheme.darkTheme, // 선택사항
       themeMode: ThemeMode.light, //
-      initialRoute: "diaryList",
+      initialRoute: "emojiSelect",
     );
   }
 }

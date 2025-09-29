@@ -1,31 +1,13 @@
 class DiaryWriteState {
-  final String text;
-  final String title;
-  final String currentPrompt;
-  final bool isWriting;
-  final bool emojiShowing;
+  bool isLoading = false;
+  String? errorMessage;
 
-  DiaryWriteState({
-    this.text = "",
-    this.title = "",
-    this.currentPrompt = "오늘 하루는 어땠나요?",
-    this.isWriting = false,
-    this.emojiShowing = false,
-  });
+  DiaryWriteState({this.isLoading = false, this.errorMessage});
 
-  DiaryWriteState copyWith({
-    String? text,
-    String? title,
-    String? currentPrompt,
-    bool? isWriting,
-    bool? emojiShowing,
-  }) {
+  DiaryWriteState copyWith({bool? isLoading, String? errorMessage}) {
     return DiaryWriteState(
-      text: text ?? this.text,
-      title: title ?? this.title,
-      currentPrompt: currentPrompt ?? this.currentPrompt,
-      isWriting: isWriting ?? this.isWriting,
-      emojiShowing: emojiShowing ?? this.emojiShowing,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
