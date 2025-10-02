@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/model/diary_mood_state.dart';
 import 'package:line_a_day/model/mood.dart';
-import 'package:line_a_day/screens/diary_write/mood/diary_mood_view_model.dart';
+import 'package:line_a_day/features/diary_write/mood/diary_mood_view_model.dart';
 
 class DiaryMoodView extends ConsumerStatefulWidget {
   const DiaryMoodView({super.key});
@@ -102,9 +102,9 @@ class _DiaryMoodViewState extends ConsumerState<DiaryMoodView>
           ),
         );
       }
+
       if (next.isCompleted && !(previous?.isCompleted ?? false)) {
         Navigator.of(context).pushNamed("diaryWrite");
-        viewModel.resetState();
       }
     });
 

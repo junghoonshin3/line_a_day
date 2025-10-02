@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/model/diary_entity.dart';
 import 'package:line_a_day/providers/calendar_notifier_provider.dart';
-import 'package:line_a_day/screens/diary_list/diary_list_view_model.dart';
+import 'package:line_a_day/features/diary_list/diary_list_view_model.dart';
 import 'package:line_a_day/widgets/animated_button_widget.dart';
 import 'package:line_a_day/widgets/diary_card_widget.dart';
 import 'package:line_a_day/widgets/expanded_app_bar_content.dart';
@@ -103,7 +102,6 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
                   ref
                       .read(calendarProvider.notifier)
                       .onChangeCalendarDay(selectedDay, focusedDay);
-                  diaryListViewModel.getDiaryList(selectedDay);
                 },
                 onPageChanged: (p1) {
                   ref
@@ -134,14 +132,7 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
               ),
             ),
           ),
-          diaryListState.diaryList.isNotEmpty
-              ? LineDiaryList(diaryItems: diaryListState.diaryList)
-              : SliverToBoxAdapter(
-                  child: Container(
-                    alignment: AlignmentGeometry.center,
-                    child: const Text("일기가 없어요"),
-                  ),
-                ),
+          const LineDiaryList(),
         ],
       ),
     );
@@ -171,21 +162,17 @@ class CollapsedAppBar extends StatelessWidget {
 }
 
 class LineDiaryList extends StatelessWidget {
-  const LineDiaryList({super.key, required this.diaryItems});
+  const LineDiaryList({super.key});
 
-  final List<DiaryEntity> diaryItems;
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.all(8.0),
       sliver: SliverList.separated(
         separatorBuilder: (context, index) => const SizedBox(height: 10),
-        itemCount: diaryItems.length,
-        itemBuilder: (context, index) => DiaryCardWidget(
-          title: diaryItems[index].title,
-          content: diaryItems[index].content,
-          date: diaryItems[index].createdAt.toString(),
-        ),
+        itemCount: 5,
+        itemBuilder: (context, index) =>
+            const DiaryCardWidget(title: "", content: "", date: ""),
       ),
     );
   }

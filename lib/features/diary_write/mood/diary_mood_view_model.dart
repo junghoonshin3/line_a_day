@@ -48,6 +48,6 @@ class DiaryMoodViewModel extends StateNotifier<DiaryMoodState> {
 }
 
 final diaryMoodViewModelProvider =
-    StateNotifierProvider<DiaryMoodViewModel, DiaryMoodState>(
+    StateNotifierProvider.autoDispose<DiaryMoodViewModel, DiaryMoodState>(
       (ref) => DiaryMoodViewModel(),
     );
