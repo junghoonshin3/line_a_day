@@ -29,6 +29,7 @@ class AppConfigNotifier extends StateNotifier<AppConfigState> {
 
   void updateEmojiStyle(String newStyle) {
     pref.setString("emoji_style", newStyle);
+    pref.setBool("is_emoji_style_complete", true);
     state = state.copyWith(emojiStyle: newStyle);
   }
 

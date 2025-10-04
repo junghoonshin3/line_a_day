@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/di/di.dart';
-import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 import 'package:line_a_day/features/emoji/presentation/emoji_select_view_model.dart';
+import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
+import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class EmojiSelectView extends ConsumerStatefulWidget {
   const EmojiSelectView({super.key});
@@ -12,57 +13,19 @@ class EmojiSelectView extends ConsumerStatefulWidget {
 }
 
 class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late List<Animation<double>> _fadeAnimations;
-  late List<Animation<Offset>> _slideAnimations;
+    with TickerProviderStateMixin, StaggeredAnimationMixin {
+  @override
+  int get itemCount => 5;
 
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-
-    _fadeAnimations = List.generate(5, (index) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-          parent: _animationController,
-          curve: Interval(
-            index * 0.15,
-            (index * 0.15) + 0.4,
-            curve: Curves.easeOutCubic,
-          ),
-        ),
-      );
-    });
-
-    _slideAnimations = List.generate(5, (index) {
-      return Tween<Offset>(
-        begin: const Offset(0, 0.3),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(
-          parent: _animationController,
-          curve: Interval(
-            index * 0.15,
-            (index * 0.15) + 0.4,
-            curve: Curves.easeOutCubic,
-          ),
-        ),
-      );
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _animationController.forward();
-    });
+    initStaggeredAnimation();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    disposeStaggeredAnimation();
     super.dispose();
   }
 
@@ -71,12 +34,11 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
     final state = ref.watch(emojiSelectViewModelProvider);
     final viewModel = ref.read(emojiSelectViewModelProvider.notifier);
 
-    // 상태 변화 감지 (에러, 완료)
+    // 상태 변화 감지
     ref.listen<EmojiSelectState>(emojiSelectViewModelProvider, (
       previous,
       next,
     ) {
-      // 에러 발생 시 스낵바 표시
       if (next.errorMessage != null &&
           (previous?.errorMessage != next.errorMessage)) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -85,12 +47,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
               children: [
                 const Icon(Icons.error_outline, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    next.errorMessage!,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
+                Expanded(child: Text(next.errorMessage!)),
               ],
             ),
             backgroundColor: const Color(0xFFDC2626),
@@ -99,14 +56,11 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
               borderRadius: BorderRadius.circular(8),
             ),
             margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 3),
           ),
         );
       }
-
-      // 선택 완료 시 다음 화면으로 이동
-      if (next.isCompleted && !(previous?.isCompleted ?? false)) {
-        // Navigator.of(context).pop();
+      if (next.isCompleted) {
+        _navigateToDiaryList();
       }
     });
 
@@ -127,12 +81,15 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                   child: Column(
                     children: [
-                      _buildAnimatedWidget(index: 0, child: _buildHeader()),
+                      // 헤더 (index: 0)
+                      buildAnimatedItem(index: 0, child: _buildHeader()),
                       const SizedBox(height: 40),
-                      ...List.generate(EmojiStyleData.styles.length, (index) {
-                        final styleData = EmojiStyleData.styles[index];
-                        return _buildAnimatedWidget(
-                          index: index + 1,
+
+                      // 이모지 스타일 카드들 (index: 1, 2, 3)
+                      ...List.generate(EmojiStyleData.styles.length, (i) {
+                        final styleData = EmojiStyleData.styles[i];
+                        return buildAnimatedItem(
+                          index: i + 1,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: _buildEmojiStyleCard(
@@ -148,7 +105,9 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                   ),
                 ),
               ),
-              _buildAnimatedWidget(
+
+              // 하단 버튼 (index: 4)
+              buildAnimatedItem(
                 index: 4,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -159,22 +118,6 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildAnimatedWidget({required int index, required Widget child}) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return FadeTransition(
-          opacity: _fadeAnimations[index],
-          child: SlideTransition(
-            position: _slideAnimations[index],
-            child: child,
-          ),
-        );
-      },
-      child: child,
     );
   }
 
@@ -350,5 +293,13 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
               ),
       ),
     );
+  }
+
+  void _navigateToDiaryList() {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed("diaryList");
+      }
+    });
   }
 }

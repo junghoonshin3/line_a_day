@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/providers/calendar_notifier_provider.dart';
 import 'package:line_a_day/features/diary_list/diary_list_view_model.dart';
 import 'package:line_a_day/widgets/animated_button_widget.dart';
+import 'package:line_a_day/widgets/common/gradient_container.dart';
 import 'package:line_a_day/widgets/diary_card_widget.dart';
 import 'package:line_a_day/widgets/expanded_app_bar_content.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,6 +20,7 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
   double expandedHeight = 150;
   late final ScrollController scrollController;
   late final Function() listener;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +33,7 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
                 scrollController.offset > (expandedHeight - kToolbarHeight),
           );
     };
+
     scrollController.addListener(listener);
     // 한국어 로케일 초기화
     initializeDateFormatting('ko_KR', null);
@@ -48,7 +52,6 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
     final diaryListState = ref.watch(diaryListViewModelProvider);
     final diaryListViewModel = ref.read(diaryListViewModelProvider.notifier);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           const BottomNavigationBarItem(icon: Icon(Icons.list), label: "목록"),
@@ -79,61 +82,64 @@ class _DiaryListView extends ConsumerState<DiaryListView> {
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterDocked,
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          SliverAppBar(
-            expandedHeight: expandedHeight,
-            collapsedHeight: kToolbarHeight,
-            centerTitle: false,
-            pinned: true,
-            title: AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              opacity: calendarState.isExpanded ? 1 : 0,
-              child: const CollapsedAppBar(title: "하루 한 줄"),
-            ),
-            backgroundColor: Colors.amber,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ExpandedAppBarContent(
-                isExpanded: false,
-                focusedDay: calendarState.focusedDay,
-                selectedDay: calendarState.selectedDay,
-                onDaySelected: (selectedDay, focusedDay) {
-                  ref
-                      .read(calendarProvider.notifier)
-                      .onChangeCalendarDay(selectedDay, focusedDay);
-                },
-                onPageChanged: (p1) {
-                  ref
-                      .read(calendarProvider.notifier)
-                      .onChangeCalendarDay(null, p1);
-                },
+      body: GradientContainer(
+        gradient: AppTheme.backgroundGradient,
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            SliverAppBar(
+              expandedHeight: expandedHeight,
+              collapsedHeight: kToolbarHeight,
+              centerTitle: false,
+              pinned: true,
+              title: AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: calendarState.isExpanded ? 1 : 0,
+                child: const CollapsedAppBar(title: "하루 한 줄"),
+              ),
+              backgroundColor: Colors.amber,
+              flexibleSpace: FlexibleSpaceBar(
+                background: ExpandedAppBarContent(
+                  isExpanded: false,
+                  focusedDay: calendarState.focusedDay,
+                  selectedDay: calendarState.selectedDay,
+                  onDaySelected: (selectedDay, focusedDay) {
+                    ref
+                        .read(calendarProvider.notifier)
+                        .onChangeCalendarDay(selectedDay, focusedDay);
+                  },
+                  onPageChanged: (p1) {
+                    ref
+                        .read(calendarProvider.notifier)
+                        .onChangeCalendarDay(null, p1);
+                  },
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.amber,
-              height: 20,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        topRight: Radius.circular(20.0),
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.amber,
+                height: 20,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          const LineDiaryList(),
-        ],
+            const LineDiaryList(),
+          ],
+        ),
       ),
     );
   }

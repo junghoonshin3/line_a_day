@@ -8,7 +8,7 @@ import 'package:line_a_day/features/diary_write/write/diary_write_view.dart';
 import 'package:line_a_day/features/diary_write/mood/diary_mood_view.dart';
 import 'package:line_a_day/features/emoji/presentation/emoji_select_view.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
-import 'package:line_a_day/features/intro/intro_view.dart';
+import 'package:line_a_day/features/intro/presentation/intro_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {

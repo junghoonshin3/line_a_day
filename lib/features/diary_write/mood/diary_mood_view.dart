@@ -104,7 +104,7 @@ class _DiaryMoodViewState extends ConsumerState<DiaryMoodView>
       }
 
       if (next.isCompleted && !(previous?.isCompleted ?? false)) {
-        Navigator.of(context).pushNamed("diaryWrite");
+        // Navigator.of(context).pushNamed("diaryWrite");
       }
     });
 
