@@ -42,7 +42,5 @@ final sharedRefProvider = Provider<SharedPreferences>((ref) {
 final appConfigProvider =
     StateNotifierProvider<AppConfigNotifier, AppConfigState>((ref) {
       final pref = ref.watch(sharedRefProvider);
-
-      // 비동기 초기화
       return AppConfigNotifier(pref: pref);
     });

@@ -21,7 +21,6 @@ class LineCalendarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TableCalendar<dynamic>(
-      locale: 'ko_KR',
       firstDay: DateTime(2000, 1, 1),
       lastDay: DateTime(2030, 12, 31),
       focusedDay: focusedDay,
@@ -33,7 +32,7 @@ class LineCalendarWidget extends StatelessWidget {
         formatButtonVisible: false,
         titleCentered: true,
         titleTextFormatter: (date, locale) {
-          return DateFormat.yMMMM('ko_KR').format(date);
+          return DateFormat.yMMMM().format(date);
         },
         titleTextStyle: const TextStyle(
           fontSize: 16,
