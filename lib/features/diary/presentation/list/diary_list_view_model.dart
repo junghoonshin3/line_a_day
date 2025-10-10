@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
-import 'package:line_a_day/features/main/state/diary_list_state.dart';
-import 'package:line_a_day/model/diary_entity.dart';
-import 'package:line_a_day/model/mood.dart';
+import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
+import 'package:line_a_day/features/diary/presentation/state/diary_list_state.dart';
 
 class DiaryListViewModel extends StateNotifier<DiaryListState> {
   DiaryListViewModel() : super(DiaryListState()) {
@@ -40,7 +40,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     state = state.copyWith(filterMood: mood, clearFilter: mood == null);
   }
 
-  List<DiaryEntity> getFilteredEntries() {
+  List<DiaryModel> getFilteredEntries() {
     var filtered = state.entries;
 
     if (state.filterMood != null) {
@@ -52,7 +52,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     return filtered;
   }
 
-  List<DiaryEntity> getEntriesForDate(DateTime date) {
+  List<DiaryModel> getEntriesForDate(DateTime date) {
     return state.entries.where((entry) {
       return entry.createdAt.year == date.year &&
           entry.createdAt.month == date.month &&
@@ -68,9 +68,9 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     });
   }
 
-  Map<String, List<DiaryEntity>> getGroupedEntries() {
+  Map<String, List<DiaryModel>> getGroupedEntries() {
     final filtered = getFilteredEntries();
-    final Map<String, List<DiaryEntity>> grouped = {};
+    final Map<String, List<DiaryModel>> grouped = {};
 
     for (final entry in filtered) {
       final dateKey = DateFormat().format(entry.createdAt);
@@ -83,7 +83,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     return grouped;
   }
 
-  DiaryListStats _calculateStats(List<DiaryEntity> entries) {
+  DiaryListStats _calculateStats(List<DiaryModel> entries) {
     if (entries.isEmpty) {
       return const DiaryListStats();
     }
@@ -98,7 +98,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     );
   }
 
-  int _calculateStreak(List<DiaryEntity> sortedEntries) {
+  int _calculateStreak(List<DiaryModel> sortedEntries) {
     if (sortedEntries.isEmpty) return 0;
 
     int streak = 1;
@@ -119,37 +119,40 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     return streak;
   }
 
-  List<DiaryEntity> _generateMockData() {
+  List<DiaryModel> _generateMockData() {
     final now = DateTime.now();
     return [
-      DiaryEntity()
-        ..id = 1
-        ..createdAt = now
-        ..title = '오랜만에 친구들과 만난 날'
-        ..content =
-            '오늘은 대학 동기들과 오랜만에 만나서 저녁을 먹었다. 다들 바쁘게 살다보니 이렇게 모이기가 쉽지 않은데, 오늘 정말 즐거웠다...'
-        ..mood = MoodType.happy
-        ..tags = ['친구', '행복']
-        ..weather = '☀️ 맑음'
-        ..location = '강남역',
-      DiaryEntity()
-        ..id = 2
-        ..createdAt = now.subtract(const Duration(days: 1))
-        ..title = '프로젝트 마감'
-        ..content =
-            '드디어 한 달간 작업하던 프로젝트가 마무리되었다. 힘들었지만 보람찬 시간이었고, 많은 것을 배울 수 있었다...'
-        ..mood = MoodType.calm
-        ..tags = ['업무', '성취감']
-        ..weather = '🌧️ 비',
-      DiaryEntity()
-        ..id = 3
-        ..createdAt = now.subtract(const Duration(days: 2))
-        ..title = '평범한 월요일'
-        ..content =
-            '월요일은 언제나 피곤하다. 오늘은 특별한 일 없이 평범하게 하루를 보냈다. 저녁에는 넷플릭스를 보며 쉬었다...'
-        ..mood = MoodType.tired
-        ..tags = ['일상', '휴식']
-        ..weather = '☁️ 흐림',
+      DiaryModel(
+        id: 1,
+        createdAt: now,
+        title: '오랜만에 친구들과 만난 날',
+        content:
+            '오늘은 대학 동기들과 오랜만에 만나서 저녁을 먹었다. 다들 바쁘게 살다보니 이렇게 모이기가 쉽지 않은데, 오늘 정말 즐거웠다...',
+        mood: MoodType.happy,
+        tags: ['친구', '행복'],
+        weather: '☀️ 맑음',
+        location: '강남역',
+      ),
+      DiaryModel(
+        id: 2,
+        createdAt: now.subtract(const Duration(days: 1)),
+        title: '프로젝트 마감',
+        content:
+            '드디어 한 달간 작업하던 프로젝트가 마무리되었다. 힘들었지만 보람찬 시간이었고, 많은 것을 배울 수 있었다...',
+        mood: MoodType.calm,
+        tags: ['업무', '성취감'],
+        weather: '🌧️ 비',
+      ),
+      DiaryModel(
+        id: 3,
+        createdAt: now.subtract(const Duration(days: 2)),
+        title: '평범한 월요일',
+        content:
+            '월요일은 언제나 피곤하다. 오늘은 특별한 일 없이 평범하게 하루를 보냈다. 저녁에는 넷플릭스를 보며 쉬었다...',
+        mood: MoodType.tired,
+        tags: ['일상', '휴식'],
+        weather: '☁️ 흐림',
+      ),
     ];
   }
 }

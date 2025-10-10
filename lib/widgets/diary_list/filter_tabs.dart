@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/model/mood.dart';
 
 class FilterTabs extends StatelessWidget {
   final MoodType? selectedMood;

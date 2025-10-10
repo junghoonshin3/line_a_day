@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/features/main/diary_list/diary_list_view.dart';
-import 'package:line_a_day/features/main/main_view_model.dart';
-import 'package:line_a_day/features/main/state/main_state.dart';
+import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
+import 'package:line_a_day/features/diary/presentation/main_view_model.dart';
+import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
 
 class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});

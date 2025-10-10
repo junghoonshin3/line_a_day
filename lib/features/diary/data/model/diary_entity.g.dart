@@ -18,21 +18,40 @@ const DiaryEntitySchema = CollectionSchema(
   id: 3606339010430372336,
   properties: {
     r'content': PropertySchema(id: 0, name: r'content', type: IsarType.string),
-    r'date': PropertySchema(id: 1, name: r'date', type: IsarType.dateTime),
-    r'location': PropertySchema(
+    r'createdAt': PropertySchema(
+      id: 1,
+      name: r'createdAt',
+      type: IsarType.dateTime,
+    ),
+    r'isFavorite': PropertySchema(
       id: 2,
+      name: r'isFavorite',
+      type: IsarType.bool,
+    ),
+    r'lastModified': PropertySchema(
+      id: 3,
+      name: r'lastModified',
+      type: IsarType.dateTime,
+    ),
+    r'location': PropertySchema(
+      id: 4,
       name: r'location',
       type: IsarType.string,
     ),
     r'mood': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'mood',
       type: IsarType.byte,
       enumMap: _DiaryEntitymoodEnumValueMap,
     ),
-    r'tags': PropertySchema(id: 4, name: r'tags', type: IsarType.stringList),
-    r'title': PropertySchema(id: 5, name: r'title', type: IsarType.string),
-    r'weather': PropertySchema(id: 6, name: r'weather', type: IsarType.string),
+    r'photoUrls': PropertySchema(
+      id: 6,
+      name: r'photoUrls',
+      type: IsarType.stringList,
+    ),
+    r'tags': PropertySchema(id: 7, name: r'tags', type: IsarType.stringList),
+    r'title': PropertySchema(id: 8, name: r'title', type: IsarType.string),
+    r'weather': PropertySchema(id: 9, name: r'weather', type: IsarType.string),
   },
 
   estimateSize: _diaryEntityEstimateSize,
@@ -40,7 +59,34 @@ const DiaryEntitySchema = CollectionSchema(
   deserialize: _diaryEntityDeserialize,
   deserializeProp: _diaryEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'createdAt': IndexSchema(
+      id: -3433535483987302584,
+      name: r'createdAt',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+    r'lastModified': IndexSchema(
+      id: 5953778071269117195,
+      name: r'lastModified',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'lastModified',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+  },
   links: {},
   embeddedSchemas: {},
 
@@ -61,6 +107,18 @@ int _diaryEntityEstimateSize(
     final value = object.location;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final list = object.photoUrls;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
     }
   }
   {
@@ -92,12 +150,15 @@ void _diaryEntitySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.content);
-  writer.writeDateTime(offsets[1], object.date);
-  writer.writeString(offsets[2], object.location);
-  writer.writeByte(offsets[3], object.mood.index);
-  writer.writeStringList(offsets[4], object.tags);
-  writer.writeString(offsets[5], object.title);
-  writer.writeString(offsets[6], object.weather);
+  writer.writeDateTime(offsets[1], object.createdAt);
+  writer.writeBool(offsets[2], object.isFavorite);
+  writer.writeDateTime(offsets[3], object.lastModified);
+  writer.writeString(offsets[4], object.location);
+  writer.writeByte(offsets[5], object.mood.index);
+  writer.writeStringList(offsets[6], object.photoUrls);
+  writer.writeStringList(offsets[7], object.tags);
+  writer.writeString(offsets[8], object.title);
+  writer.writeString(offsets[9], object.weather);
 }
 
 DiaryEntity _diaryEntityDeserialize(
@@ -108,15 +169,18 @@ DiaryEntity _diaryEntityDeserialize(
 ) {
   final object = DiaryEntity();
   object.content = reader.readString(offsets[0]);
-  object.date = reader.readDateTime(offsets[1]);
+  object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.location = reader.readStringOrNull(offsets[2]);
+  object.isFavorite = reader.readBool(offsets[2]);
+  object.lastModified = reader.readDateTimeOrNull(offsets[3]);
+  object.location = reader.readStringOrNull(offsets[4]);
   object.mood =
-      _DiaryEntitymoodValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+      _DiaryEntitymoodValueEnumMap[reader.readByteOrNull(offsets[5])] ??
       MoodType.happy;
-  object.tags = reader.readStringList(offsets[4]);
-  object.title = reader.readString(offsets[5]);
-  object.weather = reader.readStringOrNull(offsets[6]);
+  object.photoUrls = reader.readStringList(offsets[6]);
+  object.tags = reader.readStringList(offsets[7]);
+  object.title = reader.readString(offsets[8]);
+  object.weather = reader.readStringOrNull(offsets[9]);
   return object;
 }
 
@@ -132,16 +196,22 @@ P _diaryEntityDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 3:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (_DiaryEntitymoodValueEnumMap[reader.readByteOrNull(offset)] ??
               MoodType.happy)
           as P;
-    case 4:
-      return (reader.readStringList(offset)) as P;
-    case 5:
-      return (reader.readString(offset)) as P;
     case 6:
+      return (reader.readStringList(offset)) as P;
+    case 7:
+      return (reader.readStringList(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -190,6 +260,22 @@ extension DiaryEntityQueryWhereSort
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhere> anyCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'createdAt'),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhere> anyLastModified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'lastModified'),
+      );
     });
   }
 }
@@ -260,6 +346,235 @@ extension DiaryEntityQueryWhere
           lower: lowerId,
           includeLower: includeLower,
           upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> createdAtEqualTo(
+    DateTime createdAt,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'createdAt', value: [createdAt]),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> createdAtNotEqualTo(
+    DateTime createdAt,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [],
+                upper: [createdAt],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [createdAt],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [createdAt],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [],
+                upper: [createdAt],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  createdAtGreaterThan(DateTime createdAt, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [createdAt],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> createdAtLessThan(
+    DateTime createdAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [],
+          upper: [createdAt],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> createdAtBetween(
+    DateTime lowerCreatedAt,
+    DateTime upperCreatedAt, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [lowerCreatedAt],
+          includeLower: includeLower,
+          upper: [upperCreatedAt],
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  lastModifiedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'lastModified', value: [null]),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  lastModifiedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'lastModified',
+          lower: [null],
+          includeLower: false,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> lastModifiedEqualTo(
+    DateTime? lastModified,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'lastModified',
+          value: [lastModified],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  lastModifiedNotEqualTo(DateTime? lastModified) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'lastModified',
+                lower: [],
+                upper: [lastModified],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'lastModified',
+                lower: [lastModified],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'lastModified',
+                lower: [lastModified],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'lastModified',
+                lower: [],
+                upper: [lastModified],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  lastModifiedGreaterThan(DateTime? lastModified, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'lastModified',
+          lower: [lastModified],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause>
+  lastModifiedLessThan(DateTime? lastModified, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'lastModified',
+          lower: [],
+          upper: [lastModified],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterWhereClause> lastModifiedBetween(
+    DateTime? lowerLastModified,
+    DateTime? upperLastModified, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'lastModified',
+          lower: [lowerLastModified],
+          includeLower: includeLower,
+          upper: [upperLastModified],
           includeUpper: includeUpper,
         ),
       );
@@ -416,47 +731,43 @@ extension DiaryEntityQueryFilter
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> dateEqualTo(
-    DateTime value,
-  ) {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'date', value: value),
+        FilterCondition.equalTo(property: r'createdAt', value: value),
       );
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> dateGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'date',
+          property: r'createdAt',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> dateLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'date',
+          property: r'createdAt',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> dateBetween(
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -465,7 +776,7 @@ extension DiaryEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'date',
+          property: r'createdAt',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -525,6 +836,88 @@ extension DiaryEntityQueryFilter
       return query.addFilterCondition(
         FilterCondition.between(
           property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  isFavoriteEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isFavorite', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastModified'),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastModified'),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastModified', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastModified',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastModified',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  lastModifiedBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastModified',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -751,6 +1144,218 @@ extension DiaryEntityQueryFilter
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'photoUrls'),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'photoUrls'),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'photoUrls',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'photoUrls',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'photoUrls',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'photoUrls', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'photoUrls', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'photoUrls', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'photoUrls', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'photoUrls', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsLengthLessThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'photoUrls', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'photoUrls', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  photoUrlsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'photoUrls',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
       );
     });
   }
@@ -1299,15 +1904,40 @@ extension DiaryEntityQuerySortBy
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByDate() {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
+      return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByDateDesc() {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByLastModified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastModified', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy>
+  sortByLastModifiedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastModified', Sort.desc);
     });
   }
 
@@ -1374,15 +2004,15 @@ extension DiaryEntityQuerySortThenBy
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByDate() {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.asc);
+      return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByDateDesc() {
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'date', Sort.desc);
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
@@ -1395,6 +2025,31 @@ extension DiaryEntityQuerySortThenBy
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByLastModified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastModified', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy>
+  thenByLastModifiedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastModified', Sort.desc);
     });
   }
 
@@ -1457,9 +2112,21 @@ extension DiaryEntityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByDate() {
+  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'date');
+      return query.addDistinctBy(r'createdAt');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isFavorite');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByLastModified() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastModified');
     });
   }
 
@@ -1474,6 +2141,12 @@ extension DiaryEntityQueryWhereDistinct
   QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByMood() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mood');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByPhotoUrls() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'photoUrls');
     });
   }
 
@@ -1514,9 +2187,22 @@ extension DiaryEntityQueryProperty
     });
   }
 
-  QueryBuilder<DiaryEntity, DateTime, QQueryOperations> dateProperty() {
+  QueryBuilder<DiaryEntity, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'date');
+      return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, bool, QQueryOperations> isFavoriteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isFavorite');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DateTime?, QQueryOperations>
+  lastModifiedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastModified');
     });
   }
 
@@ -1529,6 +2215,13 @@ extension DiaryEntityQueryProperty
   QueryBuilder<DiaryEntity, MoodType, QQueryOperations> moodProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'mood');
+    });
+  }
+
+  QueryBuilder<DiaryEntity, List<String>?, QQueryOperations>
+  photoUrlsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'photoUrls');
     });
   }
 

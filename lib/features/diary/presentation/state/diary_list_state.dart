@@ -1,9 +1,8 @@
 import 'package:line_a_day/constant.dart';
-import 'package:line_a_day/model/diary_entity.dart';
-import 'package:line_a_day/model/mood.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 
 class DiaryListState {
-  final List<DiaryEntity> entries;
+  final List<DiaryModel> entries;
   final DateTime selectedDate;
   final DateTime focusedDate;
   final MoodType? filterMood;
@@ -24,7 +23,7 @@ class DiaryListState {
        stats = stats ?? const DiaryListStats();
 
   DiaryListState copyWith({
-    List<DiaryEntity>? entries,
+    List<DiaryModel>? entries,
     DateTime? selectedDate,
     DateTime? focusedDate,
     MoodType? filterMood,

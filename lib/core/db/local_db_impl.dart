@@ -1,6 +1,6 @@
 import 'package:isar_community/isar.dart';
 import 'package:line_a_day/core/db/local_db.dart';
-import 'package:line_a_day/model/diary_entity.dart';
+import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
 import 'package:path_provider/path_provider.dart';
 
 interface class LocalDbImpl extends LocalDb {

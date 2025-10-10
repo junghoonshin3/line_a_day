@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/model/diary_mood_state.dart';
-import '/model/mood.dart';
+import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/features/diary/presentation/state/diary_mood_state.dart';
 
 class DiaryMoodViewModel extends StateNotifier<DiaryMoodState> {
   DiaryMoodViewModel() : super(DiaryMoodState());

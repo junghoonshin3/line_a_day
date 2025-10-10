@@ -1,4 +1,4 @@
-import 'package:line_a_day/model/mood.dart';
+import 'package:line_a_day/constant.dart';
 
 class DiaryMoodState {
   final MoodType? selectedMood;

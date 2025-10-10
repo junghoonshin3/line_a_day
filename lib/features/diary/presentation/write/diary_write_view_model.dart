@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/model/diary_write_state.dart';
+import 'package:line_a_day/features/diary/presentation/state/diary_write_state.dart';
 
 class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
   DiaryWriteViewModel() : super(DiaryWriteState());

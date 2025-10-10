@@ -7,7 +7,7 @@ import 'package:line_a_day/features/emoji/presentation/emoji_select_view_model.d
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view_model.dart';
 import 'package:line_a_day/features/intro/presentation/state/intro_state.dart';
-import 'package:line_a_day/repository/diary_list_repository_impl.dart';
+import 'package:line_a_day/features/diary/data/repository/diary_list_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //local db

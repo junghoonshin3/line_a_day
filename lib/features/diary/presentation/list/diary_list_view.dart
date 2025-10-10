@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/features/main/diary_list/diary_list_view_model.dart';
-import 'package:line_a_day/features/main/state/diary_list_state.dart';
-import 'package:line_a_day/model/diary_entity.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
+import 'package:line_a_day/features/diary/presentation/list/diary_list_view_model.dart';
+import 'package:line_a_day/features/diary/presentation/state/diary_list_state.dart';
+import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/diary_list/diary_card.dart';
 import 'package:line_a_day/widgets/diary_list/filter_tabs.dart';
 import 'package:line_a_day/widgets/diary_list/stats_cards.dart';
@@ -18,7 +18,20 @@ class DiaryListView extends ConsumerStatefulWidget {
   ConsumerState<DiaryListView> createState() => _DiaryListViewState();
 }
 
-class _DiaryListViewState extends ConsumerState<DiaryListView> {
+class _DiaryListViewState extends ConsumerState<DiaryListView>
+    with TickerProviderStateMixin, StaggeredAnimationMixin {
+  @override
+  void initState() {
+    super.initState();
+    initStaggeredAnimation();
+  }
+
+  @override
+  void dispose() {
+    disposeStaggeredAnimation();
+    super.dispose();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -31,14 +44,20 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
     final viewModel = ref.read(diaryListViewModelProvider.notifier);
 
     return Scaffold(
-      floatingActionButton: _buildFAB(),
+      floatingActionButton: buildAnimatedItem(
+        index: 6,
+        scaleAnimation: true,
+        child: _buildFAB(),
+      ),
       backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
           // 헤더
           _buildHeader(state),
+
           // 필터 탭
-          SliverToBoxAdapter(
+          buildAnimatedSliverBox(
+            index: 3,
             child: FilterTabs(
               selectedMood: state.filterMood,
               onMoodSelected: viewModel.filterByMood,
@@ -46,7 +65,11 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
           ),
 
           // 달력
-          SliverToBoxAdapter(child: _buildCalendar(state, viewModel)),
+          buildAnimatedSliverBox(
+            index: 4,
+            customSlideOffset: const Offset(0, 40),
+            child: _buildCalendar(state, viewModel),
+          ),
 
           // 일기 리스트
           _buildDiaryList(state, viewModel),
@@ -56,51 +79,55 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
   }
 
   Widget _buildHeader(DiaryListState state) {
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        return SliverAppBar(
-          expandedHeight: 220,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.primaryGradient,
-              ),
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return SliverAppBar(
+      expandedHeight: 220,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '나의 일기',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
+                  buildFadeItem(
+                    index: 0,
+                    child: const Text(
+                      '나의 일기',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
-                      Row(
-                        children: [
-                          _buildHeaderIcon(Icons.search),
-                          const SizedBox(width: 12),
-                          _buildHeaderIcon(Icons.settings),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  StatsCards(
-                    totalEntries: state.stats.totalEntries,
-                    currentStreak: state.stats.currentStreak,
-                    recentMood: state.stats.recentMood,
+                  buildFadeItem(
+                    index: 1,
+                    child: Row(
+                      children: [
+                        _buildHeaderIcon(Icons.search),
+                        const SizedBox(width: 12),
+                        _buildHeaderIcon(Icons.settings),
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+              buildAnimatedItem(
+                index: 2,
+                customSlideOffset: const Offset(0, 20),
+                child: StatsCards(
+                  totalEntries: state.stats.totalEntries,
+                  currentStreak: state.stats.currentStreak,
+                  recentMood: state.stats.recentMood,
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -206,7 +233,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
     final groupedEntries = viewModel.getGroupedEntries();
 
     if (groupedEntries.isEmpty) {
-      return SliverToBoxAdapter(child: _buildEmptyState());
+      return buildAnimatedSliverBox(index: 5, child: _buildEmptyState());
     }
 
     return SliverList(
@@ -214,18 +241,28 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
         final dateKey = groupedEntries.keys.elementAt(index);
         final entries = groupedEntries[dateKey]!;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDateSection(dateKey),
-              const SizedBox(height: 12),
-              ...entries.map(
-                (entity) =>
-                    DiaryCard(entity: entity, onTap: () => _onDiaryTap(entity)),
-              ),
-            ],
+        return buildSliverAnimatedItem(
+          index: index + 5,
+          customSlideOffset: const Offset(0, 20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDateSection(dateKey),
+                const SizedBox(height: 12),
+                ...entries.asMap().entries.map((entry) {
+                  final entity = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: DiaryCard(
+                      model: entity,
+                      onTap: () => _onDiaryTap(entity),
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
         );
       }, childCount: groupedEntries.length),
@@ -300,104 +337,12 @@ class _DiaryListViewState extends ConsumerState<DiaryListView> {
     );
   }
 
-  // Widget _buildBottomNav(DiaryListState state, DiaryListViewModel viewModel) {
-  //   return Container(
-  //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.08),
-  //           blurRadius: 12,
-  //           offset: const Offset(0, -2),
-  //         ),
-  //       ],
-  //     ),
-  //     child: SafeArea(
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //         children: [
-  //           _buildNavItem(
-  //             Icons.book,
-  //             BottomTapName.diary,
-  //             state.selectedBottomTap == BottomTapName.diary,
-  //             () {
-  //               viewModel.selectedBottomTapName(BottomTapName.diary);
-  //             },
-  //           ),
-  //           _buildNavItem(
-  //             Icons.bar_chart,
-  //             BottomTapName.statistics,
-  //             state.selectedBottomTap == BottomTapName.statistics,
-  //             () {
-  //               viewModel.selectedBottomTapName(BottomTapName.statistics);
-  //             },
-  //           ),
-  //           _buildNavItem(
-  //             Icons.flag,
-  //             BottomTapName.goal,
-  //             state.selectedBottomTap == BottomTapName.goal,
-  //             () {
-  //               viewModel.selectedBottomTapName(BottomTapName.goal);
-  //             },
-  //           ),
-  //           _buildNavItem(
-  //             Icons.person,
-  //             BottomTapName.myinfo,
-  //             state.selectedBottomTap == BottomTapName.myinfo,
-  //             () {
-  //               viewModel.selectedBottomTapName(BottomTapName.myinfo);
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildNavItem(
-  //   IconData icon,
-  //   BottomTapName name,
-  //   bool isActive,
-  //   void Function() onTap,
-  // ) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Container(
-  //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-  //       decoration: BoxDecoration(
-  //         color: isActive ? const Color(0xFFEEF2FF) : Colors.transparent,
-  //         borderRadius: BorderRadius.circular(12),
-  //       ),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Icon(
-  //             icon,
-  //             size: 24,
-  //             color: isActive ? AppTheme.primaryBlue : AppTheme.gray400,
-  //           ),
-  //           const SizedBox(height: 4),
-  //           Text(
-  //             name.description,
-  //             style: AppTheme.labelMedium.copyWith(
-  //               color: isActive ? AppTheme.primaryBlue : AppTheme.gray600,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  void _onDiaryTap(DiaryEntity entity) {
+  void _onDiaryTap(DiaryModel entity) {
     // TODO: 일기 상세 화면으로 이동
     print('일기 탭: ${entity.title}');
   }
 
   void _onWriteDiary() {
-    // TODO: 일기 작성 화면으로 이동
-    print('일기 작성');
+    Navigator.of(context).pushNamed("diaryWrite");
   }
 }

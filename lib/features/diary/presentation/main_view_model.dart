@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:line_a_day/constant.dart';
-import 'package:line_a_day/features/main/state/main_state.dart';
+import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
 
 class MainViewModel extends StateNotifier<MainState> {
   MainViewModel() : super(MainState(selectedBottomTap: BottomTapName.diary));

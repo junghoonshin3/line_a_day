@@ -1,7 +1,7 @@
 // views/diary_write_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/features/diary_write/write/diary_write_view_model.dart';
+import 'package:line_a_day/features/diary/presentation/write/diary_write_view_model.dart';
 
 class DiaryWriteView extends ConsumerStatefulWidget {
   const DiaryWriteView({super.key});

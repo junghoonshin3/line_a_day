@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/model/diary_entity.dart';
-import 'package:line_a_day/model/mood.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 
 class DiaryCard extends StatelessWidget {
-  final DiaryEntity entity;
+  final DiaryModel model;
   final VoidCallback onTap;
 
-  const DiaryCard({super.key, required this.entity, required this.onTap});
+  const DiaryCard({super.key, required this.model, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +30,7 @@ class DiaryCard extends StatelessWidget {
             _buildTitle(),
             const SizedBox(height: 8),
             _buildPreview(),
-            if (entity.tags?.isNotEmpty ??
-                false || entity.weather != null || entity.location != null) ...[
+            if (model.tags.isNotEmpty) ...[
               const SizedBox(height: 12),
               _buildTags(),
             ],
@@ -42,11 +41,11 @@ class DiaryCard extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    final timeString = DateFormat('a h:mm').format(entity.createdAt);
+    final timeString = DateFormat('a h:mm').format(model.createdAt);
     return Row(
       children: [
         Text(
-          Mood.getMoodByType(entity.mood)?.emoji ?? '😊',
+          Mood.getMoodByType(model.mood)?.emoji ?? '😊',
           style: const TextStyle(fontSize: 32),
         ),
         const Spacer(),
@@ -60,7 +59,7 @@ class DiaryCard extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      entity.title,
+      model.title,
       style: AppTheme.titleLarge,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -69,7 +68,7 @@ class DiaryCard extends StatelessWidget {
 
   Widget _buildPreview() {
     return Text(
-      entity.content,
+      model.content,
       style: AppTheme.bodyMedium,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
@@ -81,19 +80,19 @@ class DiaryCard extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        if (entity.weather != null)
+        if (model.weather != null)
           _buildTag(
-            entity.weather!,
+            model.weather!,
             const Color(0xFFFEF3C7),
             const Color(0xFFD97706),
           ),
-        if (entity.location != null)
+        if (model.location != null)
           _buildTag(
-            '📍 ${entity.location!}',
+            '📍 ${model.location!}',
             const Color(0xFFDBEAFE),
             const Color(0xFF2563EB),
           ),
-        ...?entity.tags?.map(
+        ...model.tags.map(
           (tag) => _buildTag(
             '#$tag',
             const Color(0xFFF3E8FF),

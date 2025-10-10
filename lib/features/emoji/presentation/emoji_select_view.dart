@@ -15,9 +15,6 @@ class EmojiSelectView extends ConsumerStatefulWidget {
 class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
     with TickerProviderStateMixin, StaggeredAnimationMixin {
   @override
-  int get itemCount => 5;
-
-  @override
   void initState() {
     super.initState();
     initStaggeredAnimation();
