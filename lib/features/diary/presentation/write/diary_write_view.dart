@@ -1,7 +1,10 @@
 // views/diary_write_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view_model.dart';
+import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class DiaryWriteView extends ConsumerStatefulWidget {
   const DiaryWriteView({super.key});
@@ -11,11 +14,7 @@ class DiaryWriteView extends ConsumerStatefulWidget {
 }
 
 class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late List<Animation<double>> _fadeAnimations;
-  late List<Animation<Offset>> _slideAnimations;
-
+    with TickerProviderStateMixin, StaggeredAnimationMixin {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final FocusNode _titleFocusNode = FocusNode();
@@ -24,50 +23,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   @override
   void initState() {
     super.initState();
+    initStaggeredAnimation();
 
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    // 애니메이션 설정
-    _fadeAnimations = List.generate(4, (index) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-          parent: _animationController,
-          curve: Interval(
-            index * 0.2,
-            (index * 0.2) + 0.4,
-            curve: Curves.easeOutCubic,
-          ),
-        ),
-      );
-    });
-
-    _slideAnimations = List.generate(4, (index) {
-      return Tween<Offset>(
-        begin: const Offset(0, 0.3),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(
-          parent: _animationController,
-          curve: Interval(
-            index * 0.2,
-            (index * 0.2) + 0.4,
-            curve: Curves.easeOutCubic,
-          ),
-        ),
-      );
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _animationController.forward();
-    });
+    final diary = ref.read(diaryWriteViewModelProvider).diary;
+    print("diary.content : ${diary.content}");
+    // 초기값 설정
+    _titleController.text = diary.title;
+    _contentController.text = diary.content;
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    disposeStaggeredAnimation();
     _titleController.dispose();
     _contentController.dispose();
     _titleFocusNode.dispose();
@@ -78,6 +45,8 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(diaryWriteViewModelProvider);
+    final viewModel = ref.read(diaryWriteViewModelProvider.notifier);
+
     return GestureDetector(
       onTap: () {
         _titleFocusNode.unfocus();
@@ -114,19 +83,19 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                     const SizedBox(height: 20),
 
                     // 헤더 섹션
-                    _buildAnimatedWidget(index: 0, child: _buildHeader()),
+                    buildAnimatedItem(index: 0, child: _buildHeader()),
                     const SizedBox(height: 32),
 
                     // 제목 입력
-                    _buildAnimatedWidget(index: 1, child: _buildTitleInput()),
+                    buildAnimatedItem(index: 1, child: _buildTitleInput()),
                     const SizedBox(height: 24),
 
                     // 내용 입력
-                    _buildAnimatedWidget(index: 2, child: _buildContentInput()),
+                    buildAnimatedItem(index: 2, child: _buildContentInput()),
                     const SizedBox(height: 32),
 
                     // 추가 기능들
-                    _buildAnimatedWidget(
+                    buildAnimatedItem(
                       index: 3,
                       child: _buildAdditionalFeatures(),
                     ),
@@ -154,7 +123,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                   // 임시 저장 버튼
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: state.isLoading ? null : () {},
+                      onPressed: state.isLoading
+                          ? null
+                          : () {
+                              viewModel.saveDraft(
+                                DiaryModel(
+                                  createdAt: DateTime.now(),
+                                  title: _titleController.text,
+                                  content: _contentController.text,
+                                  mood: MoodType.happy,
+                                ),
+                              );
+                            },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF3B82F6)),
                         shape: RoundedRectangleBorder(
@@ -178,7 +158,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
-                      onPressed: state.isLoading ? null : () {},
+                      onPressed: state.isLoading
+                          ? null
+                          : () {
+                              viewModel.saveDiary(
+                                DiaryModel(
+                                  createdAt: DateTime.now(),
+                                  title: _titleController.text,
+                                  content: _contentController.text,
+                                  mood: MoodType.happy,
+                                ),
+                              );
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3B82F6),
                         foregroundColor: Colors.white,
@@ -212,22 +203,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAnimatedWidget({required int index, required Widget child}) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return FadeTransition(
-          opacity: _fadeAnimations[index],
-          child: SlideTransition(
-            position: _slideAnimations[index],
-            child: child,
-          ),
-        );
-      },
-      child: child,
     );
   }
 

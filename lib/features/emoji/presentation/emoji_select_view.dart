@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/di/di.dart';
+import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/emoji/presentation/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';

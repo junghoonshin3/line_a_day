@@ -1,11 +1,10 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/core/app/config/config.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 
 class EmojiSelectViewModel extends StateNotifier<EmojiSelectState> {
-  final AppConfigNotifier appConfigNotifier;
+  // final AppConfigNotifier appConfigNotifier;
 
-  EmojiSelectViewModel(this.appConfigNotifier) : super(EmojiSelectState());
+  EmojiSelectViewModel() : super(EmojiSelectState());
 
   void selectStyle(EmojiStyle style) {
     state = state.copyWith(selectedStyle: style, errorMessage: null);
@@ -23,7 +22,7 @@ class EmojiSelectViewModel extends StateNotifier<EmojiSelectState> {
 
     try {
       // 여기에 실제 저장 로직 추가 (API 호출, SharedPreferences 저장 등)
-      appConfigNotifier.updateEmojiStyle(state.selectedStyle.toString());
+      // appConfigNotifier.updateEmojiStyle(state.selectedStyle.toString());
 
       state = state.copyWith(isLoading: false, isCompleted: true);
       // 선택 완료 상태로 업데이트

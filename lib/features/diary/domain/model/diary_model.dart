@@ -60,4 +60,49 @@ class DiaryModel {
       lastModified: lastModified ?? this.lastModified,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'createdAt': createdAt.toIso8601String(),
+      'title': title,
+      'content': content,
+      'mood': mood.name, // enum → 문자열
+      'emojiStyle': emojiStyle?.name,
+      'tags': tags,
+      'photoUrls': photoUrls,
+      'weather': weather,
+      'location': location,
+      'isFavorite': isFavorite,
+      'lastModified': lastModified?.toIso8601String(),
+    };
+  }
+
+  /// ✅ JSON 역직렬화
+  factory DiaryModel.fromJson(Map<String, dynamic> json) {
+    return DiaryModel(
+      id: json['id'],
+      createdAt: DateTime.parse(json['createdAt']),
+      title: json['title'],
+      content: json['content'],
+      mood: MoodType.values.firstWhere(
+        (e) => e.name == json['mood'],
+        orElse: () => MoodType.calm, // 기본값
+      ),
+      emojiStyle: json['emojiStyle'] != null
+          ? EmojiStyle.values.firstWhere(
+              (e) => e.name == json['emojiStyle'],
+              orElse: () => EmojiStyle.threeD,
+            )
+          : null,
+      tags: List<String>.from(json['tags'] ?? []),
+      photoUrls: List<String>.from(json['photoUrls'] ?? []),
+      weather: json['weather'],
+      location: json['location'],
+      isFavorite: json['isFavorite'] ?? false,
+      lastModified: json['lastModified'] != null
+          ? DateTime.parse(json['lastModified'])
+          : null,
+    );
+  }
 }

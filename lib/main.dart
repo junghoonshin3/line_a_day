@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/core/db/local_db_impl.dart';
-import 'package:line_a_day/di/di.dart';
+import 'package:line_a_day/core/database/isar_service.dart';
+import 'package:line_a_day/core/storage/storage_keys.dart';
+import 'package:line_a_day/core/storage/storage_service.dart';
+import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
 import 'package:line_a_day/features/diary/presentation/mood/diary_mood_view.dart';
@@ -10,23 +12,12 @@ import 'package:line_a_day/features/emoji/presentation/emoji_select_view.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view.dart';
 import 'package:line_a_day/features/diary/presentation/main_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  init();
-  final db = LocalDbImpl();
-  final pref = await SharedPreferences.getInstance();
-  await db.initDb();
-  runApp(
-    ProviderScope(
-      overrides: [
-        localDatabaseProvider.overrideWithValue(db),
-        sharedRefProvider.overrideWithValue(pref),
-      ],
-      child: const LineAday(),
-    ),
-  );
+  await Future.wait([IsarService.initialize(), StorageService.initialize()]);
+
+  runApp(const ProviderScope(child: LineAday()));
 }
 
 void init() async {}
@@ -36,9 +27,11 @@ class LineAday extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appConfig = ref.watch(appConfigProvider);
-    final pref = ref.read(sharedRefProvider);
-    final hasSeenIntro = pref.getBool('hasSeenIntro') ?? false;
+    // final appConfig = ref.watch(appConfigProvider);
+    // 인트로 화면 확인
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final hasSeenIntro = prefs.getBool(StorageKeys.hasSeenIntro) ?? false;
+
     return MaterialApp(
       routes: {
         "intro": (context) => const IntroView(),
@@ -49,7 +42,7 @@ class LineAday extends ConsumerWidget {
         "main": (context) => const MainView(),
       },
       theme: AppTheme.lightTheme,
-      themeMode: getThemeMode(appConfig.themeMode),
+      // themeMode: getThemeMode(appConfig.themeMode),
       // themeMode: getThemeMode(appConfig.themeMode), //테마 변경가능하도록 할거임
       initialRoute: hasSeenIntro ? "main" : "intro",
     );
