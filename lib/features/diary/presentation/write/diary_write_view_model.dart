@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/core/services/image_picker_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
@@ -8,31 +9,58 @@ import 'package:line_a_day/features/diary/presentation/state/diary_write_state.d
 
 class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
   DiaryWriteViewModel({
-    required this.diary,
     required this.draftRepository,
     required this.diaryRepository,
-  }) : super(DiaryWriteState(diary: diary));
-  final DiaryModel diary;
+  }) : super(
+         DiaryWriteState(
+           diary: DiaryModel(
+             createdAt: DateTime.now(),
+             title: "",
+             content: "",
+             mood: MoodType.calm,
+           ),
+         ),
+       );
   final DraftRepository draftRepository;
   final DiaryRepository diaryRepository;
+  final ImagePickerService _imagePickerService = ImagePickerService();
 
   void checkDraft() {
     final hasDraft = draftRepository.hasDraft();
-    if (hasDraft) {
-      final draft = draftRepository.loadDraft();
-      print("darft : ${draft.title}");
-      state = state.copyWith(diary: draft);
+    state = state.copyWith(draftExists: hasDraft, isDraftPopUpShow: hasDraft);
+  }
+
+  void loadDraft() {
+    final draft = draftRepository.loadDraft();
+    state = state.copyWith(diary: draft, isDraftPopUpShow: false);
+  }
+
+  void clearDraft() async {
+    try {
+      await draftRepository.clearDraft();
+      state = state.copyWith(isDraftSaved: false, isDraftPopUpShow: false);
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
     }
   }
 
-  void saveDraft(DiaryModel model) async {
+  void saveDraft(DiaryModel diary) async {
     state = state.copyWith(isLoading: true);
     try {
-      await draftRepository.saveDraft(model);
+      await draftRepository.saveDraft(diary);
+      state = state.copyWith(
+        isDraftSaved: true,
+        diary: diary,
+        successMessage: "임시저장 성공",
+      );
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
+      state = state.copyWith(isDraftSaved: false, errorMessage: e.toString());
     } finally {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(
+        isDraftSaved: false,
+        isLoading: false,
+        isDraftPopUpShow: false,
+      );
     }
   }
 
@@ -40,11 +68,63 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
     state = state.copyWith(isLoading: true);
     try {
       await diaryRepository.saveDiary(diary);
+      await draftRepository.clearDraft();
+      state = state.copyWith(diary: diary, isCompleted: true);
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
+      state = state.copyWith(errorMessage: e.toString(), isCompleted: false);
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  Future<void> pickFromGallery() async {
+    final photoUrl = await _imagePickerService.pickMultipleImages();
+    if (photoUrl.isNotEmpty) {
+      state = state.copyWith(
+        diary: state.diary.copyWith(
+          photoUrls: [...state.diary.photoUrls, ...photoUrl],
+        ),
+      );
+    }
+  }
+
+  // 카메라로 사진 촬영
+  Future<void> takePhoto() async {
+    final photoUrl = await _imagePickerService.pickImageFromCamera();
+    if (photoUrl != null) {
+      state = state.copyWith(
+        diary: state.diary.copyWith(
+          photoUrls: [...state.diary.photoUrls, photoUrl],
+        ),
+      );
+    }
+  }
+
+  // 이미지 삭제
+  void removeImage(int index) {
+    final updatedImages = List<String>.from(state.diary.photoUrls);
+    updatedImages.removeAt(index);
+    state = state.copyWith(
+      diary: state.diary.copyWith(photoUrls: updatedImages),
+    );
+  }
+
+  void setWeather(String weather) {
+    state = state.copyWith(
+      diary: state.diary.copyWith(
+        weather: state.diary.weather == null ? null : weather,
+      ),
+    );
+  }
+
+  void setLocation(String location) {
+    state = state.copyWith(
+      diary: state.diary.copyWith(location: location.isEmpty ? null : location),
+    );
+  }
+
+  void updateTags(List<String> tags) {
+    state = state.copyWith(diary: state.diary.copyWith(tags: tags));
   }
 }
 
@@ -53,12 +133,6 @@ final diaryWriteViewModelProvider =
       ref,
     ) {
       final viewModel = DiaryWriteViewModel(
-        diary: DiaryModel(
-          createdAt: DateTime.now(),
-          title: "",
-          content: "",
-          mood: MoodType.calm,
-        ),
         draftRepository: ref.watch(draftRepositoryProvider),
         diaryRepository: ref.watch(diaryRepositoryProvider),
       );

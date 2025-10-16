@@ -6,9 +6,9 @@ import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_list_state.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
-import 'package:line_a_day/widgets/diary_list/diary_card.dart';
-import 'package:line_a_day/widgets/diary_list/filter_tabs.dart';
-import 'package:line_a_day/widgets/diary_list/stats_cards.dart';
+import 'package:line_a_day/widgets/diary/list/diary_card.dart';
+import 'package:line_a_day/widgets/diary/list/filter_tabs.dart';
+import 'package:line_a_day/widgets/diary/list/stats_cards.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class DiaryListView extends ConsumerStatefulWidget {

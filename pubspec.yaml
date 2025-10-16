@@ -43,6 +43,7 @@ dependencies:
   isar_community_flutter_libs: 3.3.0-dev.3
   shared_preferences: ^2.5.3
   smooth_page_indicator: ^1.2.1
+  image_picker: ^1.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
