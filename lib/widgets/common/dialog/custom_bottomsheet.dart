@@ -18,6 +18,7 @@ class CustomBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       height: height,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -42,7 +43,7 @@ class CustomBottomSheet extends StatelessWidget {
       width: 40,
       height: 4,
       decoration: BoxDecoration(
-        color: AppTheme.gray300,
+        color: const Color(0xFFE5E7EB),
         borderRadius: BorderRadius.circular(2),
       ),
     );

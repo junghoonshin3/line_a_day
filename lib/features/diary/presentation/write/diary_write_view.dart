@@ -1,12 +1,12 @@
-// views/diary_write_view.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/core/utils/dialog_helper.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_write_state.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view_model.dart';
+import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/diary/dialog/diary_dialogs.dart';
 
@@ -67,11 +67,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     final viewModel = ref.read(diaryWriteViewModelProvider.notifier);
     _draftPopUp(state, viewModel);
 
-    // ✨ 상태 변화 감지 - 저장 완료 시 바텀시트 표시
+    // 상태 변화 감지
     ref.listen<DiaryWriteState>(diaryWriteViewModelProvider, (previous, next) {
+      if (previous?.diary.title != next.diary.title &&
+          _titleController.text != next.diary.title) {
+        _titleController.text = next.diary.title;
+      }
+      if (previous?.diary.content != next.diary.content &&
+          _contentController.text != next.diary.content) {
+        _contentController.text = next.diary.content;
+      }
       // 저장 완료 감지
       if (next.isCompleted && !(previous?.isCompleted ?? false)) {
-        print("저장성공");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
@@ -143,13 +150,13 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
         _contentFocusNode.unfocus();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFFAFAFA),
+        backgroundColor: const Color.fromRGBO(250, 250, 250, 1),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF6B7280)),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(true),
           ),
           title: const Text(
             '오늘의 일기',
@@ -160,6 +167,28 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             ),
           ),
           centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                DiaryDialogs.showCalendarDialog(
+                  context: context,
+                  focusedDate: state.focusedDate,
+                  selectedDate: state.selectedDate,
+                  onDaySelected: (selectedDay, focusedDay) {
+                    viewModel.setFocusedDate(focusedDay);
+                    viewModel.setSelectedDate(selectedDay);
+                  },
+                  onPageChanged: (focusedDay) {
+                    viewModel.setFocusedDate(focusedDay);
+                  },
+                  hasEntryOnDate: (date) {
+                    return false;
+                  },
+                );
+              },
+              icon: const Icon(Icons.calendar_month_outlined),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -179,20 +208,14 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                     // 제목 입력
                     buildAnimatedItem(
                       index: 1,
-                      child: _buildTitleInput(state.diary.title),
+                      child: _buildTitleInput(state, viewModel),
                     ),
                     const SizedBox(height: 24),
 
                     // 내용 입력
                     buildAnimatedItem(
                       index: 2,
-                      child: _buildContentInput(
-                        state.diary.content,
-                        state.diary.photoUrls,
-                        (index) {
-                          viewModel.removeImage(index);
-                        },
-                      ),
+                      child: _buildContentInput(state, viewModel),
                     ),
                     const SizedBox(height: 32),
 
@@ -226,13 +249,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        viewModel.saveDraft(
-                          state.diary.copyWith(
-                            createdAt: DateTime.now(),
-                            title: _titleController.text,
-                            content: _contentController.text,
-                          ),
-                        );
+                        viewModel.saveDraft();
                       },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF3B82F6)),
@@ -258,14 +275,8 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: () {
-                        viewModel.saveDiary(
-                          state.diary.copyWith(
-                            createdAt: DateTime.now(),
-                            title: _titleController.text,
-                            content: _contentController.text,
-                          ),
-                        );
-                        Navigator.of(context).pop();
+                        viewModel.saveDiary();
+                        Navigator.of(context).pop(true);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3B82F6),
@@ -295,7 +306,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   }
 
   Widget _buildHeader(DiaryWriteState state) {
-    final now = DateTime.now();
+    final now = state.diary.createdAt;
     final dateString =
         '${now.year}.${now.month.toString().padLeft(2, '0')}.${now.day.toString().padLeft(2, '0')}';
     final dayNames = ['월', '화', '수', '목', '금', '토', '일'];
@@ -303,85 +314,122 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     final weather = state.diary.weather;
     final location = state.diary.location;
     final tags = state.diary.tags;
+    final emotion = state.diary.emotion;
 
-    const weatherColor = Color(0xFF93C5FD); // 하늘색
-    const locationColor = Color(0xFFFCD34D); // 노랑
-    const tagColor = Color(0xFFC4B5FD); // 연보라
+    // 감정 텍스트 매핑
+    final emotionTexts = {
+      'happy': '기분 좋은',
+      'excited': '신나는',
+      'calm': '평온한',
+      'tired': '피곤한',
+      'sad': '슬픈',
+      'angry': '화난',
+      'grateful': '감사한',
+      'anxious': '불안한',
+      'lonely': '외로운',
+      'proud': '뿌듯한',
+      'bored': '지루한',
+      'hopeful': '희망찬',
+    };
+
+    const weatherColor = Color(0xFF93C5FD);
+    const locationColor = Color(0xFFFCD34D);
+    const tagColor = Color(0xFFC4B5FD);
+    const emotionColor = Color(0xFFFDA4AF); // 감정 색상
+
     List<InlineSpan> sentenceParts = [];
 
-    if (weather != null || location != null || tags.isNotEmpty) {
+    sentenceParts.add(
+      const TextSpan(
+        text: '오늘은 ',
+        style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
+      ),
+    );
+
+    // 감정 추가
+    final emoji = "${Emotion.getMoodByType(emotion)?.emoji}";
+    final text = emotionTexts[emotion.name] ?? '특별한';
+    sentenceParts.add(
+      TextSpan(
+        text: '$emoji $text ',
+        style: const TextStyle(
+          color: emotionColor,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
+    );
+    sentenceParts.add(
+      const TextSpan(
+        text: '기분으로 ',
+        style: TextStyle(color: Colors.white, fontSize: 14),
+      ),
+    );
+
+    if (weather != null) {
       sentenceParts.add(
-        const TextSpan(
-          text: '오늘은 ',
-          style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
+        TextSpan(
+          text: '$weather ',
+          style: const TextStyle(
+            color: weatherColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
         ),
       );
-
-      if (weather != null) {
-        sentenceParts.add(
-          TextSpan(
-            text: '$weather ',
-            style: const TextStyle(
-              color: weatherColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        );
-        sentenceParts.add(
-          const TextSpan(
-            text: '날씨에 ',
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        );
-      }
-
-      if (location != null) {
-        sentenceParts.add(
-          TextSpan(
-            text: '$location ',
-            style: const TextStyle(
-              color: locationColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        );
-        sentenceParts.add(
-          const TextSpan(
-            text: '에서 ',
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        );
-      }
-
-      if (tags.isNotEmpty) {
-        final tagText = tags.take(3).map((t) => '#$t').join(' ');
-        sentenceParts.add(
-          TextSpan(
-            text: '$tagText ',
-            style: const TextStyle(
-              color: tagColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        );
-        sentenceParts.add(
-          const TextSpan(
-            text: '키워드로 ',
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        );
-      }
-
       sentenceParts.add(
         const TextSpan(
-          text: '하루를 기록했어요 ✨',
+          text: '날씨에 ',
           style: TextStyle(color: Colors.white, fontSize: 14),
         ),
       );
     }
+
+    if (location != null) {
+      sentenceParts.add(
+        TextSpan(
+          text: '$location ',
+          style: const TextStyle(
+            color: locationColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      );
+      sentenceParts.add(
+        const TextSpan(
+          text: '에서 ',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      );
+    }
+
+    if (tags.isNotEmpty) {
+      final tagText = tags.take(3).map((t) => '#$t').join(' ');
+      sentenceParts.add(
+        TextSpan(
+          text: '$tagText ',
+          style: const TextStyle(
+            color: tagColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      );
+      sentenceParts.add(
+        const TextSpan(
+          text: '키워드로 ',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      );
+    }
+
+    sentenceParts.add(
+      const TextSpan(
+        text: '하루를 기록했어요 ✨',
+        style: TextStyle(color: Colors.white, fontSize: 14),
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -428,8 +476,11 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     );
   }
 
-  Widget _buildTitleInput(String text) {
-    _titleController.text = text;
+  Widget _buildTitleInput(
+    DiaryWriteState state,
+    DiaryWriteViewModel viewModel,
+  ) {
+    // _titleController.text = state.diary.title;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -458,6 +509,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             autocorrect: false,
             controller: _titleController,
             focusNode: _titleFocusNode,
+            onChanged: viewModel.updateTitle,
             decoration: const InputDecoration(
               hintText: '오늘의 제목을 입력해주세요',
               hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
@@ -478,11 +530,10 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   }
 
   Widget _buildContentInput(
-    String text,
-    List<String> photoUrls,
-    Function(int index) onRemove,
+    DiaryWriteState state,
+    DiaryWriteViewModel viewModel,
   ) {
-    _contentController.text = text;
+    // _contentController.text = state.diary.content;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -495,7 +546,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           ),
         ),
         const SizedBox(height: 8),
-        if (photoUrls.isNotEmpty)
+        if (state.diary.photoUrls.isNotEmpty)
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -504,9 +555,9 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
-            itemCount: photoUrls.length,
+            itemCount: state.diary.photoUrls.length,
             itemBuilder: (context, index) {
-              final url = photoUrls[index];
+              final url = state.diary.photoUrls[index];
               return Stack(
                 children: [
                   ClipRRect(
@@ -523,7 +574,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                     right: 4,
                     child: GestureDetector(
                       onTap: () {
-                        onRemove(index);
+                        viewModel.removeImage(index);
                       },
                       child: Container(
                         decoration: const BoxDecoration(
@@ -559,6 +610,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             autocorrect: false,
             controller: _contentController,
             focusNode: _contentFocusNode,
+            onChanged: viewModel.updateContent,
             decoration: const InputDecoration(
               hintText: '오늘 있었던 일, 느낀 점, 감사한 일 등을 자유롭게 작성해보세요...',
               hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
@@ -597,6 +649,25 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
         const SizedBox(height: 12),
         Row(
           children: [
+            // 감정 선택 (새로 추가)
+            Expanded(
+              child: _buildFeatureCard(
+                icon: Icons.sentiment_satisfied_alt,
+                title: '감정 기록',
+                subtitle: '지금 기분은?',
+                onTap: () {
+                  DiaryDialogs.showEmotionDialog(
+                    context,
+                    onEmotionSelected: (emotion) {
+                      viewModel.setEmotion(emotion);
+                    },
+                    currentEmotion: state.diary.emotion,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+
             // 사진 추가
             Expanded(
               child: _buildFeatureCard(
@@ -687,33 +758,62 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    LinearGradient? gradient, // 추가
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: gradient,
+          color: gradient == null ? Colors.white : null,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(
+            color: gradient == null
+                ? const Color(0xFFE5E7EB)
+                : Colors.transparent,
+          ),
+          boxShadow: gradient != null
+              ? [
+                  BoxShadow(
+                    color: gradient.colors.first.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 24, color: const Color(0xFF3B82F6)),
+            Icon(
+              icon,
+              size: 24,
+              color: gradient != null ? Colors.white : const Color(0xFF3B82F6),
+            ),
             const SizedBox(height: 8),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
+                color: gradient != null
+                    ? Colors.white
+                    : const Color(0xFF374151),
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                color: gradient != null
+                    ? Colors.white.withOpacity(0.9)
+                    : const Color(0xFF9CA3AF),
+              ),
             ),
           ],
         ),

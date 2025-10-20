@@ -17,7 +17,7 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
              createdAt: DateTime.now(),
              title: "",
              content: "",
-             mood: MoodType.calm,
+             emotion: EmotionType.calm,
            ),
          ),
        );
@@ -44,13 +44,13 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
     }
   }
 
-  void saveDraft(DiaryModel diary) async {
+  void saveDraft() async {
     state = state.copyWith(isLoading: true);
     try {
-      await draftRepository.saveDraft(diary);
+      await draftRepository.saveDraft(state.diary);
       state = state.copyWith(
         isDraftSaved: true,
-        diary: diary,
+        diary: state.diary,
         successMessage: "임시저장 성공",
       );
     } catch (e) {
@@ -64,12 +64,12 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
     }
   }
 
-  void saveDiary(DiaryModel diary) async {
+  void saveDiary() async {
     state = state.copyWith(isLoading: true);
     try {
-      await diaryRepository.saveDiary(diary);
+      await diaryRepository.saveDiary(state.diary);
       await draftRepository.clearDraft();
-      state = state.copyWith(diary: diary, isCompleted: true);
+      state = state.copyWith(diary: state.diary, isCompleted: true);
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString(), isCompleted: false);
     } finally {
@@ -86,6 +86,17 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
         ),
       );
     }
+  }
+
+  void setFocusedDate(DateTime date) {
+    state = state.copyWith(focusedDate: date);
+  }
+
+  void setSelectedDate(DateTime date) {
+    state = state.copyWith(
+      selectedDate: date,
+      diary: state.diary.copyWith(createdAt: date),
+    );
   }
 
   // 카메라로 사진 촬영
@@ -125,6 +136,20 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
 
   void updateTags(List<String> tags) {
     state = state.copyWith(diary: state.diary.copyWith(tags: tags));
+  }
+
+  void setEmotion(Emotion emotion) {
+    state = state.copyWith(diary: state.diary.copyWith(emotion: emotion.type));
+  }
+
+  // 제목 업데이트
+  void updateTitle(String title) {
+    state = state.copyWith(diary: state.diary.copyWith(title: title));
+  }
+
+  // 본문 업데이트
+  void updateContent(String content) {
+    state = state.copyWith(diary: state.diary.copyWith(content: content));
   }
 }
 

@@ -3,8 +3,8 @@ import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 
 class FilterTabs extends StatelessWidget {
-  final MoodType? selectedMood;
-  final Function(MoodType?) onMoodSelected;
+  final EmotionType? selectedMood;
+  final Function(EmotionType?) onMoodSelected;
 
   const FilterTabs({
     super.key,
@@ -24,11 +24,11 @@ class FilterTabs extends StatelessWidget {
         children: [
           _buildTab('전체', null),
           const SizedBox(width: 8),
-          _buildTab('😊 행복', MoodType.happy),
+          _buildTab('😊 행복', EmotionType.happy),
           const SizedBox(width: 8),
-          _buildTab('😢 슬픔', MoodType.sad),
+          _buildTab('😢 슬픔', EmotionType.sad),
           const SizedBox(width: 8),
-          _buildTab('😤 화남', MoodType.angry),
+          _buildTab('😤 화남', EmotionType.angry),
           const SizedBox(width: 8),
           _buildTab('🏷️ 태그', null),
         ],
@@ -36,7 +36,7 @@ class FilterTabs extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String label, MoodType? mood) {
+  Widget _buildTab(String label, EmotionType? mood) {
     final isSelected = selectedMood == mood;
 
     return GestureDetector(

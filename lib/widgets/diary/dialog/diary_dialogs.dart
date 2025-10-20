@@ -1,5 +1,8 @@
-// features/diary/presentation/write/widgets/diary_dialogs.dart
 import 'package:flutter/material.dart';
+import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/widgets/common/custom_calendar.dart';
+import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
 
 class DiaryDialogs {
   // 사진 선택 바텀시트
@@ -8,65 +11,49 @@ class DiaryDialogs {
     required VoidCallback onCamera,
     required VoidCallback onGallery,
   }) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+    DialogHelper.showBottomSheetDialog(
+      context,
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              '사진 추가하기',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
               ),
-              const SizedBox(height: 24),
-              const Text(
-                '사진 추가하기',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1F2937),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: _ImagePickOption(
-                      icon: Icons.camera_alt,
-                      label: '카메라',
-                      onTap: () {
-                        Navigator.pop(context);
-                        onCamera();
-                      },
-                    ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: _ImagePickOption(
+                    icon: Icons.camera_alt,
+                    label: '카메라',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onCamera();
+                    },
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ImagePickOption(
-                      icon: Icons.photo_library,
-                      label: '갤러리',
-                      onTap: () {
-                        Navigator.pop(context);
-                        onGallery();
-                      },
-                    ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _ImagePickOption(
+                    icon: Icons.photo_library,
+                    label: '갤러리',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onGallery();
+                    },
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
@@ -88,7 +75,6 @@ class DiaryDialogs {
       {'icon': '🌫️', 'name': '안개', 'value': 'foggy'},
       {'icon': '🌪️', 'name': '바람', 'value': 'windy'},
     ];
-
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -330,6 +316,57 @@ class DiaryDialogs {
     );
   }
 
+  static void showCalendarDialog({
+    required BuildContext context,
+    required DateTime focusedDate,
+    required DateTime? selectedDate,
+    required void Function(DateTime selectedDay, DateTime focusedDay)
+    onDaySelected,
+    required void Function(DateTime focusedDay) onPageChanged,
+    required bool Function(DateTime date) hasEntryOnDate,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '날짜 선택',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '날짜를 선택해주세요',
+                style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+              ),
+              const SizedBox(height: 16),
+              CalendarWidget(
+                focusedDate: focusedDate,
+                selectedDate: selectedDate,
+                onDaySelected: (selectedDay, focusedDay) {
+                  onDaySelected(selectedDay, focusedDay);
+                  Navigator.pop(context); // 날짜 선택 시 다이얼로그 닫기
+                },
+                onPageChanged: onPageChanged,
+                hasEntryOnDate: hasEntryOnDate,
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // 태그 추가 다이얼로그
   static void showTagDialog(
     BuildContext context, {
@@ -526,6 +563,152 @@ class DiaryDialogs {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 감정 선택 다이얼로그
+  static void showEmotionDialog(
+    BuildContext context, {
+    required Function(Emotion) onEmotionSelected,
+    EmotionType? currentEmotion,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+        ),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 360),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 헤더
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.sentiment_satisfied_alt,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('오늘의 감정', style: AppTheme.headlineMedium),
+                        const SizedBox(height: 2),
+                        Text(
+                          '지금 느끼는 감정을 선택해주세요',
+                          style: AppTheme.bodyMedium.copyWith(
+                            color: AppTheme.gray600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: AppTheme.gray400),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // 감정 그리드
+              SizedBox(
+                height: 420,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.9,
+                  ),
+                  itemCount: Emotion.emotions.length,
+                  itemBuilder: (context, index) {
+                    final emotion = Emotion.emotions[index];
+                    final isSelected = currentEmotion == emotion.type;
+
+                    return GestureDetector(
+                      onTap: () {
+                        onEmotionSelected(emotion);
+                        Navigator.pop(context);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppTheme.primaryPurple
+                              : AppTheme.gray100,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.transparent
+                                : AppTheme.gray200,
+                            width: isSelected ? 0 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: Color(
+                                      emotion.colorCode,
+                                    ).withValues(alpha: 0.3),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              emotion.emoji,
+                              style: TextStyle(fontSize: isSelected ? 42 : 38),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              emotion.label,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppTheme.gray700,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
       ),

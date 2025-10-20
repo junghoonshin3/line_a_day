@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_list_state.dart';
+import 'package:line_a_day/widgets/common/custom_calendar.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/diary/list/diary_card.dart';
 import 'package:line_a_day/widgets/diary/list/filter_tabs.dart';
@@ -33,12 +33,6 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    initializeDateFormatting(Localizations.localeOf(context).languageCode);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final state = ref.watch(diaryListViewModelProvider);
     final viewModel = ref.read(diaryListViewModelProvider.notifier);
@@ -47,7 +41,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
       floatingActionButton: buildAnimatedItem(
         index: 6,
         scaleAnimation: true,
-        child: _buildFAB(),
+        child: _buildFAB(viewModel),
       ),
       backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
@@ -121,7 +115,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
                 child: StatsCards(
                   totalEntries: state.stats.totalEntries,
                   currentStreak: state.stats.currentStreak,
-                  recentMood: state.stats.recentMood,
+                  recentEmotion: state.stats.recentEmotion,
                 ),
               ),
             ],
@@ -144,102 +138,31 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   }
 
   Widget _buildCalendar(DiaryListState state, DiaryListViewModel viewModel) {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: TableCalendar(
-        firstDay: DateTime.utc(2000, 1, 1),
-        lastDay: DateTime.utc(2100, 12, 31),
-        focusedDay: state.focusedDate,
-        selectedDayPredicate: (day) => isSameDay(day, state.selectedDate),
-        onDaySelected: (selectedDay, focusedDay) {
-          viewModel.selectDate(selectedDay);
-          viewModel.setFocusedDate(focusedDay);
-        },
-        onPageChanged: (focusedDay) {
-          viewModel.setFocusedDate(focusedDay);
-        },
-        calendarFormat: CalendarFormat.month,
-        headerStyle: const HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: false,
-          titleTextStyle: AppTheme.titleLarge,
-          leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.gray600),
-          rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.gray600),
-        ),
-        daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: AppTheme.labelMedium.copyWith(color: AppTheme.gray400),
-          weekendStyle: AppTheme.labelMedium.copyWith(color: AppTheme.gray400),
-        ),
-        calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
-            border: Border.all(color: AppTheme.primaryBlue, width: 2),
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-            shape: BoxShape.circle,
-          ),
-          todayTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
-            fontWeight: FontWeight.w600,
-          ),
-          selectedTextStyle: AppTheme.bodyMedium.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          defaultTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
-            fontWeight: FontWeight.w600,
-          ),
-          weekendTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
-            fontWeight: FontWeight.w600,
-          ),
-          outsideTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray300,
-          ),
-          markerDecoration: const BoxDecoration(
-            color: AppTheme.primaryBlue,
-            shape: BoxShape.circle,
-          ),
-          markerSize: 4,
-        ),
-        calendarBuilders: CalendarBuilders(
-          markerBuilder: (context, date, events) {
-            if (viewModel.hasEntryOnDate(date)) {
-              return Container(
-                width: 4,
-                height: 4,
-                decoration: const BoxDecoration(
-                  color: AppTheme.primaryBlue,
-                  shape: BoxShape.circle,
-                ),
-              );
-            }
-            return null;
-          },
-        ),
-      ),
+    return CalendarWidget(
+      focusedDate: state.focusedDate,
+      selectedDate: state.selectedDate,
+      onDaySelected: (selectedDay, focusedDay) {
+        viewModel.selectDate(selectedDay);
+        viewModel.setFocusedDate(focusedDay);
+      },
+      onPageChanged: (focusedDay) {
+        viewModel.setFocusedDate(focusedDay);
+      },
+      hasEntryOnDate: (date) => viewModel.hasEntryOnDate(date),
     );
   }
 
   Widget _buildDiaryList(DiaryListState state, DiaryListViewModel viewModel) {
-    final groupedEntries = viewModel.getGroupedEntries();
+    final selectedEntries = viewModel.getGroupedEntries();
 
-    if (groupedEntries.isEmpty) {
+    if (selectedEntries.isEmpty) {
       return buildAnimatedSliverBox(index: 5, child: _buildEmptyState());
     }
 
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
-        final dateKey = groupedEntries.keys.elementAt(index);
-        final entries = groupedEntries[dateKey]!;
+        final dateKey = selectedEntries.keys.elementAt(index);
+        final entries = selectedEntries[dateKey]!;
 
         return buildSliverAnimatedItem(
           index: index + 5,
@@ -265,7 +188,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
             ),
           ),
         );
-      }, childCount: groupedEntries.length),
+      }, childCount: selectedEntries.length),
     );
   }
 
@@ -315,7 +238,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     );
   }
 
-  Widget _buildFAB() {
+  Widget _buildFAB(DiaryListViewModel viewModel) {
     return GestureDetector(
       onTap: _onWriteDiary,
       child: Container(

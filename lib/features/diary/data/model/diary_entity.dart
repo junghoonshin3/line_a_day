@@ -11,7 +11,7 @@ class DiaryEntity {
   late String title;
   late String content;
   @enumerated
-  late MoodType mood;
+  late EmotionType emotionType;
   List<String>? tags; // ['친구', '행복', '여행']
   List<String>? photoUrls; // ['path/to/photo1.jpg', ...]
 

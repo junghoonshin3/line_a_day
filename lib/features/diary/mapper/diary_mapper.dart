@@ -3,12 +3,12 @@ import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 
 extension DiaryEntityMapper on DiaryEntity {
-  DiaryModel toDomain() => DiaryModel(
+  DiaryModel toModel() => DiaryModel(
     id: id,
     createdAt: createdAt,
     title: title,
     content: content,
-    mood: mood,
+    emotion: emotionType,
     tags: tags ?? [],
     photoUrls: photoUrls ?? [],
     weather: weather,
@@ -18,17 +18,27 @@ extension DiaryEntityMapper on DiaryEntity {
   );
 }
 
-extension DiaryMapper on DiaryModel {
+extension DiaryModelMapper on DiaryModel {
   DiaryEntity toEntity() => DiaryEntity()
     ..id = id ?? Isar.autoIncrement
     ..createdAt = createdAt
     ..title = title
     ..content = content
-    ..mood = mood
+    ..emotionType = emotion
     ..tags = tags
     ..photoUrls = photoUrls
     ..weather = weather
     ..location = location
     ..isFavorite = isFavorite
     ..lastModified = lastModified;
+}
+
+class DiaryMapper {
+  static List<DiaryModel> toModelList(List<DiaryEntity> entities) {
+    return entities.map((entity) => entity.toModel()).toList();
+  }
+
+  static List<DiaryEntity> toEntityList(List<DiaryModel> models) {
+    return models.map((model) => model.toEntity()).toList();
+  }
 }

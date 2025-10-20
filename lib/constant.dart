@@ -9,60 +9,112 @@ enum BottomTapName {
   const BottomTapName(this.description);
 }
 
-enum MoodType { happy, excited, calm, tired, sad, angry, grateful, anxious }
+enum EmotionType {
+  happy,
+  excited,
+  calm,
+  tired,
+  sad,
+  angry,
+  grateful,
+  anxious,
+  lonely,
+  proud,
+  bored,
+  hopeful,
+}
 
-class Mood {
-  final MoodType type;
+class Emotion {
+  final EmotionType type;
   final String emoji;
   final String label;
   final int colorCode;
 
-  const Mood({
+  const Emotion({
     required this.type,
     required this.emoji,
     required this.label,
     required this.colorCode,
   });
 
-  static const List<Mood> moods = [
-    Mood(
-      type: MoodType.happy,
+  static const List<Emotion> emotions = [
+    Emotion(
+      type: EmotionType.happy,
       emoji: '😊',
       label: '기분 좋음',
       colorCode: 0xFFFEF3C7,
     ),
-    Mood(
-      type: MoodType.excited,
+    Emotion(
+      type: EmotionType.excited,
       emoji: '🤩',
       label: '신남',
       colorCode: 0xFFFED7AA,
     ),
-    Mood(type: MoodType.calm, emoji: '😌', label: '평온함', colorCode: 0xFFDBEAFE),
-    Mood(
-      type: MoodType.tired,
+    Emotion(
+      type: EmotionType.calm,
+      emoji: '😌',
+      label: '평온함',
+      colorCode: 0xFFDBEAFE,
+    ),
+    Emotion(
+      type: EmotionType.tired,
       emoji: '😴',
       label: '피곤함',
       colorCode: 0xFFE9D5FF,
     ),
-    Mood(type: MoodType.sad, emoji: '😢', label: '슬픔', colorCode: 0xFFF3F4F6),
-    Mood(type: MoodType.angry, emoji: '😤', label: '화남', colorCode: 0xFFFECDD3),
-    Mood(
-      type: MoodType.grateful,
+    Emotion(
+      type: EmotionType.sad,
+      emoji: '😢',
+      label: '슬픔',
+      colorCode: 0xFFF3F4F6,
+    ),
+    Emotion(
+      type: EmotionType.angry,
+      emoji: '😤',
+      label: '화남',
+      colorCode: 0xFFFECDD3,
+    ),
+    Emotion(
+      type: EmotionType.grateful,
       emoji: '🥰',
       label: '감사함',
       colorCode: 0xFFFCE7F3,
     ),
-    Mood(
-      type: MoodType.anxious,
+    Emotion(
+      type: EmotionType.anxious,
       emoji: '😰',
       label: '불안함',
       colorCode: 0xFFE0E7FF,
     ),
+    Emotion(
+      type: EmotionType.lonely,
+      emoji: '😔',
+      label: '외로움',
+      colorCode: 0xFFDDD6FE,
+    ),
+    Emotion(
+      type: EmotionType.proud,
+      emoji: '😎',
+      label: '뿌듯함',
+      colorCode: 0xFFBFDBFE,
+    ),
+    Emotion(
+      type: EmotionType.bored,
+      emoji: '😑',
+      label: '지루함',
+      colorCode: 0xFFD1D5DB,
+    ),
+    Emotion(
+      type: EmotionType.hopeful,
+      emoji: '🌟',
+      label: '희망참',
+      colorCode: 0xFFFDE68A,
+    ),
   ];
 
-  static Mood? getMoodByType(MoodType type) {
+  static Emotion? getMoodByType(EmotionType type) {
     try {
-      return moods.firstWhere((mood) => mood.type == type);
+      return emotions.firstWhere((mood) => mood.type == type);
     } catch (e) {
       return null;
     }

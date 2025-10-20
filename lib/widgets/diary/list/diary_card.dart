@@ -7,7 +7,6 @@ import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 class DiaryCard extends StatelessWidget {
   final DiaryModel model;
   final VoidCallback onTap;
-
   const DiaryCard({super.key, required this.model, required this.onTap});
 
   @override
@@ -25,7 +24,7 @@ class DiaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            _buildHeader(model.emotion),
             const SizedBox(height: 12),
             _buildTitle(),
             const SizedBox(height: 8),
@@ -40,12 +39,12 @@ class DiaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(EmotionType type) {
     final timeString = DateFormat('a h:mm').format(model.createdAt);
     return Row(
       children: [
         Text(
-          Mood.getMoodByType(model.mood)?.emoji ?? '😊',
+          "${Emotion.getMoodByType(type)?.emoji}",
           style: const TextStyle(fontSize: 32),
         ),
         const Spacer(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/core/database/isar_service.dart';
 import 'package:line_a_day/core/storage/storage_keys.dart';
@@ -7,7 +8,6 @@ import 'package:line_a_day/core/storage/storage_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
-import 'package:line_a_day/features/diary/presentation/mood/diary_mood_view.dart';
 import 'package:line_a_day/features/emoji/presentation/emoji_select_view.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view.dart';
@@ -16,7 +16,7 @@ import 'package:line_a_day/features/diary/presentation/main_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.wait([IsarService.initialize(), StorageService.initialize()]);
-
+  await initializeDateFormatting('ko');
   runApp(const ProviderScope(child: LineAday()));
 }
 
@@ -37,7 +37,6 @@ class LineAday extends ConsumerWidget {
         "intro": (context) => const IntroView(),
         "emojiSelect": (context) => const EmojiSelectView(),
         "diaryList": (context) => const DiaryListView(),
-        "diaryMood": (context) => const DiaryMoodView(),
         "diaryWrite": (context) => const DiaryWriteView(),
         "main": (context) => const MainView(),
       },

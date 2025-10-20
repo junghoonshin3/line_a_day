@@ -5,7 +5,7 @@ class DiaryListState {
   final List<DiaryModel> entries;
   final DateTime selectedDate;
   final DateTime focusedDate;
-  final MoodType? filterMood;
+  final EmotionType? filterMood;
   final bool isLoading;
   final String? errorMessage;
   final DiaryListStats stats;
@@ -26,7 +26,7 @@ class DiaryListState {
     List<DiaryModel>? entries,
     DateTime? selectedDate,
     DateTime? focusedDate,
-    MoodType? filterMood,
+    EmotionType? filterMood,
     bool? clearFilter,
     bool? isLoading,
     String? errorMessage,
@@ -47,11 +47,11 @@ class DiaryListState {
 class DiaryListStats {
   final int totalEntries;
   final int currentStreak;
-  final String recentMood;
+  final EmotionType recentEmotion;
 
   const DiaryListStats({
     this.totalEntries = 0,
     this.currentStreak = 0,
-    this.recentMood = '😊',
+    this.recentEmotion = EmotionType.calm,
   });
 }

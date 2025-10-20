@@ -9,6 +9,7 @@ class CustomDialog extends StatelessWidget {
   final String? cancelText;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
+  final bool showCloseButton;
   final Color? confirmColor;
   final IconData? icon;
   final Color? iconColor;
@@ -22,6 +23,7 @@ class CustomDialog extends StatelessWidget {
     this.cancelText = '취소',
     this.onConfirm,
     this.onCancel,
+    this.showCloseButton = true,
     this.confirmColor,
     this.icon,
     this.iconColor,
@@ -44,7 +46,7 @@ class CustomDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // 헤더
-            if (title != null) _buildHeader(context),
+            if (title != null || showCloseButton) _buildHeader(context),
 
             // 아이콘
             if (icon != null) _buildIcon(),

@@ -23,26 +23,26 @@ const DiaryEntitySchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'isFavorite': PropertySchema(
+    r'emotionType': PropertySchema(
       id: 2,
+      name: r'emotionType',
+      type: IsarType.byte,
+      enumMap: _DiaryEntityemotionTypeEnumValueMap,
+    ),
+    r'isFavorite': PropertySchema(
+      id: 3,
       name: r'isFavorite',
       type: IsarType.bool,
     ),
     r'lastModified': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'lastModified',
       type: IsarType.dateTime,
     ),
     r'location': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'location',
       type: IsarType.string,
-    ),
-    r'mood': PropertySchema(
-      id: 5,
-      name: r'mood',
-      type: IsarType.byte,
-      enumMap: _DiaryEntitymoodEnumValueMap,
     ),
     r'photoUrls': PropertySchema(
       id: 6,
@@ -151,10 +151,10 @@ void _diaryEntitySerialize(
 ) {
   writer.writeString(offsets[0], object.content);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeBool(offsets[2], object.isFavorite);
-  writer.writeDateTime(offsets[3], object.lastModified);
-  writer.writeString(offsets[4], object.location);
-  writer.writeByte(offsets[5], object.mood.index);
+  writer.writeByte(offsets[2], object.emotionType.index);
+  writer.writeBool(offsets[3], object.isFavorite);
+  writer.writeDateTime(offsets[4], object.lastModified);
+  writer.writeString(offsets[5], object.location);
   writer.writeStringList(offsets[6], object.photoUrls);
   writer.writeStringList(offsets[7], object.tags);
   writer.writeString(offsets[8], object.title);
@@ -170,13 +170,13 @@ DiaryEntity _diaryEntityDeserialize(
   final object = DiaryEntity();
   object.content = reader.readString(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
+  object.emotionType =
+      _DiaryEntityemotionTypeValueEnumMap[reader.readByteOrNull(offsets[2])] ??
+      EmotionType.happy;
   object.id = id;
-  object.isFavorite = reader.readBool(offsets[2]);
-  object.lastModified = reader.readDateTimeOrNull(offsets[3]);
-  object.location = reader.readStringOrNull(offsets[4]);
-  object.mood =
-      _DiaryEntitymoodValueEnumMap[reader.readByteOrNull(offsets[5])] ??
-      MoodType.happy;
+  object.isFavorite = reader.readBool(offsets[3]);
+  object.lastModified = reader.readDateTimeOrNull(offsets[4]);
+  object.location = reader.readStringOrNull(offsets[5]);
   object.photoUrls = reader.readStringList(offsets[6]);
   object.tags = reader.readStringList(offsets[7]);
   object.title = reader.readString(offsets[8]);
@@ -196,15 +196,17 @@ P _diaryEntityDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
-    case 3:
-      return (reader.readDateTimeOrNull(offset)) as P;
-    case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
-      return (_DiaryEntitymoodValueEnumMap[reader.readByteOrNull(offset)] ??
-              MoodType.happy)
+      return (_DiaryEntityemotionTypeValueEnumMap[reader.readByteOrNull(
+                offset,
+              )] ??
+              EmotionType.happy)
           as P;
+    case 3:
+      return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readStringList(offset)) as P;
     case 7:
@@ -218,7 +220,7 @@ P _diaryEntityDeserializeProp<P>(
   }
 }
 
-const _DiaryEntitymoodEnumValueMap = {
+const _DiaryEntityemotionTypeEnumValueMap = {
   'happy': 0,
   'excited': 1,
   'calm': 2,
@@ -227,16 +229,24 @@ const _DiaryEntitymoodEnumValueMap = {
   'angry': 5,
   'grateful': 6,
   'anxious': 7,
+  'lonely': 8,
+  'proud': 9,
+  'bored': 10,
+  'hopeful': 11,
 };
-const _DiaryEntitymoodValueEnumMap = {
-  0: MoodType.happy,
-  1: MoodType.excited,
-  2: MoodType.calm,
-  3: MoodType.tired,
-  4: MoodType.sad,
-  5: MoodType.angry,
-  6: MoodType.grateful,
-  7: MoodType.anxious,
+const _DiaryEntityemotionTypeValueEnumMap = {
+  0: EmotionType.happy,
+  1: EmotionType.excited,
+  2: EmotionType.calm,
+  3: EmotionType.tired,
+  4: EmotionType.sad,
+  5: EmotionType.angry,
+  6: EmotionType.grateful,
+  7: EmotionType.anxious,
+  8: EmotionType.lonely,
+  9: EmotionType.proud,
+  10: EmotionType.bored,
+  11: EmotionType.hopeful,
 };
 
 Id _diaryEntityGetId(DiaryEntity object) {
@@ -786,6 +796,61 @@ extension DiaryEntityQueryFilter
     });
   }
 
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  emotionTypeEqualTo(EmotionType value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'emotionType', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  emotionTypeGreaterThan(EmotionType value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'emotionType',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  emotionTypeLessThan(EmotionType value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'emotionType',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition>
+  emotionTypeBetween(
+    EmotionType lower,
+    EmotionType upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'emotionType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> idEqualTo(
     Id value,
   ) {
@@ -1085,65 +1150,6 @@ extension DiaryEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'location', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> moodEqualTo(
-    MoodType value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'mood', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> moodGreaterThan(
-    MoodType value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'mood',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> moodLessThan(
-    MoodType value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'mood',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterFilterCondition> moodBetween(
-    MoodType lower,
-    MoodType upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'mood',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
       );
     });
   }
@@ -1916,6 +1922,18 @@ extension DiaryEntityQuerySortBy
     });
   }
 
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByEmotionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotionType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByEmotionTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotionType', Sort.desc);
+    });
+  }
+
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByIsFavorite() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isFavorite', Sort.asc);
@@ -1950,18 +1968,6 @@ extension DiaryEntityQuerySortBy
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByLocationDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'location', Sort.desc);
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByMood() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mood', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> sortByMoodDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mood', Sort.desc);
     });
   }
 
@@ -2016,6 +2022,18 @@ extension DiaryEntityQuerySortThenBy
     });
   }
 
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByEmotionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotionType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByEmotionTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotionType', Sort.desc);
+    });
+  }
+
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -2065,18 +2083,6 @@ extension DiaryEntityQuerySortThenBy
     });
   }
 
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByMood() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mood', Sort.asc);
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByMoodDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mood', Sort.desc);
-    });
-  }
-
   QueryBuilder<DiaryEntity, DiaryEntity, QAfterSortBy> thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -2118,6 +2124,12 @@ extension DiaryEntityQueryWhereDistinct
     });
   }
 
+  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByEmotionType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'emotionType');
+    });
+  }
+
   QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByIsFavorite() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isFavorite');
@@ -2135,12 +2147,6 @@ extension DiaryEntityQueryWhereDistinct
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'location', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<DiaryEntity, DiaryEntity, QDistinct> distinctByMood() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'mood');
     });
   }
 
@@ -2193,6 +2199,13 @@ extension DiaryEntityQueryProperty
     });
   }
 
+  QueryBuilder<DiaryEntity, EmotionType, QQueryOperations>
+  emotionTypeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'emotionType');
+    });
+  }
+
   QueryBuilder<DiaryEntity, bool, QQueryOperations> isFavoriteProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isFavorite');
@@ -2209,12 +2222,6 @@ extension DiaryEntityQueryProperty
   QueryBuilder<DiaryEntity, String?, QQueryOperations> locationProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'location');
-    });
-  }
-
-  QueryBuilder<DiaryEntity, MoodType, QQueryOperations> moodProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'mood');
     });
   }
 

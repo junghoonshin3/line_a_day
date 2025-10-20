@@ -1,26 +1,26 @@
 import 'package:line_a_day/constant.dart';
 
-class DiaryMoodState {
-  final MoodType? selectedMood;
+class DiaryEmotionState {
+  final EmotionType? selectedEmotion;
   final bool isLoading;
   final String? errorMessage;
   final bool isCompleted;
 
-  DiaryMoodState({
-    this.selectedMood,
+  DiaryEmotionState({
+    this.selectedEmotion,
     this.isLoading = false,
     this.errorMessage,
     this.isCompleted = false,
   });
 
-  DiaryMoodState copyWith({
-    MoodType? selectedMood,
+  DiaryEmotionState copyWith({
+    EmotionType? selectedEmotion,
     bool? isLoading,
     String? errorMessage,
     bool? isCompleted,
   }) {
-    return DiaryMoodState(
-      selectedMood: selectedMood ?? this.selectedMood,
+    return DiaryEmotionState(
+      selectedEmotion: selectedEmotion ?? this.selectedEmotion,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       isCompleted: isCompleted ?? this.isCompleted,

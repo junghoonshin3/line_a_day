@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:line_a_day/constant.dart';
 
 class StatsCards extends StatelessWidget {
   final int totalEntries;
   final int currentStreak;
-  final String recentMood;
+  final EmotionType recentEmotion;
 
   const StatsCards({
     super.key,
     required this.totalEntries,
     required this.currentStreak,
-    required this.recentMood,
+    required this.recentEmotion,
   });
 
   @override
@@ -20,7 +21,12 @@ class StatsCards extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(child: _buildStatCard('$currentStreak', '연속 작성')),
         const SizedBox(width: 10),
-        Expanded(child: _buildStatCard(recentMood, '최근 기분')),
+        Expanded(
+          child: _buildStatCard(
+            Emotion.getMoodByType(recentEmotion)?.emoji ?? "없음",
+            '최근 기분',
+          ),
+        ),
       ],
     );
   }
