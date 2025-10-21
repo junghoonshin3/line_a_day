@@ -115,26 +115,6 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     // 하지만 명시적으로 새로고침이 필요한 경우 사용
   }
 
-  // 특정 일기 조회
-  Future<DiaryModel?> getDiaryById(int id) async {
-    try {
-      // 메모리 캐시에서 먼저 찾기
-      final cached = _allDiaries.firstWhere(
-        (diary) => diary.id == id,
-        orElse: () => throw Exception('Not found'),
-      );
-      return cached;
-    } catch (e) {
-      // 캐시에 없으면 DB에서 조회
-      try {
-        return await _repository.getDiaryById(id);
-      } catch (e) {
-        state = state.copyWith(errorMessage: '일기를 불러오는데 실패했습니다.');
-        return null;
-      }
-    }
-  }
-
   // 특정 날짜의 일기 목록 가져오기
   List<DiaryModel> getEntriesForDate(DateTime date) {
     return _allDiaries.where((entry) {

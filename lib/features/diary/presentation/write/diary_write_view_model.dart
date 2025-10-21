@@ -27,7 +27,7 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
 
   void checkDraft() {
     final hasDraft = draftRepository.hasDraft();
-    state = state.copyWith(draftExists: hasDraft, isDraftPopUpShow: hasDraft);
+    state = state.copyWith(isDraftSaved: hasDraft, isDraftPopUpShow: hasDraft);
   }
 
   void loadDraft() {
@@ -49,18 +49,17 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
     try {
       await draftRepository.saveDraft(state.diary);
       state = state.copyWith(
-        isDraftSaved: true,
+        isDraftSavedCompleted: true,
         diary: state.diary,
         successMessage: "임시저장 성공",
       );
     } catch (e) {
-      state = state.copyWith(isDraftSaved: false, errorMessage: e.toString());
-    } finally {
       state = state.copyWith(
-        isDraftSaved: false,
-        isLoading: false,
-        isDraftPopUpShow: false,
+        isDraftSavedCompleted: false,
+        errorMessage: e.toString(),
       );
+    } finally {
+      state = state.copyWith(isLoading: false, isDraftPopUpShow: false);
     }
   }
 
@@ -151,6 +150,14 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
   void updateContent(String content) {
     state = state.copyWith(diary: state.diary.copyWith(content: content));
   }
+
+  void loadForEdit(DiaryModel diary, bool isEditMode) {
+    state = state.copyWith(
+      diary: diary,
+      isDraftPopUpShow: false,
+      isEditMode: isEditMode,
+    );
+  }
 }
 
 final diaryWriteViewModelProvider =
@@ -161,8 +168,6 @@ final diaryWriteViewModelProvider =
         draftRepository: ref.watch(draftRepositoryProvider),
         diaryRepository: ref.watch(diaryRepositoryProvider),
       );
-
-      viewModel.checkDraft();
 
       return viewModel;
     });

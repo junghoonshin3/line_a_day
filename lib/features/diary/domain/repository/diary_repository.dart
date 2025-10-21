@@ -5,7 +5,7 @@ abstract class DiaryRepository {
   Stream<List<DiaryModel>> getAllDiaries();
 
   /// 특정 일기 조회
-  Future<DiaryModel?> getDiaryById(int id);
+  Stream<DiaryModel?> getDiaryById(int id);
 
   /// 날짜별 일기 조회
   Future<List<DiaryModel>> getDiariesByDate(DateTime date);

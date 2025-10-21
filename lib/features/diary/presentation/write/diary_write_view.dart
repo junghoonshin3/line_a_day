@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_write_state.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view_model.dart';
 import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
@@ -28,6 +29,15 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   void initState() {
     super.initState();
     initStaggeredAnimation();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      final viewModel = ref.read(diaryWriteViewModelProvider.notifier);
+      if (args is DiaryModel) {
+        viewModel.loadForEdit(args, true);
+      } else {
+        viewModel.checkDraft();
+      }
+    });
   }
 
   @override
@@ -40,24 +50,22 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     super.dispose();
   }
 
-  void _draftPopUp(DiaryWriteState state, DiaryWriteViewModel viewModel) async {
+  void _draftPopUp(DiaryWriteState state, DiaryWriteViewModel viewModel) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (state.draftExists && state.isDraftPopUpShow) {
-        await DialogHelper.showConfirm(
-          context,
-          title: '임시 저장된 일기',
-          message: '작성 중이던 일기가 있습니다.\n이어서 작성하시겠습니까?',
-          icon: Icons.edit_note,
-          confirmText: '이어쓰기',
-          cancelText: '새로 작성',
-          onCancel: () {
-            viewModel.clearDraft();
-          },
-          onConfirm: () {
-            viewModel.loadDraft();
-          },
-        );
-      }
+      await DialogHelper.showConfirm(
+        context,
+        title: '임시 저장된 일기',
+        message: '작성 중이던 일기가 있습니다.\n이어서 작성하시겠습니까?',
+        icon: Icons.edit_note,
+        confirmText: '이어쓰기',
+        cancelText: '새로 작성',
+        onCancel: () {
+          viewModel.clearDraft();
+        },
+        onConfirm: () {
+          viewModel.loadDraft();
+        },
+      );
     });
   }
 
@@ -65,14 +73,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
   Widget build(BuildContext context) {
     final state = ref.watch(diaryWriteViewModelProvider);
     final viewModel = ref.read(diaryWriteViewModelProvider.notifier);
-    _draftPopUp(state, viewModel);
-
+    final saveButtonText = state.isEditMode ? "수정" : "저장";
     // 상태 변화 감지
     ref.listen<DiaryWriteState>(diaryWriteViewModelProvider, (previous, next) {
       if (previous?.diary.title != next.diary.title &&
           _titleController.text != next.diary.title) {
         _titleController.text = next.diary.title;
       }
+
+      if (next.isDraftPopUpShow && !next.isEditMode) {
+        _draftPopUp(state, viewModel);
+      }
+
       if (previous?.diary.content != next.diary.content &&
           _contentController.text != next.diary.content) {
         _contentController.text = next.diary.content;
@@ -100,7 +112,8 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
       }
 
       // 임시 저장 완료
-      if (next.isDraftSaved && !(previous?.isDraftSaved ?? false)) {
+      if (next.isDraftSavedCompleted &&
+          !(previous?.isDraftSavedCompleted ?? false)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
@@ -246,28 +259,29 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
               child: Row(
                 children: [
                   // 임시 저장 버튼
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        viewModel.saveDraft();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF3B82F6)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  if (!state.isEditMode)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          viewModel.saveDraft();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF3B82F6)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text(
-                        '임시저장',
-                        style: TextStyle(
-                          color: Color(0xFF3B82F6),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        child: const Text(
+                          '임시저장',
+                          style: TextStyle(
+                            color: Color(0xFF3B82F6),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   const SizedBox(width: 12),
 
                   // 완료 버튼
@@ -287,9 +301,9 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text(
-                        '일기 완료',
-                        style: TextStyle(
+                      child: Text(
+                        saveButtonText,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

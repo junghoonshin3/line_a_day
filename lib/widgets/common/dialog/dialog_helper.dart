@@ -34,9 +34,10 @@ class DialogHelper {
     Color? iconColor,
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
+    bool barrierDismissible = false,
   }) async {
     final result = await showDialog<bool>(
-      barrierDismissible: false,
+      barrierDismissible: barrierDismissible,
       context: context,
       builder: (context) => CustomDialog(
         title: title,

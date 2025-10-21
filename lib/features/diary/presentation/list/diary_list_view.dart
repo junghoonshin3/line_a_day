@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view_model.dart';
@@ -9,7 +10,6 @@ import 'package:line_a_day/widgets/common/staggered_animation/staggered_animatio
 import 'package:line_a_day/widgets/diary/list/diary_card.dart';
 import 'package:line_a_day/widgets/diary/list/filter_tabs.dart';
 import 'package:line_a_day/widgets/diary/list/stats_cards.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class DiaryListView extends ConsumerStatefulWidget {
   const DiaryListView({super.key});
@@ -260,12 +260,14 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     );
   }
 
-  void _onDiaryTap(DiaryModel entity) {
-    // TODO: 일기 상세 화면으로 이동
-    print('일기 탭: ${entity.title}');
+  void _onDiaryTap(DiaryModel entity) async {
+    if (entity.id == null) return;
+    await Navigator.of(
+      context,
+    ).pushNamed(AppRoutes.diaryDetail, arguments: entity.id);
   }
 
   void _onWriteDiary() {
-    Navigator.of(context).pushNamed("diaryWrite");
+    Navigator.of(context).pushNamed(AppRoutes.diaryWrite);
   }
 }

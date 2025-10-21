@@ -1,5 +1,4 @@
 import 'package:isar_community/isar.dart';
-import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
@@ -27,7 +26,6 @@ class DiaryRepositoryImpl extends DiaryRepository {
   @override
   Stream<List<DiaryModel>> getAllDiaries() {
     try {
-      // Isar의 watch() 메서드를 사용하여 실시간 변경 감지
       return _isar.diaryEntitys
           .where()
           .sortByCreatedAtDesc()
@@ -61,10 +59,15 @@ class DiaryRepositoryImpl extends DiaryRepository {
   }
 
   @override
-  Future<DiaryModel?> getDiaryById(int id) async {
+  Stream<DiaryModel?> getDiaryById(int id) {
     try {
-      final entity = await _isar.diaryEntitys.get(id);
-      return entity?.toModel();
+      return _isar.diaryEntitys
+          .where()
+          .idEqualTo(id)
+          .watch(fireImmediately: true)
+          .map(
+            (entities) => entities.isNotEmpty ? entities.first.toModel() : null,
+          );
     } catch (e) {
       print('일기 조회 실패: $e');
       rethrow;

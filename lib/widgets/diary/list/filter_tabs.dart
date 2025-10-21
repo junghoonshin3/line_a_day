@@ -14,24 +14,27 @@ class FilterTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final emotions = Emotion.emotions; // 감정 리스트
+
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 16),
       color: Colors.white,
-      child: ListView(
+      child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          _buildTab('전체', null),
-          const SizedBox(width: 8),
-          _buildTab('😊 행복', EmotionType.happy),
-          const SizedBox(width: 8),
-          _buildTab('😢 슬픔', EmotionType.sad),
-          const SizedBox(width: 8),
-          _buildTab('😤 화남', EmotionType.angry),
-          const SizedBox(width: 8),
-          _buildTab('🏷️ 태그', null),
-        ],
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemCount: emotions.length + 2,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return _buildTab('전체', null);
+          } else if (index == emotions.length + 1) {
+            return _buildTab('🏷️ 태그', null);
+          } else {
+            final emotion = emotions[index - 1];
+            return _buildTab('${emotion.emoji} ${emotion.label}', emotion.type);
+          }
+        },
       ),
     );
   }

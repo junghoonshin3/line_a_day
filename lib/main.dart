@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/core/database/isar_service.dart';
 import 'package:line_a_day/core/storage/storage_keys.dart';
 import 'package:line_a_day/core/storage/storage_service.dart';
 import 'package:line_a_day/di/providers.dart';
-import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
-import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
-import 'package:line_a_day/features/emoji/presentation/emoji_select_view.dart';
 import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
-import 'package:line_a_day/features/intro/presentation/intro_view.dart';
-import 'package:line_a_day/features/diary/presentation/main_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,30 +16,26 @@ void main() async {
   runApp(const ProviderScope(child: LineAday()));
 }
 
-void init() async {}
-
 class LineAday extends ConsumerWidget {
   const LineAday({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final appConfig = ref.watch(appConfigProvider);
     // 인트로 화면 확인
     final prefs = ref.watch(sharedPreferencesProvider);
     final hasSeenIntro = prefs.getBool(StorageKeys.hasSeenIntro) ?? false;
 
     return MaterialApp(
-      routes: {
-        "intro": (context) => const IntroView(),
-        "emojiSelect": (context) => const EmojiSelectView(),
-        "diaryList": (context) => const DiaryListView(),
-        "diaryWrite": (context) => const DiaryWriteView(),
-        "main": (context) => const MainView(),
-      },
+      title: 'Line A Day',
       theme: AppTheme.lightTheme,
-      // themeMode: getThemeMode(appConfig.themeMode),
-      // themeMode: getThemeMode(appConfig.themeMode), //테마 변경가능하도록 할거임
-      initialRoute: hasSeenIntro ? "main" : "intro",
+      // 기본 routes (arguments 없는 경로)
+      routes: AppRoutes.getRoutes(),
+      // arguments가 필요한 routes 처리
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+      // 초기 화면 설정
+      initialRoute: hasSeenIntro ? AppRoutes.main : AppRoutes.intro,
+      // // 디버그 배너 제거 (선택사항)
+      // debugShowCheckedModeBanner: false,
     );
   }
 
