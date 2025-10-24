@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
+import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
 
 class EmojiSelectViewModel extends StateNotifier<EmojiSelectState> {
   // final AppConfigNotifier appConfigNotifier;

@@ -102,7 +102,6 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
   Future<void> deleteDiary(int id) async {
     try {
       await _repository.deleteDiary(id);
-      // DB 변경 → Stream emit → 자동으로 통계와 목록 업데이트
     } catch (e) {
       state = state.copyWith(errorMessage: '일기 삭제에 실패했습니다.');
       rethrow;
@@ -110,10 +109,10 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
   }
 
   // 일기 추가/수정 후 호출 (필요시)
-  Future<void> refreshData() async {
-    // Stream이 자동으로 업데이트하므로 실제로는 불필요
-    // 하지만 명시적으로 새로고침이 필요한 경우 사용
-  }
+  // Future<void> refreshData() async {
+  //   // Stream이 자동으로 업데이트하므로 실제로는 불필요
+  //   // 하지만 명시적으로 새로고침이 필요한 경우 사용
+  // }
 
   // 특정 날짜의 일기 목록 가져오기
   List<DiaryModel> getEntriesForDate(DateTime date) {

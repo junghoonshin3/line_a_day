@@ -452,17 +452,15 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
   }
 
   void _onDelete(BuildContext context, viewModel) async {
-    final confirmed = await DialogHelper.showConfirm(
+    await DialogHelper.showConfirm(
       context,
       title: '일기 삭제',
       message: '정말로 이 일기를 삭제하시겠습니까?\n삭제된 일기는 복구할 수 없습니다.',
       icon: Icons.delete_forever,
       confirmText: '삭제',
       cancelText: '취소',
+      onConfirm: viewModel.deleteDiary,
+      onCancel: () {},
     );
-
-    if (confirmed == true) {
-      await viewModel.deleteDiary();
-    }
   }
 }

@@ -59,6 +59,225 @@ class DiaryDialogs {
     );
   }
 
+  // 날짜/시간 통합 선택 다이얼로그
+  static void showDateTimePickerDialog({
+    required BuildContext context,
+    required DateTime currentDateTime,
+    required Function(DateTime) onDateTimeSelected,
+    required DateTime focusedDate,
+    required void Function(DateTime) onPageChanged,
+    required bool Function(DateTime date) hasEntryOnDate,
+  }) {
+    DateTime tempDate = currentDateTime;
+    TimeOfDay tempTime = TimeOfDay.fromDateTime(currentDateTime);
+    DateTime tempFocusedDate = focusedDate;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 헤더
+                  const Text(
+                    '일기 작성 시간',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '날짜와 시간을 선택해주세요',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 캘린더
+                  CalendarWidget(
+                    focusedDate: tempFocusedDate,
+                    selectedDate: tempDate,
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        tempDate = DateTime(
+                          selectedDay.year,
+                          selectedDay.month,
+                          selectedDay.day,
+                          tempTime.hour,
+                          tempTime.minute,
+                        );
+                        tempFocusedDate = focusedDay;
+                      });
+                    },
+                    onPageChanged: (focusedDay) {
+                      setState(() {
+                        tempFocusedDate = focusedDay;
+                      });
+                      onPageChanged(focusedDay);
+                    },
+                    hasEntryOnDate: hasEntryOnDate,
+                    margin: const EdgeInsets.all(0),
+                    padding: const EdgeInsets.all(0),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 시간 선택
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: tempTime,
+                        builder: (context, child) {
+                          return MediaQuery(
+                            data: MediaQuery.of(
+                              context,
+                            ).copyWith(alwaysUse24HourFormat: false),
+                            child: child!,
+                          );
+                        },
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          tempTime = picked;
+                          tempDate = DateTime(
+                            tempDate.year,
+                            tempDate.month,
+                            tempDate.day,
+                            picked.hour,
+                            picked.minute,
+                          );
+                        });
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3B82F6).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.access_time,
+                              color: Color(0xFF3B82F6),
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  '시간',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _formatTime(tempTime),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1F2937),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFF9CA3AF),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // 버튼
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFE5E7EB)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            onDateTimeSelected(tempDate);
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3B82F6),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text(
+                            '확인',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 헬퍼 함수
+  static String _formatTime(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? '오전' : '오후';
+    return '$period $hour:$minute';
+  }
+
   // 날씨 선택 다이얼로그
   static void showWeatherDialog(
     BuildContext context, {
@@ -310,57 +529,6 @@ class DiaryDialogs {
                 const SizedBox(height: 8),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  static void showCalendarDialog({
-    required BuildContext context,
-    required DateTime focusedDate,
-    required DateTime? selectedDate,
-    required void Function(DateTime selectedDay, DateTime focusedDay)
-    onDaySelected,
-    required void Function(DateTime focusedDay) onPageChanged,
-    required bool Function(DateTime date) hasEntryOnDate,
-  }) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                '날짜 선택',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1F2937),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '날짜를 선택해주세요',
-                style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
-              ),
-              const SizedBox(height: 16),
-              CalendarWidget(
-                focusedDate: focusedDate,
-                selectedDate: selectedDate,
-                onDaySelected: (selectedDay, focusedDay) {
-                  onDaySelected(selectedDay, focusedDay);
-                  Navigator.pop(context); // 날짜 선택 시 다이얼로그 닫기
-                },
-                onPageChanged: onPageChanged,
-                hasEntryOnDate: hasEntryOnDate,
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(10),
-              ),
-            ],
           ),
         ),
       ),

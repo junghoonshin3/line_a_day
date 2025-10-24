@@ -5,6 +5,7 @@ import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
 import 'package:line_a_day/features/diary/presentation/main_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
+import 'package:line_a_day/features/emoji/presentation/statistic/presentation/emoji_statistic_view.dart';
 
 class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
@@ -21,7 +22,7 @@ class _MainViewState extends ConsumerState<MainView>
 
   final List<Widget> _tabItem = [
     const DiaryListView(),
-    const DiaryListView(),
+    const EmojiStatisticView(),
     const DiaryListView(),
     const DiaryListView(),
   ];

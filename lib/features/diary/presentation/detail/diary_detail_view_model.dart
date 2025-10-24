@@ -51,11 +51,11 @@ class DiaryDetailViewModel extends StateNotifier<DiaryDetailState> {
   // 일기 삭제
   Future<void> deleteDiary() async {
     if (state.diary == null) return;
-
     state = state.copyWith(isDeleting: true);
     try {
       await _repository.deleteDiary(state.diary!.id!);
       state = state.copyWith(isDeleting: false, isDeleted: true);
+      _diarySubscription?.cancel();
     } catch (e) {
       state = state.copyWith(isDeleting: false, errorMessage: '일기 삭제에 실패했습니다.');
     }

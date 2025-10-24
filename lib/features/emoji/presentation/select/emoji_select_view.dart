@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/di/providers.dart';
-import 'package:line_a_day/features/emoji/presentation/emoji_select_view_model.dart';
-import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
+import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
+import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class EmojiSelectView extends ConsumerStatefulWidget {
@@ -295,7 +296,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
   void _navigateToDiaryList() {
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed("diaryList");
+        Navigator.of(context).pushReplacementNamed(AppRoutes.main);
       }
     });
   }

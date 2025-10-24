@@ -7,7 +7,7 @@ import 'package:line_a_day/core/database/isar_service.dart';
 import 'package:line_a_day/core/storage/storage_keys.dart';
 import 'package:line_a_day/core/storage/storage_service.dart';
 import 'package:line_a_day/di/providers.dart';
-import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
+import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

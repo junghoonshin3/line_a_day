@@ -14,8 +14,8 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:isar_community/isar.dart';
 import 'package:line_a_day/core/app/config/config.dart';
 import 'package:line_a_day/core/database/isar_service.dart';
-import 'package:line_a_day/features/emoji/presentation/emoji_select_view_model.dart';
-import 'package:line_a_day/features/emoji/presentation/state/emoji_select_state.dart';
+import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
+import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view_model.dart';
 import 'package:line_a_day/features/intro/presentation/state/intro_state.dart';
 

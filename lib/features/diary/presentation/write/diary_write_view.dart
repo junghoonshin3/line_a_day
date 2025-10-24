@@ -183,13 +183,13 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           actions: [
             IconButton(
               onPressed: () {
-                DiaryDialogs.showCalendarDialog(
+                DiaryDialogs.showDateTimePickerDialog(
                   context: context,
                   focusedDate: state.focusedDate,
-                  selectedDate: state.selectedDate,
-                  onDaySelected: (selectedDay, focusedDay) {
-                    viewModel.setFocusedDate(focusedDay);
-                    viewModel.setSelectedDate(selectedDay);
+                  currentDateTime: state.selectedDate,
+                  onDateTimeSelected: (datetime) {
+                    viewModel.setFocusedDate(datetime);
+                    viewModel.setSelectedDate(datetime);
                   },
                   onPageChanged: (focusedDay) {
                     viewModel.setFocusedDate(focusedDay);
@@ -494,7 +494,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     DiaryWriteState state,
     DiaryWriteViewModel viewModel,
   ) {
-    // _titleController.text = state.diary.title;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -547,7 +546,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     DiaryWriteState state,
     DiaryWriteViewModel viewModel,
   ) {
-    // _contentController.text = state.diary.content;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -43,7 +43,7 @@ class CalendarWidget extends StatelessWidget {
         calendarFormat: CalendarFormat.month,
         headerStyle: const HeaderStyle(
           formatButtonVisible: false,
-          titleCentered: false,
+          titleCentered: true,
           titleTextStyle: AppTheme.titleLarge,
           leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.gray600),
           rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.gray600),
