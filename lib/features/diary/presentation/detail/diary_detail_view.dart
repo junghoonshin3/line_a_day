@@ -421,21 +421,13 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
 
   void _showImageDialog(BuildContext context, List<String> urls, int index) {
     showDialog(
+      fullscreenDialog: true,
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: Stack(
-          children: [
-            InteractiveViewer(child: Image.file(File(urls[index]))),
-            Positioned(
-              top: 10,
-              right: 10,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ],
+          alignment: Alignment.center,
+          children: [InteractiveViewer(child: Image.file(File(urls[index])))],
         ),
       ),
     );

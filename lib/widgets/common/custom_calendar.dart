@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -43,8 +44,8 @@ class CalendarWidget extends StatelessWidget {
         calendarFormat: CalendarFormat.month,
         headerStyle: const HeaderStyle(
           formatButtonVisible: false,
-          titleCentered: true,
-          titleTextStyle: AppTheme.titleLarge,
+          // titleCentered: true,
+          // titleTextStyle: AppTheme.titleLarge,
           leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.gray600),
           rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.gray600),
         ),
@@ -99,6 +100,14 @@ class CalendarWidget extends StatelessWidget {
               );
             }
             return null;
+          },
+          headerTitleBuilder: (context, day) {
+            return Center(
+              child: Text(
+                DateFormat("yyyy년 MM월", "ko").format(day),
+                style: AppTheme.titleLarge,
+              ),
+            );
           },
         ),
       ),

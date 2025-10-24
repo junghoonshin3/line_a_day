@@ -1,8 +1,8 @@
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 
 abstract class DiaryRepository {
-  /// 모든 일기 조회
-  Stream<List<DiaryModel>> getAllDiaries();
+  /// 모든 일기 조회(Stream)
+  Stream<List<DiaryModel>> getAllDiariesForRealtime();
 
   /// 특정 일기 조회
   Stream<DiaryModel?> getDiaryById(int id);
@@ -18,4 +18,13 @@ abstract class DiaryRepository {
 
   /// 일기 삭제
   Future<void> deleteDiary(int id);
+
+  //모든 일기 조회
+  Future<List<DiaryModel>> getAllDiaries();
+
+  //범위에 속한 모든 일기 조회
+  Future<List<DiaryModel>> getDiariesByRange(
+    DateTime startDate,
+    DateTime endDate,
+  );
 }
