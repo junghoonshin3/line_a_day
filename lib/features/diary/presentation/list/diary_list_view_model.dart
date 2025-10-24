@@ -23,7 +23,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
   void _initializeDiaryStream() {
     state = state.copyWith(isLoading: true);
 
-    _diariesSubscription = _repository.getAllDiaries().listen(
+    _diariesSubscription = _repository.getAllDiariesForRealtime().listen(
       (allDiaries) {
         // 전체 데이터 캐싱
         _allDiaries = allDiaries;

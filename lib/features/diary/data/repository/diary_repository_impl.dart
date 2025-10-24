@@ -24,7 +24,7 @@ class DiaryRepositoryImpl extends DiaryRepository {
   }
 
   @override
-  Stream<List<DiaryModel>> getAllDiaries() {
+  Stream<List<DiaryModel>> getAllDiariesForRealtime() {
     try {
       return _isar.diaryEntitys
           .where()
@@ -85,5 +85,51 @@ class DiaryRepositoryImpl extends DiaryRepository {
       final updatedDiary = diary.copyWith(lastModified: DateTime.now());
       await _isar.diaryEntitys.put(updatedDiary.toEntity());
     });
+  }
+
+  @override
+  Future<List<DiaryModel>> getAllDiaries() async {
+    try {
+      final entities = await _isar.diaryEntitys
+          .where()
+          .sortByCreatedAtDesc()
+          .findAll();
+
+      return DiaryMapper.toModelList(entities);
+    } catch (e) {
+      print('일기 불러오기 실패: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<DiaryModel>> getDiariesByRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    try {
+      // 범위의 시작과 끝 정규화
+      final start = DateTime(startDate.year, startDate.month, startDate.day);
+      final end = DateTime(
+        endDate.year,
+        endDate.month,
+        endDate.day,
+        23,
+        59,
+        59,
+      );
+
+      final entities = await _isar.diaryEntitys
+          .where()
+          .filter()
+          .createdAtBetween(start, end)
+          .sortByCreatedAtDesc()
+          .findAll();
+
+      return DiaryMapper.toModelList(entities);
+    } catch (e) {
+      print('기간별 일기 불러오기 실패: $e');
+      rethrow;
+    }
   }
 }
