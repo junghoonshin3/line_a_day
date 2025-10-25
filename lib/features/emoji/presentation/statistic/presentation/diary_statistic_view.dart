@@ -4,18 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/features/emoji/presentation/statistic/presentation/emoji_statistic_view_model.dart';
-import 'package:line_a_day/features/emoji/presentation/statistic/state/emoji_statistic_state.dart';
+import 'package:line_a_day/features/emoji/presentation/statistic/presentation/diary_statistic_view_model.dart';
+import 'package:line_a_day/features/emoji/presentation/statistic/state/diary_statistic_state.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
-class EmojiStatisticView extends ConsumerStatefulWidget {
-  const EmojiStatisticView({super.key});
+class DiaryStatisticView extends ConsumerStatefulWidget {
+  const DiaryStatisticView({super.key});
 
   @override
-  ConsumerState<EmojiStatisticView> createState() => _EmojiStatisticViewState();
+  ConsumerState<DiaryStatisticView> createState() => _EmojiStatisticViewState();
 }
 
-class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
+class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     with TickerProviderStateMixin, StaggeredAnimationMixin {
   @override
   void initState() {
@@ -47,7 +47,10 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
             index: 4,
             child: _buildChart(state, viewModel),
           ),
-          // buildAnimatedSliverBox(index: 5, child: _buildEmotionLegend()),
+          buildAnimatedSliverBox(
+            index: 5,
+            child: _buildEmotionChart(state, viewModel),
+          ),
           buildAnimatedSliverBox(
             index: 6,
             child: _buildTopEmotions(state, viewModel),
@@ -58,7 +61,7 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
     );
   }
 
-  Widget _buildHeader(EmojiStatisticState state, EmojiStatisticViewModel vm) {
+  Widget _buildHeader(DiaryStatisticState state, DiaryStatisticViewModel vm) {
     String periodText = '';
     switch (state.selectedPeriod) {
       case PeriodType.week:
@@ -148,8 +151,8 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
   }
 
   Widget _buildPeriodSelector(
-    EmojiStatisticState state,
-    EmojiStatisticViewModel viewModel,
+    DiaryStatisticState state,
+    DiaryStatisticViewModel viewModel,
   ) {
     return Container(
       margin: const EdgeInsets.all(20),
@@ -193,7 +196,7 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
     );
   }
 
-  Widget _buildChart(EmojiStatisticState state, EmojiStatisticViewModel vm) {
+  Widget _buildChart(DiaryStatisticState state, DiaryStatisticViewModel vm) {
     if (state.chartData.isEmpty) {
       return _buildEmptyChart();
     }
@@ -229,7 +232,7 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final data = state.chartData[group.x.toInt()];
                       return BarTooltipItem(
-                        '${data.count > 10 ? Emotion.getMoodByType(EmotionType.happy)!.emoji : Emotion.getMoodByType(EmotionType.sad)!.emoji}\n${data.count}회',
+                        '${data.count}회',
                         const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -325,6 +328,185 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
                           end: Alignment.topCenter,
                         ),
                         width: 20,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(6),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmotionChart(
+    DiaryStatisticState state,
+    DiaryStatisticViewModel vm,
+  ) {
+    if (state.emotionCounts.isEmpty) return _buildEmptyChart();
+
+    final entries = state.emotionCounts.entries.toList();
+    final maxCount = entries
+        .map((e) => e.value)
+        .reduce((a, b) => a > b ? a : b);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppTheme.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '감정 그래프',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 300,
+            child: BarChart(
+              transformationConfig: FlTransformationConfig(
+                scaleAxis: FlScaleAxis.horizontal,
+                scaleEnabled: true,
+                transformationController: TransformationController(
+                  Matrix4.identity()
+                    ..scale(1.5, 1.5)
+                    ..translate(0.0, 0.0),
+                ),
+              ),
+              BarChartData(
+                alignment: BarChartAlignment.spaceEvenly,
+                maxY: (maxCount + 1).toDouble(),
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      final emotion = entries[group.x.toInt()].key;
+                      final count = entries[group.x.toInt()].value;
+                      final mood = Emotion.getMoodByType(emotion);
+
+                      return BarTooltipItem(
+                        '${mood?.emoji ?? ''} ${mood?.label ?? ''}\n$count회',
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= entries.length) {
+                          return const SizedBox.shrink();
+                        }
+                        final emotion = entries[index].key;
+                        final mood = Emotion.getMoodByType(emotion);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Column(
+                            children: [
+                              Text(
+                                mood?.emoji ?? '🙂',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                mood?.label ?? '',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.gray600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      reservedSize: 50,
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      interval: 1,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.gray600,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: 1,
+                  getDrawingHorizontalLine: (value) {
+                    return const FlLine(
+                      color: AppTheme.gray200,
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: const Border(
+                    left: BorderSide(color: AppTheme.gray300, width: 1),
+                    bottom: BorderSide(color: AppTheme.gray300, width: 1),
+                  ),
+                ),
+                barGroups: entries.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final emotion = entry.value.key;
+                  final count = entry.value.value;
+                  final mood = Emotion.getMoodByType(emotion);
+
+                  return BarChartGroupData(
+                    x: index,
+                    barRods: [
+                      BarChartRodData(
+                        toY: count.toDouble(),
+                        width: 22,
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(mood?.colorCode ?? 0xFFE5E7EB),
+                            Color(
+                              mood?.colorCode ?? 0xFFE5E7EB,
+                            ).withOpacity(0.7),
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(6),
                         ),
@@ -439,8 +621,8 @@ class _EmojiStatisticViewState extends ConsumerState<EmojiStatisticView>
   }
 
   Widget _buildTopEmotions(
-    EmojiStatisticState state,
-    EmojiStatisticViewModel viewModel,
+    DiaryStatisticState state,
+    DiaryStatisticViewModel viewModel,
   ) {
     final emotionStats = viewModel.getEmotionStats();
 

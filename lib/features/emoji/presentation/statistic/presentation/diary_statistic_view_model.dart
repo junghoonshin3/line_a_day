@@ -4,12 +4,12 @@ import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
-import 'package:line_a_day/features/emoji/presentation/statistic/state/emoji_statistic_state.dart';
+import 'package:line_a_day/features/emoji/presentation/statistic/state/diary_statistic_state.dart';
 
-class EmojiStatisticViewModel extends StateNotifier<EmojiStatisticState> {
+class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
   final DiaryRepository _repository;
 
-  EmojiStatisticViewModel(this._repository) : super(EmojiStatisticState()) {
+  DiaryStatisticViewModel(this._repository) : super(DiaryStatisticState()) {
     _loadStatistics();
   }
 
@@ -337,9 +337,9 @@ class EmojiStatisticViewModel extends StateNotifier<EmojiStatisticState> {
 
 final emojiStatisticViewModelProvider =
     StateNotifierProvider.autoDispose<
-      EmojiStatisticViewModel,
-      EmojiStatisticState
+      DiaryStatisticViewModel,
+      DiaryStatisticState
     >((ref) {
       final repository = ref.watch(diaryRepositoryProvider);
-      return EmojiStatisticViewModel(repository);
+      return DiaryStatisticViewModel(repository);
     });
