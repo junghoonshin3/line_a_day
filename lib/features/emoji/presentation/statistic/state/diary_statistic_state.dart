@@ -1,6 +1,6 @@
 import 'package:line_a_day/constant.dart';
 
-class EmojiStatisticState {
+class DiaryStatisticState {
   final Map<EmotionType, int> emotionCounts;
   final int totalDiaries;
   final EmotionType? mostFrequentEmotion;
@@ -10,7 +10,7 @@ class EmojiStatisticState {
   final PeriodType selectedPeriod;
   final List<ChartDataPoint> chartData;
 
-  EmojiStatisticState({
+  DiaryStatisticState({
     this.emotionCounts = const {},
     this.totalDiaries = 0,
     this.mostFrequentEmotion,
@@ -21,7 +21,7 @@ class EmojiStatisticState {
     this.chartData = const [],
   }) : selectedDate = selectedDate ?? DateTime(2025, 10, 24);
 
-  EmojiStatisticState copyWith({
+  DiaryStatisticState copyWith({
     Map<EmotionType, int>? emotionCounts,
     int? totalDiaries,
     EmotionType? mostFrequentEmotion,
@@ -31,7 +31,7 @@ class EmojiStatisticState {
     PeriodType? selectedPeriod,
     List<ChartDataPoint>? chartData,
   }) {
-    return EmojiStatisticState(
+    return DiaryStatisticState(
       emotionCounts: emotionCounts ?? this.emotionCounts,
       totalDiaries: totalDiaries ?? this.totalDiaries,
       mostFrequentEmotion: mostFrequentEmotion ?? this.mostFrequentEmotion,
