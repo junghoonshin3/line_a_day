@@ -98,13 +98,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
                   ),
                   buildFadeItem(
                     index: 1,
-                    child: Row(
-                      children: [
-                        _buildHeaderIcon(Icons.search),
-                        const SizedBox(width: 12),
-                        _buildHeaderIcon(Icons.settings),
-                      ],
-                    ),
+                    child: Row(children: [_buildHeaderIcon(Icons.search)]),
                   ),
                 ],
               ),
@@ -126,14 +120,17 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   }
 
   Widget _buildHeaderIcon(IconData icon) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
       ),
-      child: Icon(icon, color: Colors.white, size: 20),
     );
   }
 

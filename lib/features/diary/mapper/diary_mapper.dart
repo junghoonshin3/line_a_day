@@ -1,4 +1,5 @@
 import 'package:isar_community/isar.dart';
+import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 
@@ -11,7 +12,7 @@ extension DiaryEntityMapper on DiaryEntity {
     emotion: emotionType,
     tags: tags ?? [],
     photoUrls: photoUrls ?? [],
-    weather: weather,
+    weather: WeatherData.getWeatherByValue(weather),
     location: location,
     isFavorite: isFavorite,
     lastModified: lastModified,
@@ -27,7 +28,7 @@ extension DiaryModelMapper on DiaryModel {
     ..emotionType = emotion
     ..tags = tags
     ..photoUrls = photoUrls
-    ..weather = weather
+    ..weather = weather?.value
     ..location = location
     ..isFavorite = isFavorite
     ..lastModified = lastModified;

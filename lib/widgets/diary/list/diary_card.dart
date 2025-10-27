@@ -81,7 +81,7 @@ class DiaryCard extends StatelessWidget {
       children: [
         if (model.weather != null)
           _buildTag(
-            model.weather!,
+            model.weather?.name ?? "",
             const Color(0xFFFEF3C7),
             const Color(0xFFD97706),
           ),

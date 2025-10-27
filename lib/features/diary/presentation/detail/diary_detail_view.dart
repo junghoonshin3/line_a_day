@@ -176,7 +176,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     ).format(diary.createdAt);
 
     return SliverAppBar(
-      expandedHeight: 140,
+      expandedHeight: 170,
       pinned: true,
       // backgroundColor: Colors.transparent,
       elevation: 0,
@@ -261,7 +261,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     );
   }
 
-  Widget _buildMetaInfo(diary) {
+  Widget _buildMetaInfo(DiaryModel diary) {
     final items = <Widget>[];
 
     // 감정
@@ -280,8 +280,8 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     if (diary.weather != null) {
       items.add(
         _buildMetaChip(
-          icon: diary.weather!,
-          label: diary.weather!,
+          icon: diary.weather!.icon,
+          label: diary.weather!.name,
           color: const Color(0xFF93C5FD),
         ),
       );

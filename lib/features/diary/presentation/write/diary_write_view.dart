@@ -383,7 +383,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     if (weather != null) {
       sentenceParts.add(
         TextSpan(
-          text: '$weather ',
+          text: '${weather.name} ',
           style: const TextStyle(
             color: weatherColor,
             fontWeight: FontWeight.w600,

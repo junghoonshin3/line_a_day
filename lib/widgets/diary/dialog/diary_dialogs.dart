@@ -281,19 +281,10 @@ class DiaryDialogs {
   // 날씨 선택 다이얼로그
   static void showWeatherDialog(
     BuildContext context, {
-    required Function(String) onWeatherSelected,
-    String? currentWeather,
+    required Function(WeatherData) onWeatherSelected,
+    WeatherData? currentWeather,
   }) {
-    final weathers = [
-      {'icon': '☀️', 'name': '맑음', 'value': 'sunny'},
-      {'icon': '⛅', 'name': '구름 조금', 'value': 'partly_cloudy'},
-      {'icon': '☁️', 'name': '흐림', 'value': 'cloudy'},
-      {'icon': '🌧️', 'name': '비', 'value': 'rainy'},
-      {'icon': '⛈️', 'name': '천둥번개', 'value': 'thunderstorm'},
-      {'icon': '❄️', 'name': '눈', 'value': 'snowy'},
-      {'icon': '🌫️', 'name': '안개', 'value': 'foggy'},
-      {'icon': '🌪️', 'name': '바람', 'value': 'windy'},
-    ];
+    final weathers = WeatherData.weathers;
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -329,10 +320,10 @@ class DiaryDialogs {
                 itemCount: weathers.length,
                 itemBuilder: (context, index) {
                   final weather = weathers[index];
-                  final isSelected = currentWeather == weather['value'];
+                  final isSelected = currentWeather?.name == weather.name;
                   return GestureDetector(
                     onTap: () {
-                      onWeatherSelected(weather['value'] as String);
+                      onWeatherSelected(weather);
                       Navigator.pop(context);
                     },
                     child: Container(
@@ -352,12 +343,12 @@ class DiaryDialogs {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            weather['icon'] as String,
+                            weather.icon,
                             style: const TextStyle(fontSize: 32),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            weather['name'] as String,
+                            weather.name,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: isSelected
@@ -375,18 +366,6 @@ class DiaryDialogs {
                   );
                 },
               ),
-              const SizedBox(height: 16),
-              if (currentWeather != null)
-                TextButton(
-                  onPressed: () {
-                    onWeatherSelected('');
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    '선택 해제',
-                    style: TextStyle(color: Color(0xFF6B7280)),
-                  ),
-                ),
             ],
           ),
         ),

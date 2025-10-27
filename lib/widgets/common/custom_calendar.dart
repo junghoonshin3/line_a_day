@@ -26,6 +26,7 @@ class CalendarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     return Container(
       margin: margin ?? const EdgeInsets.all(20),
       padding: padding ?? const EdgeInsets.all(20),
@@ -38,14 +39,15 @@ class CalendarWidget extends StatelessWidget {
         firstDay: DateTime.utc(2000, 1, 1),
         lastDay: DateTime.utc(2100, 12, 31),
         focusedDay: focusedDate,
+        enabledDayPredicate: (date) {
+          return !date.isAfter(now);
+        },
         selectedDayPredicate: (day) => isSameDay(day, selectedDate),
         onDaySelected: onDaySelected,
         onPageChanged: onPageChanged,
         calendarFormat: CalendarFormat.month,
         headerStyle: const HeaderStyle(
           formatButtonVisible: false,
-          // titleCentered: true,
-          // titleTextStyle: AppTheme.titleLarge,
           leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.gray600),
           rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.gray600),
         ),

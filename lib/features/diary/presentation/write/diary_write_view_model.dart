@@ -119,12 +119,8 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
     );
   }
 
-  void setWeather(String weather) {
-    state = state.copyWith(
-      diary: state.diary.copyWith(
-        weather: state.diary.weather == null ? null : weather,
-      ),
-    );
+  void setWeather(WeatherData weather) {
+    state = state.copyWith(diary: state.diary.copyWith(weather: weather));
   }
 
   void setLocation(String location) {

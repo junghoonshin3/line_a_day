@@ -10,7 +10,7 @@ class DiaryModel {
   final EmojiStyle? emojiStyle;
   final List<String> tags;
   final List<String> photoUrls;
-  final String? weather;
+  final WeatherData? weather;
   final String? location;
   final bool isFavorite;
   final DateTime? lastModified;
@@ -40,7 +40,7 @@ class DiaryModel {
     EmojiStyle? emojiStyle,
     List<String>? tags,
     List<String>? photoUrls,
-    String? weather,
+    WeatherData? weather,
     String? location,
     bool? isFavorite,
     DateTime? lastModified,

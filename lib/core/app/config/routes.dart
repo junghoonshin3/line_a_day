@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/detail/diary_detail_view.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
-import 'package:line_a_day/features/diary/presentation/main_view.dart';
+import 'package:line_a_day/features/main/presentation/main_view.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view.dart';

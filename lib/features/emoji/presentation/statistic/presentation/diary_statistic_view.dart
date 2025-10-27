@@ -84,7 +84,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     }
 
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 220,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
@@ -355,7 +355,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
         .reduce((a, b) => a > b ? a : b);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -633,7 +633,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     final topThree = emotionStats.take(3).toList();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
