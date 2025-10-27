@@ -9,6 +9,9 @@ class DiaryListState {
   final bool isLoading;
   final String? errorMessage;
   final DiaryListStats stats;
+  final bool isSearchMode;
+  final String searchQuery;
+  final List<DiaryModel> searchResults;
 
   DiaryListState({
     this.entries = const [],
@@ -18,6 +21,9 @@ class DiaryListState {
     this.isLoading = false,
     this.errorMessage,
     DiaryListStats? stats,
+    this.isSearchMode = false,
+    this.searchQuery = '',
+    this.searchResults = const [],
   }) : selectedDate = selectedDate ?? DateTime.now(),
        focusedDate = focusedDate ?? DateTime.now(),
        stats = stats ?? const DiaryListStats();
@@ -31,6 +37,9 @@ class DiaryListState {
     bool? isLoading,
     String? errorMessage,
     DiaryListStats? stats,
+    bool? isSearchMode,
+    String? searchQuery,
+    List<DiaryModel>? searchResults,
   }) {
     return DiaryListState(
       entries: entries ?? this.entries,
@@ -40,6 +49,9 @@ class DiaryListState {
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       stats: stats ?? this.stats,
+      isSearchMode: isSearchMode ?? this.isSearchMode,
+      searchQuery: searchQuery ?? this.searchQuery,
+      searchResults: searchResults ?? this.searchResults,
     );
   }
 }

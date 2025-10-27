@@ -11,6 +11,7 @@ import 'package:line_a_day/features/diary/presentation/state/diary_list_state.da
 class DiaryListViewModel extends StateNotifier<DiaryListState> {
   final DiaryRepository _repository;
   StreamSubscription<List<DiaryModel>>? _diariesSubscription;
+  Timer? _debounceTimer;
 
   // 전체 일기 데이터를 메모리에 캐싱
   List<DiaryModel> _allDiaries = [];
@@ -31,15 +32,20 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
         // 통계 계산 (전체 데이터 기준)
         final stats = _calculateStats(allDiaries);
 
-        // 현재 선택된 날짜와 필터에 맞는 일기만 추출
-        final filteredEntries = _getFilteredAndDateFilteredEntries();
+        // 검색 모드라면 검색 결과 업데이트
+        if (state.isSearchMode && state.searchQuery.isNotEmpty) {
+          _performSearch(state.searchQuery);
+        } else {
+          // 현재 선택된 날짜와 필터에 맞는 일기만 추출
+          final filteredEntries = _getFilteredAndDateFilteredEntries();
 
-        state = state.copyWith(
-          entries: filteredEntries, // 화면에 표시될 일기 목록
-          stats: stats, // 전체 통계 (실시간 업데이트)
-          isLoading: false,
-          errorMessage: null,
-        );
+          state = state.copyWith(
+            entries: filteredEntries,
+            stats: stats,
+            isLoading: false,
+            errorMessage: null,
+          );
+        }
       },
       onError: (error) {
         state = state.copyWith(
@@ -49,6 +55,72 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
         print('일기 스트림 에러: $error');
       },
     );
+  }
+
+  // 검색 모드 전환
+  void toggleSearchMode() {
+    final newSearchMode = !state.isSearchMode;
+
+    if (newSearchMode) {
+      // 검색 모드 활성화
+      state = state.copyWith(
+        isSearchMode: true,
+        searchQuery: '',
+        searchResults: [],
+      );
+    } else {
+      // 검색 모드 비활성화 - 초기화
+      state = state.copyWith(
+        isSearchMode: false,
+        searchQuery: '',
+        searchResults: [],
+      );
+      _debounceTimer?.cancel();
+    }
+  }
+
+  // 검색 쿼리 업데이트
+  void updateSearchQuery(String query) {
+    state = state.copyWith(searchQuery: query);
+
+    // 디바운스: 300ms 후에 검색 실행
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _performSearch(query);
+    });
+  }
+
+  // 검색 수행
+  void _performSearch(String query) {
+    if (query.trim().isEmpty) {
+      state = state.copyWith(searchResults: []);
+      return;
+    }
+
+    final lowerQuery = query.toLowerCase().trim();
+    final results = _allDiaries.where((diary) {
+      // 제목에서 검색
+      final titleMatch = diary.title.toLowerCase().contains(lowerQuery);
+      // 내용에서 검색
+      final contentMatch = diary.content.toLowerCase().contains(lowerQuery);
+      // 태그에서 검색
+      final tagMatch = diary.tags.any(
+        (tag) => tag.toLowerCase().contains(lowerQuery),
+      );
+
+      return titleMatch || contentMatch || tagMatch;
+    }).toList();
+
+    // 최신순 정렬
+    results.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    state = state.copyWith(searchResults: results);
+  }
+
+  // 검색 초기화
+  void clearSearch() {
+    state = state.copyWith(searchQuery: '', searchResults: []);
+    _debounceTimer?.cancel();
   }
 
   // 날짜 선택 - 선택한 날짜가 변경되면 해당 날짜의 일기만 필터링
@@ -108,12 +180,6 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     }
   }
 
-  // 일기 추가/수정 후 호출 (필요시)
-  // Future<void> refreshData() async {
-  //   // Stream이 자동으로 업데이트하므로 실제로는 불필요
-  //   // 하지만 명시적으로 새로고침이 필요한 경우 사용
-  // }
-
   // 특정 날짜의 일기 목록 가져오기
   List<DiaryModel> getEntriesForDate(DateTime date) {
     return _allDiaries.where((entry) {
@@ -132,9 +198,10 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     });
   }
 
-  // 날짜별로 그룹화된 일기 목록 (현재 화면에 표시된 entries 사용)
+  // 날짜별로 그룹화된 일기 목록
   Map<String, List<DiaryModel>> getGroupedEntries() {
-    final filtered = state.entries; // 이미 필터링된 entries 사용
+    // 검색 모드일 때는 검색 결과 사용
+    final filtered = state.isSearchMode ? state.searchResults : state.entries;
     final Map<String, List<DiaryModel>> grouped = {};
 
     for (final entry in filtered) {
@@ -208,6 +275,7 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
   @override
   void dispose() {
     _diariesSubscription?.cancel();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 }

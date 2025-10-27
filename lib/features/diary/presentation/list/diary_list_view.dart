@@ -20,6 +20,9 @@ class DiaryListView extends ConsumerStatefulWidget {
 
 class _DiaryListViewState extends ConsumerState<DiaryListView>
     with TickerProviderStateMixin, StaggeredAnimationMixin {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +32,8 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   @override
   void dispose() {
     disposeStaggeredAnimation();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -37,33 +42,46 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     final state = ref.watch(diaryListViewModelProvider);
     final viewModel = ref.read(diaryListViewModelProvider.notifier);
 
+    // 검색 모드가 활성화되면 포커스
+    ref.listen<DiaryListState>(diaryListViewModelProvider, (previous, next) {
+      if (next.isSearchMode && !(previous?.isSearchMode ?? false)) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _searchFocusNode.requestFocus();
+        });
+      }
+    });
+
     return Scaffold(
-      floatingActionButton: buildAnimatedItem(
-        index: 6,
-        scaleAnimation: true,
-        child: _buildFAB(viewModel),
-      ),
+      floatingActionButton: state.isSearchMode
+          ? null
+          : buildAnimatedItem(
+              index: 6,
+              scaleAnimation: true,
+              child: _buildFAB(viewModel),
+            ),
       backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
-          // 헤더
-          _buildHeader(state),
+          // 헤더 (검색 모드에 따라 다르게 표시)
+          state.isSearchMode
+              ? _buildSearchHeader(state, viewModel)
+              : _buildHeader(state, viewModel),
 
-          // 필터 탭
-          buildAnimatedSliverBox(
-            index: 3,
-            child: FilterTabs(
-              selectedMood: state.filterMood,
-              onMoodSelected: viewModel.filterByMood,
+          // 검색 모드가 아닐 때만 필터 탭과 달력 표시
+          if (!state.isSearchMode) ...[
+            buildAnimatedSliverBox(
+              index: 3,
+              child: FilterTabs(
+                selectedMood: state.filterMood,
+                onMoodSelected: viewModel.filterByMood,
+              ),
             ),
-          ),
-
-          // 달력
-          buildAnimatedSliverBox(
-            index: 4,
-            customSlideOffset: const Offset(0, 40),
-            child: _buildCalendar(state, viewModel),
-          ),
+            buildAnimatedSliverBox(
+              index: 4,
+              customSlideOffset: const Offset(0, 40),
+              child: _buildCalendar(state, viewModel),
+            ),
+          ],
 
           // 일기 리스트
           _buildDiaryList(state, viewModel),
@@ -72,7 +90,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     );
   }
 
-  Widget _buildHeader(DiaryListState state) {
+  Widget _buildHeader(DiaryListState state, DiaryListViewModel viewModel) {
     return SliverAppBar(
       expandedHeight: 220,
       flexibleSpace: FlexibleSpaceBar(
@@ -98,7 +116,13 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
                   ),
                   buildFadeItem(
                     index: 1,
-                    child: Row(children: [_buildHeaderIcon(Icons.search)]),
+                    child: Row(
+                      children: [
+                        _buildHeaderIcon(Icons.search, () {
+                          viewModel.toggleSearchMode();
+                        }),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -119,9 +143,79 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     );
   }
 
-  Widget _buildHeaderIcon(IconData icon) {
+  Widget _buildSearchHeader(
+    DiaryListState state,
+    DiaryListViewModel viewModel,
+  ) {
+    return SliverAppBar(
+      expandedHeight: 200,
+      pinned: true,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+        padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () {
+                    viewModel.toggleSearchMode();
+                    _searchController.clear();
+                  },
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  '일기 검색',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // 검색창
+            TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              onChanged: viewModel.updateSearchQuery,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: '제목, 내용, 태그로 검색',
+                hintStyle: const TextStyle(color: Colors.white70),
+                prefixIcon: const Icon(Icons.search, color: Colors.white),
+                suffixIcon: state.searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.white70),
+                        onPressed: () {
+                          _searchController.clear();
+                          viewModel.clearSearch();
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.2),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderIcon(IconData icon, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
@@ -152,8 +246,31 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   Widget _buildDiaryList(DiaryListState state, DiaryListViewModel viewModel) {
     final selectedEntries = viewModel.getGroupedEntries();
 
+    // 검색 모드이고 검색어가 없는 경우
+    if (state.isSearchMode && state.searchQuery.isEmpty) {
+      return buildAnimatedSliverBox(
+        index: 5,
+        child: _buildEmptyState(
+          icon: Icons.search,
+          message: '제목, 내용, 태그로\n일기를 검색해보세요',
+        ),
+      );
+    }
+
+    // 검색 결과가 없는 경우
     if (selectedEntries.isEmpty) {
-      return buildAnimatedSliverBox(index: 5, child: _buildEmptyState());
+      return buildAnimatedSliverBox(
+        index: 5,
+        child: state.isSearchMode
+            ? _buildEmptyState(
+                icon: Icons.search_off,
+                message: '검색 결과가 없습니다\n다른 키워드로 검색해보세요',
+              )
+            : _buildEmptyState(
+                icon: Icons.edit_note,
+                message: '아직 작성된 일기가 없습니다.\n오늘의 이야기를 기록해보세요!',
+              ),
+      );
     }
 
     return SliverList(
@@ -169,6 +286,11 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 검색 모드일 때만 날짜 섹션 표시
+                // if (state.isSearchMode ||
+                //     index == 0 ||
+                //     selectedEntries.keys.elementAt(index - 1) != dateKey)
+                const SizedBox(height: 12),
                 _buildDateSection(dateKey),
                 const SizedBox(height: 12),
                 ...entries.asMap().entries.map((entry) {
@@ -209,21 +331,15 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState({required IconData icon, required String message}) {
     return Padding(
       padding: const EdgeInsets.all(60),
       child: Column(
         children: [
-          Text(
-            '📝',
-            style: TextStyle(
-              fontSize: 64,
-              color: AppTheme.gray300.withOpacity(0.3),
-            ),
-          ),
+          Icon(icon, size: 64, color: AppTheme.gray300.withOpacity(0.5)),
           const SizedBox(height: 16),
           Text(
-            '아직 작성된 일기가 없습니다.\n오늘의 이야기를 기록해보세요!',
+            message,
             textAlign: TextAlign.center,
             style: AppTheme.bodyLarge.copyWith(
               color: AppTheme.gray400,
