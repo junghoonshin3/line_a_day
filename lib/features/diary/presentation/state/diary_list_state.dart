@@ -12,6 +12,7 @@ class DiaryListState {
   final bool isSearchMode;
   final String searchQuery;
   final List<DiaryModel> searchResults;
+  final bool isCalendarExpanded;
 
   DiaryListState({
     this.entries = const [],
@@ -24,6 +25,7 @@ class DiaryListState {
     this.isSearchMode = false,
     this.searchQuery = '',
     this.searchResults = const [],
+    this.isCalendarExpanded = true,
   }) : selectedDate = selectedDate ?? DateTime.now(),
        focusedDate = focusedDate ?? DateTime.now(),
        stats = stats ?? const DiaryListStats();
@@ -40,6 +42,7 @@ class DiaryListState {
     bool? isSearchMode,
     String? searchQuery,
     List<DiaryModel>? searchResults,
+    bool? isCalendarExpanded,
   }) {
     return DiaryListState(
       entries: entries ?? this.entries,
@@ -52,6 +55,7 @@ class DiaryListState {
       isSearchMode: isSearchMode ?? this.isSearchMode,
       searchQuery: searchQuery ?? this.searchQuery,
       searchResults: searchResults ?? this.searchResults,
+      isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
     );
   }
 }

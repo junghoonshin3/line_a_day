@@ -161,33 +161,34 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
     final firstDay = DateTime(selectedMonth.year, selectedMonth.month, 1);
     final lastDay = DateTime(selectedMonth.year, selectedMonth.month + 1, 0);
 
-    final monthData = <ChartDataPoint>[];
+    // 이번 달의 첫 월요일을 찾음 (달 초 이전이더라도 상관없음)
+    DateTime weekStart = firstDay.subtract(
+      Duration(days: firstDay.weekday - 1),
+    );
 
-    // 주차별로 묶기
+    final monthData = <ChartDataPoint>[];
     int weekNum = 1;
-    DateTime weekStart = firstDay;
 
     while (weekStart.isBefore(lastDay) || weekStart.isAtSameMomentAs(lastDay)) {
-      DateTime weekEnd = weekStart.add(const Duration(days: 6));
-      if (weekEnd.isAfter(lastDay)) weekEnd = lastDay;
+      final weekEnd = weekStart.add(const Duration(days: 6));
 
+      // 해당 주가 이번 달과 겹치는 일기만 필터링
       final weekDiaries = diaries.where((d) {
         return d.createdAt.isAfter(
-              weekStart.subtract(const Duration(days: 1)),
+              weekStart.subtract(const Duration(seconds: 1)),
             ) &&
-            d.createdAt.isBefore(weekEnd.add(const Duration(days: 1)));
+            d.createdAt.isBefore(weekEnd.add(const Duration(days: 1))) &&
+            d.createdAt.month == selectedMonth.month;
       }).toList();
 
-      // 가장 많이 사용된 감정
+      // 가장 많이 사용된 감정 계산
       EmotionType? dominantEmotion;
       int maxCount = 0;
-
       if (weekDiaries.isNotEmpty) {
         final Map<EmotionType, int> weekEmotions = {};
         for (final diary in weekDiaries) {
           weekEmotions[diary.emotion] = (weekEmotions[diary.emotion] ?? 0) + 1;
         }
-
         weekEmotions.forEach((emotion, count) {
           if (count > maxCount) {
             maxCount = count;
@@ -196,9 +197,10 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
         });
       }
 
+      // “1주차, 2주차, ...” 형식으로 표시
       monthData.add(
         ChartDataPoint(
-          label: '$weekNum주',
+          label: '$weekNum주차',
           emotion: dominantEmotion ?? EmotionType.calm,
           count: weekDiaries.length,
           date: weekStart,

@@ -24,39 +24,37 @@ class GoalViewModel extends StateNotifier<GoalState> {
     final sortedDiaries = diaries
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    int currentStreak = 0;
-    int longestStreak = 0;
-    int tempStreak = 0;
+    final (currentStreak, longestStreak) = _calculateStreaks(sortedDiaries);
 
-    if (sortedDiaries.isNotEmpty) {
-      currentStreak = 1;
-      tempStreak = 1;
-      DateTime lastDate = DateTime(
-        sortedDiaries.first.createdAt.year,
-        sortedDiaries.first.createdAt.month,
-        sortedDiaries.first.createdAt.day,
-      );
+    // if (sortedDiaries.isNotEmpty) {
+    //   currentStreak = 1;
+    //   tempStreak = 1;
+    //   DateTime lastDate = DateTime(
+    //     sortedDiaries.first.createdAt.year,
+    //     sortedDiaries.first.createdAt.month,
+    //     sortedDiaries.first.createdAt.day,
+    //   );
 
-      for (int i = 1; i < sortedDiaries.length; i++) {
-        final currentDate = DateTime(
-          sortedDiaries[i].createdAt.year,
-          sortedDiaries[i].createdAt.month,
-          sortedDiaries[i].createdAt.day,
-        );
-        final daysDiff = lastDate.difference(currentDate).inDays;
+    //   for (int i = 1; i < sortedDiaries.length; i++) {
+    //     final currentDate = DateTime(
+    //       sortedDiaries[i].createdAt.year,
+    //       sortedDiaries[i].createdAt.month,
+    //       sortedDiaries[i].createdAt.day,
+    //     );
+    //     final daysDiff = lastDate.difference(currentDate).inDays;
 
-        if (daysDiff == 1) {
-          if (i == 1) currentStreak++;
-          tempStreak++;
-          if (tempStreak > longestStreak) longestStreak = tempStreak;
-        } else if (daysDiff > 1) {
-          if (tempStreak > longestStreak) longestStreak = tempStreak;
-          tempStreak = 1;
-        }
-        lastDate = currentDate;
-      }
-      if (tempStreak > longestStreak) longestStreak = tempStreak;
-    }
+    //     if (daysDiff == 1) {
+    //       if (i == 1) currentStreak++;
+    //       tempStreak++;
+    //       if (tempStreak > longestStreak) longestStreak = tempStreak;
+    //     } else if (daysDiff > 1) {
+    //       if (tempStreak > longestStreak) longestStreak = tempStreak;
+    //       tempStreak = 1;
+    //     }
+    //     lastDate = currentDate;
+    //   }
+    //   if (tempStreak > longestStreak) longestStreak = tempStreak;
+    // }
 
     // 긍정 감정 비율 계산
     final positiveEmotions = [
@@ -98,6 +96,70 @@ class GoalViewModel extends StateNotifier<GoalState> {
       unlockedBadges: unlockedBadges,
       isLoading: false,
     );
+  }
+
+  (int currentStreak, int longestStreak) _calculateStreaks(
+    List<DiaryModel> sortedDiaries,
+  ) {
+    if (sortedDiaries.isEmpty) return (0, 0);
+
+    // 날짜만 비교하기 위해 시/분/초를 제거한 DateTime 리스트 생성 (중복일 제거)
+    final dates = <DateTime>[];
+    for (final d in sortedDiaries) {
+      final day = DateTime(
+        d.createdAt.year,
+        d.createdAt.month,
+        d.createdAt.day,
+      );
+      if (dates.isEmpty || dates.last.compareTo(day) != 0) {
+        // sortedDiaries가 최신순이므로 dates.last는 바로 이전(더 최신) 날짜
+        dates.add(day);
+      }
+    }
+
+    // longestStreak 계산 (연속되는 구간의 최대 길이)
+    int longest = 1;
+    int temp = 1;
+    for (int i = 1; i < dates.length; i++) {
+      final prev = dates[i - 1]; // 더 최신
+      final cur = dates[i]; // 이전 날짜(더 과거)
+      final diff = prev.difference(cur).inDays;
+
+      if (diff == 1) {
+        temp++;
+      } else {
+        if (temp > longest) longest = temp;
+        temp = 1;
+      }
+    }
+    if (temp > longest) longest = temp;
+
+    // currentStreak 계산: 가장 최신 날짜가 오늘 또는 어제여야 시작,
+    // 중간에 끊기면 즉시 멈추고 현재 streak 확정.
+    final today = DateTime.now();
+    final latest = dates.first; // 가장 최근(최신) 날짜
+    final daysSinceLatest = today.difference(latest).inDays;
+
+    int current = 0;
+    if (daysSinceLatest <= 1) {
+      // 최신이 오늘 또는 어제이므로 streak가 존재할 수 있음
+      current = 1;
+      for (int i = 1; i < dates.length; i++) {
+        final prev = dates[i - 1];
+        final cur = dates[i];
+        final diff = prev.difference(cur).inDays;
+        if (diff == 1) {
+          current++;
+        } else {
+          break; // 중간에 끊기면 현재 streak는 여기서 끝
+        }
+      }
+    } else {
+      // 최신이 어제보다 이전이면 현재 streak는 0으로 리셋되어야 함
+      current = 0;
+    }
+
+    return (current, longest);
   }
 
   List<GoalModel> _generateGoals(
@@ -186,7 +248,8 @@ class GoalViewModel extends StateNotifier<GoalState> {
 
   int _getWeekDiaryCount(List<DiaryModel> diaries) {
     final now = DateTime.now();
-    // 이번 주의 월요일 00:00:00
+
+    // 이번 주 월요일 00:00:00
     final weekStart = DateTime(
       now.year,
       now.month,
@@ -195,25 +258,46 @@ class GoalViewModel extends StateNotifier<GoalState> {
     final weekEnd = weekStart.add(
       const Duration(days: 6, hours: 23, minutes: 59, seconds: 59),
     );
-    final count = diaries.where((diary) {
-      final date = diary.createdAt;
-      return date.isAfter(weekStart) && date.isBefore(weekEnd);
-    }).length;
-    return count;
+
+    // 이번 주 날짜 범위 내에 작성된 일기들의 "날짜"만 추출
+    final Set<DateTime> uniqueDays = {};
+    for (final diary in diaries) {
+      final date = DateTime(
+        diary.createdAt.year,
+        diary.createdAt.month,
+        diary.createdAt.day,
+      );
+      if (!date.isBefore(weekStart) && !date.isAfter(weekEnd)) {
+        uniqueDays.add(date);
+      }
+    }
+
+    // 이번 주에 일기를 작성한 "날짜 수"
+    return uniqueDays.length;
   }
 
   int _getMonthDiaryCount(List<DiaryModel> diaries) {
     final now = DateTime.now();
-    // 이번 달의 1일 00:00:00
-    final monthStart = DateTime(now.year, now.month, 1);
-    // 이번 달의 마지막 날 23:59:59
-    final monthEnd = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-    final count = diaries.where((diary) {
-      final date = diary.createdAt; // 작성일 필드명에 맞게 수정
-      return !date.isBefore(monthStart) && !date.isAfter(monthEnd);
-    }).length;
 
-    return count;
+    // 이번 달의 1일 00:00:00 ~ 마지막 날 23:59:59
+    final monthStart = DateTime(now.year, now.month, 1);
+    final monthEnd = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+    // 이번 달 날짜 범위 내에 작성된 일기들의 "날짜"만 추출
+    final Set<DateTime> uniqueDays = {};
+    for (final diary in diaries) {
+      final date = DateTime(
+        diary.createdAt.year,
+        diary.createdAt.month,
+        diary.createdAt.day,
+      );
+      if (!date.isBefore(monthStart) && !date.isAfter(monthEnd)) {
+        uniqueDays.add(date);
+      }
+    }
+
+    // 이번 달에 일기를 작성한 "날짜 수"
+    return uniqueDays.length;
   }
 
   List<Badge> _checkBadges(

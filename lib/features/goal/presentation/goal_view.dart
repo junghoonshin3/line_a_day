@@ -55,7 +55,7 @@ class _GoalViewState extends ConsumerState<GoalView>
 
   Widget _buildHeader(state) {
     return SliverAppBar(
-      expandedHeight: 220,
+      expandedHeight: 170,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(

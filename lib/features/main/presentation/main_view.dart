@@ -7,6 +7,7 @@ import 'package:line_a_day/features/main/presentation/main_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
 import 'package:line_a_day/features/emoji/presentation/statistic/presentation/diary_statistic_view.dart';
 import 'package:line_a_day/features/goal/presentation/goal_view.dart';
+import 'package:line_a_day/features/settings/presentation/setting_view.dart';
 
 class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
@@ -25,7 +26,7 @@ class _MainViewState extends ConsumerState<MainView>
     const DiaryListView(),
     const DiaryStatisticView(),
     const GoalView(),
-    const DiaryListView(),
+    const SettingView(),
   ];
   @override
   void initState() {

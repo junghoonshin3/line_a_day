@@ -278,6 +278,10 @@ class DiaryListViewModel extends StateNotifier<DiaryListState> {
     _debounceTimer?.cancel();
     super.dispose();
   }
+
+  void toggleCalendar() {
+    state = state.copyWith(isCalendarExpanded: !state.isCalendarExpanded);
+  }
 }
 
 // Provider 설정

@@ -78,8 +78,43 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
             ),
             buildAnimatedSliverBox(
               index: 4,
-              customSlideOffset: const Offset(0, 40),
-              child: _buildCalendar(state, viewModel),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: viewModel.toggleCalendar,
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: AppTheme.cardShadow,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            state.isCalendarExpanded ? '달력 접기' : '달력 펼치기',
+                            style: AppTheme.labelLarge.copyWith(
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          AnimatedRotation(
+                            turns: state.isCalendarExpanded ? 0.5 : 0,
+                            duration: const Duration(milliseconds: 300),
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildCalendar(state, viewModel),
+                ],
+              ),
             ),
           ],
 
@@ -229,17 +264,34 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
   }
 
   Widget _buildCalendar(DiaryListState state, DiaryListViewModel viewModel) {
-    return CalendarWidget(
-      focusedDate: state.focusedDate,
-      selectedDate: state.selectedDate,
-      onDaySelected: (selectedDay, focusedDay) {
-        viewModel.selectDate(selectedDay);
-        viewModel.setFocusedDate(focusedDay);
-      },
-      onPageChanged: (focusedDay) {
-        viewModel.setFocusedDate(focusedDay);
-      },
-      hasEntryOnDate: (date) => viewModel.hasEntryOnDate(date),
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutCubic,
+      child: ClipRect(
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: state.isCalendarExpanded ? 1.0 : 0.0,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOutCubic,
+            height: state.isCalendarExpanded ? null : 0,
+            child: state.isCalendarExpanded
+                ? CalendarWidget(
+                    focusedDate: state.focusedDate,
+                    selectedDate: state.selectedDate,
+                    onDaySelected: (selectedDay, focusedDay) {
+                      viewModel.selectDate(selectedDay);
+                      viewModel.setFocusedDate(focusedDay);
+                    },
+                    onPageChanged: (focusedDay) {
+                      viewModel.setFocusedDate(focusedDay);
+                    },
+                    hasEntryOnDate: (date) => viewModel.hasEntryOnDate(date),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      ),
     );
   }
 
