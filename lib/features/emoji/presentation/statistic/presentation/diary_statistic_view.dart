@@ -224,6 +224,17 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
           SizedBox(
             height: 300,
             child: BarChart(
+              transformationConfig: state.selectedPeriod == PeriodType.year
+                  ? FlTransformationConfig(
+                      scaleAxis: FlScaleAxis.horizontal,
+                      scaleEnabled: true,
+                      transformationController: TransformationController(
+                        Matrix4.identity()
+                          ..scale(1.5, 1.5)
+                          ..translate(0.0, 0.0),
+                      ),
+                    )
+                  : const FlTransformationConfig(),
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 maxY: _getMaxY(state.chartData),

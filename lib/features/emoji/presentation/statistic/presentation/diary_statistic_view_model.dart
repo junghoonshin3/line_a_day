@@ -174,11 +174,8 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
 
       // 해당 주가 이번 달과 겹치는 일기만 필터링
       final weekDiaries = diaries.where((d) {
-        return d.createdAt.isAfter(
-              weekStart.subtract(const Duration(seconds: 1)),
-            ) &&
-            d.createdAt.isBefore(weekEnd.add(const Duration(days: 1))) &&
-            d.createdAt.month == selectedMonth.month;
+        return !d.createdAt.isBefore(weekStart) &&
+            !d.createdAt.isAfter(weekEnd);
       }).toList();
 
       // 가장 많이 사용된 감정 계산
