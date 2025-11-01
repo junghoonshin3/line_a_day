@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/settings/presentation/setting_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/state/setting_state.dart';
@@ -102,10 +103,9 @@ class _SettingViewState extends ConsumerState<SettingView>
 
   Widget _buildStatisticsCard(SettingState state) {
     final averagePerDay = state.averagePerDay.toStringAsFixed(1); // 소수점 1자리
-    final String recentTime = DateFormat(
-      'a h시 mm분',
-      'ko_KR',
-    ).format(state.recentTime!);
+    final String recentTime = state.recentTime == null
+        ? "없음"
+        : DateFormat('a h시 mm분', 'ko_KR').format(state.recentTime!);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -219,7 +219,7 @@ class _SettingViewState extends ConsumerState<SettingView>
     );
   }
 
-  Widget _buildSettingsSection(viewModel) {
+  Widget _buildSettingsSection(SettingViewModel viewModel) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -233,7 +233,7 @@ class _SettingViewState extends ConsumerState<SettingView>
             title: '알림 설정',
             subtitle: '일기 작성 알림',
             onTap: () {
-              // TODO: 알림 설정 화면으로 이동
+              Navigator.pushNamed(context, AppRoutes.notification);
             },
           ),
           _buildDivider(),
@@ -242,7 +242,7 @@ class _SettingViewState extends ConsumerState<SettingView>
             title: '보안',
             subtitle: '비밀번호 잠금',
             onTap: () {
-              // TODO: 보안 설정 화면으로 이동
+              Navigator.pushNamed(context, AppRoutes.security);
             },
           ),
           _buildDivider(),

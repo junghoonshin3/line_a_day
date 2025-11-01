@@ -16,7 +16,7 @@ class SettingState {
     this.averagePerDay = 0.0,
     DateTime? recentTime,
   }) : joinDate = joinDate ?? DateTime.now(),
-       recentTime = recentTime ?? DateTime.now();
+       recentTime = null;
 
   SettingState copyWith({
     int? totalDiaries,

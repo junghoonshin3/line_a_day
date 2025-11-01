@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:intl/intl.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
 import 'package:line_a_day/features/settings/presentation/state/setting_state.dart';
@@ -30,14 +27,14 @@ class SettingViewModel extends StateNotifier<SettingState> {
       uniqueDates.add(dateKey);
     }
 
-    // 보기 좋게 포맷 (예: 오후 10시 30분)
     final recentTime = DateTime(
       0,
       1,
       1,
-      totalDiaries.first.createdAt.hour,
-      totalDiaries.first.createdAt.minute,
+      totalDiaries.isNotEmpty ? totalDiaries.first.createdAt.hour : 0,
+      totalDiaries.isNotEmpty ? totalDiaries.first.createdAt.minute : 0,
     );
+    // 보기 좋게 포맷 (예: 오후 10시 30분)
 
     // 첫 일기 날짜 찾기
     totalDiaries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
