@@ -130,7 +130,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
           // 내용
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -176,9 +176,8 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     ).format(diary.createdAt);
 
     return SliverAppBar(
-      expandedHeight: 170,
-      pinned: true,
-      // backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      toolbarHeight: 80,
       elevation: 0,
       leading: buildFadeItem(
         index: 0,
@@ -204,32 +203,17 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
         ),
         const SizedBox(width: 8),
       ],
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-        padding: const EdgeInsets.fromLTRB(20, 80, 20, 20),
-        child: buildAnimatedItem(
-          index: 0,
-          customSlideOffset: const Offset(0, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.today, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    dateString,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+      title: Text(
+        dateString,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
         ),
       ),
     );
@@ -368,7 +352,13 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
               onTap: () => _showImageDialog(context, photoUrls, index),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.file(File(photoUrls[index]), fit: BoxFit.cover),
+                child: Image.file(
+                  File(photoUrls[index]),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text("에러..");
+                  },
+                ),
               ),
             );
           },

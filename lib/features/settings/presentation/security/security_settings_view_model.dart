@@ -50,7 +50,7 @@ class SecuritySettingsViewModel extends StateNotifier<SecuritySettingsState> {
     if (enabled) {
       final authenticated = await _authService.authenticate();
       if (!authenticated) {
-        state = state.copyWith(errorMessage: '생체 인증에 실패했습니다');
+        state = state.copyWith(errorMessage: '생체 인증을 활성화할 수 없습니다.');
         return;
       }
     }

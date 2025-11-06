@@ -52,5 +52,14 @@
         <string>fetch</string>
         <string>remote-notification</string>
     </array>
+	<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+    </array>
+  </dict>
+</array>
 </dict>
 </plist>

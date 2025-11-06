@@ -7,6 +7,7 @@ import 'package:line_a_day/features/main/presentation/main_view.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view.dart';
+import 'package:line_a_day/features/settings/presentation/backup/%20backup_view.dart';
 import 'package:line_a_day/features/settings/presentation/notification/notification_settings_view.dart';
 import 'package:line_a_day/features/settings/presentation/security/security_settings_view.dart';
 
@@ -20,6 +21,7 @@ class AppRoutes {
   static const String diaryDetail = 'diaryDetail';
   static const String notification = 'notification';
   static const String security = 'security';
+  static const String backup = 'backup';
 
   // Routes Map
   static Map<String, WidgetBuilder> getRoutes() {
@@ -31,6 +33,7 @@ class AppRoutes {
       diaryWrite: (context) => const DiaryWriteView(),
       notification: (context) => const NotificationSettingsView(),
       security: (context) => const SecuritySettingsView(),
+      backup: (context) => const BackupView(),
     };
   }
 

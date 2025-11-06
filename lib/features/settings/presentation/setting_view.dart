@@ -251,7 +251,7 @@ class _SettingViewState extends ConsumerState<SettingView>
             title: '백업 및 복원',
             subtitle: '데이터 백업',
             onTap: () {
-              // TODO: 백업 화면으로 이동
+              Navigator.pushNamed(context, AppRoutes.backup);
             },
           ),
           _buildDivider(),

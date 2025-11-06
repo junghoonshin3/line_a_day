@@ -47,10 +47,12 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
             index: 4,
             child: _buildChart(state, viewModel),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
           buildAnimatedSliverBox(
             index: 5,
             child: _buildEmotionChart(state, viewModel),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
           buildAnimatedSliverBox(
             index: 6,
             child: _buildTopEmotions(state, viewModel),
@@ -366,7 +368,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
         .reduce((a, b) => a > b ? a : b);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -385,6 +387,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
             ),
           ),
           const SizedBox(height: 24),
+
           SizedBox(
             height: 300,
             child: BarChart(

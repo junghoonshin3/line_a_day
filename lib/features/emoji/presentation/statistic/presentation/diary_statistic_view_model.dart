@@ -161,24 +161,22 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
     final firstDay = DateTime(selectedMonth.year, selectedMonth.month, 1);
     final lastDay = DateTime(selectedMonth.year, selectedMonth.month + 1, 0);
 
-    // 이번 달의 첫 월요일을 찾음 (달 초 이전이더라도 상관없음)
-    DateTime weekStart = firstDay.subtract(
-      Duration(days: firstDay.weekday - 1),
-    );
-
     final monthData = <ChartDataPoint>[];
     int weekNum = 1;
 
-    while (weekStart.isBefore(lastDay) || weekStart.isAtSameMomentAs(lastDay)) {
+    DateTime weekStart = firstDay;
+    while (weekStart.isBefore(lastDay)) {
+      // 이번 주의 종료일은 (6일 뒤 or 이번 달 마지막 날 중 더 빠른 날)
       final weekEnd = weekStart.add(const Duration(days: 6));
+      final effectiveEnd = weekEnd.isAfter(lastDay) ? lastDay : weekEnd;
 
-      // 해당 주가 이번 달과 겹치는 일기만 필터링
+      // 이번 주 안에 포함되는 일기만 필터링
       final weekDiaries = diaries.where((d) {
         return !d.createdAt.isBefore(weekStart) &&
-            !d.createdAt.isAfter(weekEnd);
+            !d.createdAt.isAfter(effectiveEnd);
       }).toList();
 
-      // 가장 많이 사용된 감정 계산
+      // 감정 집계
       EmotionType? dominantEmotion;
       int maxCount = 0;
       if (weekDiaries.isNotEmpty) {
@@ -194,7 +192,6 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
         });
       }
 
-      // “1주차, 2주차, ...” 형식으로 표시
       monthData.add(
         ChartDataPoint(
           label: '$weekNum주차',
@@ -204,7 +201,8 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
         ),
       );
 
-      weekStart = weekEnd.add(const Duration(days: 1));
+      // 다음 주 시작일
+      weekStart = effectiveEnd.add(const Duration(days: 1));
       weekNum++;
     }
 
@@ -217,14 +215,19 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
     final yearData = <ChartDataPoint>[];
 
     for (int month = 1; month <= 12; month++) {
+      // 각 월의 시작일과 마지막 날 계산
+      final startOfMonth = DateTime(selectedYear, month, 1);
+      final endOfMonth = DateTime(selectedYear, month + 1, 0);
+
+      // 이번 달에 작성된 일기만 필터링 (기간 기준)
       final monthDiaries = diaries.where((d) {
-        return d.createdAt.year == selectedYear && d.createdAt.month == month;
+        return !d.createdAt.isBefore(startOfMonth) &&
+            !d.createdAt.isAfter(endOfMonth);
       }).toList();
 
-      // 가장 많이 사용된 감정
+      // 감정별 카운트 계산
       EmotionType? dominantEmotion;
       int maxCount = 0;
-
       if (monthDiaries.isNotEmpty) {
         final Map<EmotionType, int> monthEmotions = {};
         for (final diary in monthDiaries) {
@@ -245,7 +248,7 @@ class DiaryStatisticViewModel extends StateNotifier<DiaryStatisticState> {
           label: '$month월',
           emotion: dominantEmotion ?? EmotionType.calm,
           count: monthDiaries.length,
-          date: DateTime(selectedYear, month),
+          date: startOfMonth,
         ),
       );
     }

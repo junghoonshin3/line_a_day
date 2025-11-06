@@ -19,7 +19,7 @@ class DiaryStatisticState {
     DateTime? selectedDate,
     this.selectedPeriod = PeriodType.month,
     this.chartData = const [],
-  }) : selectedDate = selectedDate ?? DateTime(2025, 10, 24);
+  }) : selectedDate = selectedDate ?? DateTime.now();
 
   DiaryStatisticState copyWith({
     Map<EmotionType, int>? emotionCounts,

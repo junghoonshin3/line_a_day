@@ -1,5 +1,7 @@
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -21,10 +23,17 @@ class AuthService {
     try {
       return await _localAuth.authenticate(
         localizedReason: '일기를 열려면 인증이 필요합니다',
-        biometricOnly: false,
+        biometricOnly: true,
+        authMessages: [
+          const IOSAuthMessages(cancelButton: "취소"),
+          const AndroidAuthMessages(
+            signInTitle: "생체인증",
+            signInHint: "지문이나 얼굴로 인증해주세요",
+            cancelButton: "취소",
+          ),
+        ],
       );
     } catch (e) {
-      print(" e >>> $e");
       return false;
     }
   }

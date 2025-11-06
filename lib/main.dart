@@ -38,15 +38,16 @@ class LineAday extends ConsumerStatefulWidget {
 class _LineadayState extends ConsumerState<LineAday> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   bool _isInitialLockChecked = false;
+  late final AppLockManager _lockManager;
 
   @override
   void initState() {
     super.initState();
+    _lockManager = AppLockManager();
+    // 백그라운드에서 포그라운드로 복귀 시 콜백 등록
+    AppLifecycleService().addBackgroundCallback(_onBackgroundReturn);
 
-    // 앱 재시작 시 잠금 확인
-    AppLifecycleService().addResumeCallback(_onAppResumed);
-
-    // 초기 잠금 확인
+    // 초기 잠금 확인 (앱 최초 실행 시에만)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkInitialLock();
     });
@@ -54,46 +55,60 @@ class _LineadayState extends ConsumerState<LineAday> {
 
   @override
   void dispose() {
-    AppLifecycleService().removeResumeCallback(_onAppResumed);
+    AppLifecycleService().removeBackgroundCallback(_onBackgroundReturn);
     super.dispose();
   }
 
+  // 앱 최초 실행 시에만 잠금 확인
   Future<void> _checkInitialLock() async {
     if (_isInitialLockChecked) return;
     _isInitialLockChecked = true;
 
     final prefs = ref.read(sharedPreferencesProvider);
-    final lockManager = AppLockManager();
+    print('=== 초기 잠금 확인 ===');
 
-    if (lockManager.shouldShowLockScreen(prefs)) {
+    // 첫 실행이고 잠금이 활성화되어 있으면 잠금 표시
+    if (_lockManager.shouldShowLockScreen(prefs, null)) {
       await _showLockScreen();
+    } else {
+      print('초기 잠금 불필요');
     }
   }
 
-  void _onAppResumed() {
-    print('앱이 포그라운드로 복귀');
+  // 백그라운드에서 복귀 시 호출
+  void _onBackgroundReturn(Duration backgroundDuration) {
+    print('=== 백그라운드 복귀 감지 ===');
+    print('백그라운드 시간: ${backgroundDuration.inSeconds}초');
 
     final prefs = ref.read(sharedPreferencesProvider);
-    final lockManager = AppLockManager();
 
-    if (lockManager.shouldShowLockScreen(prefs)) {
+    // 백그라운드 시간에 따라 잠금 필요 여부 판단
+    if (_lockManager.shouldShowLockScreen(prefs, backgroundDuration)) {
+      print('잠금 필요 - 잠금 화면 표시');
       _showLockScreen();
+    } else {
+      print('잠금 불필요 - 그대로 진행');
     }
   }
 
   Future<void> _showLockScreen() async {
+    // 네비게이터가 준비될 때까지 대기
+    await Future.delayed(const Duration(milliseconds: 100));
+
     final context = _navigatorKey.currentContext;
-    if (context == null) return;
+    if (context == null) {
+      print('네비게이터 컨텍스트 없음');
+      return;
+    }
 
     final prefs = ref.read(sharedPreferencesProvider);
-    final lockManager = AppLockManager();
 
-    final unlocked = await lockManager.showLockScreen(context, prefs);
+    final unlocked = await _lockManager.showLockScreen(context, prefs);
 
     if (!unlocked) {
-      // 잠금 해제 실패 시 (뒤로가기 등) 앱 종료는 하지 않음
-      // 사용자가 직접 앱을 종료하거나 다시 시도할 수 있음
       print('잠금 해제 실패');
+      // 사용자가 취소하거나 실패한 경우
+      // 앱을 강제 종료하지 않고 계속 잠금 화면 유지
     }
   }
 

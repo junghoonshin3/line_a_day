@@ -183,66 +183,69 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     DiaryListViewModel viewModel,
   ) {
     return SliverAppBar(
-      expandedHeight: 200,
-      pinned: true,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-        padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () {
-                    viewModel.toggleSearchMode();
-                    _searchController.clear();
-                  },
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  '일기 검색',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+      expandedHeight: 180, // 높이 조정
+      backgroundColor: AppTheme.primaryBlue,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () {
+                      viewModel.toggleSearchMode();
+                      _searchController.clear();
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    '일기 검색',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // 검색창
+              TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                onChanged: viewModel.updateSearchQuery,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: '제목, 내용, 태그로 검색',
+                  hintStyle: const TextStyle(color: Colors.white70),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white),
+                  suffixIcon: state.searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white70),
+                          onPressed: () {
+                            _searchController.clear();
+                            viewModel.clearSearch();
+                          },
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.2),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // 검색창
-            TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              onChanged: viewModel.updateSearchQuery,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: '제목, 내용, 태그로 검색',
-                hintStyle: const TextStyle(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                suffixIcon: state.searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.white70),
-                        onPressed: () {
-                          _searchController.clear();
-                          viewModel.clearSearch();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.2),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

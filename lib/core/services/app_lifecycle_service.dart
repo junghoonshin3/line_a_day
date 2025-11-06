@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
+enum AppState { foreground, background }
+
 class AppLifecycleService extends WidgetsBindingObserver {
   static final AppLifecycleService _instance = AppLifecycleService._internal();
   factory AppLifecycleService() => _instance;
   AppLifecycleService._internal();
 
-  DateTime? _lastPausedTime;
-  final List<VoidCallback> _resumeCallbacks = [];
+  DateTime? _backgroundTime;
+  AppState _currentState = AppState.foreground;
+  final List<Function(Duration)> _backgroundCallbacks = [];
 
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
@@ -16,12 +19,13 @@ class AppLifecycleService extends WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  void addResumeCallback(VoidCallback callback) {
-    _resumeCallbacks.add(callback);
+  // 백그라운드 진입 시 콜백 등록
+  void addBackgroundCallback(Function(Duration) callback) {
+    _backgroundCallbacks.add(callback);
   }
 
-  void removeResumeCallback(VoidCallback callback) {
-    _resumeCallbacks.remove(callback);
+  void removeBackgroundCallback(Function(Duration) callback) {
+    _backgroundCallbacks.remove(callback);
   }
 
   @override
@@ -31,21 +35,26 @@ class AppLifecycleService extends WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
-        // 앱이 백그라운드로 갈 때
-        _lastPausedTime = DateTime.now();
-        print('앱 일시정지 시간: $_lastPausedTime');
+        // 백그라운드로 진입
+        if (_currentState == AppState.foreground) {
+          _backgroundTime = DateTime.now();
+          _currentState = AppState.background;
+          print('백그라운드 진입: $_backgroundTime');
+        }
         break;
 
       case AppLifecycleState.resumed:
-        // 앱이 포그라운드로 올 때
-        if (_lastPausedTime != null) {
-          final duration = DateTime.now().difference(_lastPausedTime!);
-          print('앱 백그라운드 시간: ${duration.inSeconds}초');
+        // 포그라운드로 복귀
+        if (_currentState == AppState.background && _backgroundTime != null) {
+          final duration = DateTime.now().difference(_backgroundTime!);
+          print('포그라운드 복귀: 백그라운드 시간 ${duration.inSeconds}초');
 
-          // 콜백 실행
-          for (final callback in _resumeCallbacks) {
-            callback();
+          // 모든 콜백 실행
+          for (final callback in _backgroundCallbacks) {
+            callback(duration);
           }
+
+          _currentState = AppState.foreground;
         }
         break;
 
@@ -54,8 +63,14 @@ class AppLifecycleService extends WidgetsBindingObserver {
     }
   }
 
-  Duration? get timeSinceLastPause {
-    if (_lastPausedTime == null) return null;
-    return DateTime.now().difference(_lastPausedTime!);
+  bool get isInBackground => _currentState == AppState.background;
+  bool get isInForeground => _currentState == AppState.foreground;
+  DateTime? get backgroundTime => _backgroundTime;
+
+  Duration? get timeSinceBackground {
+    if (_backgroundTime == null || _currentState == AppState.foreground) {
+      return null;
+    }
+    return DateTime.now().difference(_backgroundTime!);
   }
 }

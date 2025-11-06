@@ -70,9 +70,13 @@ class DiaryWriteViewModel extends StateNotifier<DiaryWriteState> {
       await draftRepository.clearDraft();
       state = state.copyWith(diary: state.diary, isCompleted: true);
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString(), isCompleted: false);
+      if (mounted) {
+        state = state.copyWith(errorMessage: e.toString(), isCompleted: false);
+      }
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
