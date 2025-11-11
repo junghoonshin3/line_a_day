@@ -19,7 +19,6 @@ class FilterTabs extends StatelessWidget {
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 16),
-      color: Colors.white,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),

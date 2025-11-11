@@ -15,6 +15,8 @@ import 'package:line_a_day/features/settings/data/repository/backup_repository_i
 import 'package:line_a_day/features/settings/domain/repository/backup_repository.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/backup/state/backup_state.dart';
+import 'package:line_a_day/features/settings/presentation/theme/state/theme_state.dart';
+import 'package:line_a_day/features/settings/presentation/theme/theme_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:isar_community/isar.dart';
@@ -93,4 +95,10 @@ final backupRepositoryProvider = Provider<BackupRepository>((ref) {
 final backupViewModelProvider =
     StateNotifierProvider.autoDispose<BackupViewModel, BackupState>((ref) {
       return BackupViewModel(ref.watch(backupRepositoryProvider));
+    });
+
+final themeViewModelProvider =
+    StateNotifierProvider<ThemeViewModel, ThemeState>((ref) {
+      final prefs = ref.watch(sharedPreferencesProvider);
+      return ThemeViewModel(prefs);
     });

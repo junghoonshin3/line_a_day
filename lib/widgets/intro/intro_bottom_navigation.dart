@@ -27,7 +27,7 @@ class IntroBottomNavigation extends StatelessWidget {
           SmoothPageIndicator(
             controller: pageController,
             count: pageCount,
-            effect: const WormEffect(
+            effect: WormEffect(
               dotWidth: 8,
               dotHeight: 8,
               activeDotColor: AppTheme.primaryBlue,

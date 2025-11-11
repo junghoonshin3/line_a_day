@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/constant.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
 import 'package:line_a_day/features/main/presentation/main_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
@@ -13,21 +12,20 @@ class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
-    return _MainViewState();
-  }
+  ConsumerState<ConsumerStatefulWidget> createState() => _MainViewState();
 }
 
 class _MainViewState extends ConsumerState<MainView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Widget> _tabItem = [
-    const DiaryListView(),
-    const DiaryStatisticView(),
-    const GoalView(),
-    const SettingView(),
+  final List<Widget> _tabItem = const [
+    DiaryListView(),
+    DiaryStatisticView(),
+    GoalView(),
+    SettingView(),
   ];
+
   @override
   void initState() {
     super.initState();
@@ -39,24 +37,27 @@ class _MainViewState extends ConsumerState<MainView>
     final state = ref.watch(mainViewModelProvider);
     final viewModel = ref.read(mainViewModelProvider.notifier);
 
+    // 상태 변화 시 탭 전환
     ref.listen<MainState>(mainViewModelProvider, (before, next) {
       if (before?.selectedBottomTap != next.selectedBottomTap) {
         switch (next.selectedBottomTap) {
           case BottomTapName.diary:
             _tabController.animateTo(0);
-            return;
+            break;
           case BottomTapName.statistics:
             _tabController.animateTo(1);
-            return;
+            break;
           case BottomTapName.goal:
             _tabController.animateTo(2);
-            return;
+            break;
           case BottomTapName.myinfo:
             _tabController.animateTo(3);
-            return;
+            break;
         }
       }
     });
+
+    final currentIndex = _bottomTapToIndex(state.selectedBottomTap);
 
     return Scaffold(
       body: TabBarView(
@@ -64,69 +65,40 @@ class _MainViewState extends ConsumerState<MainView>
         controller: _tabController,
         children: _tabItem,
       ),
-
-      bottomNavigationBar: _buildBottomNav(
-        state: state,
-        onTap: (name) {
-          viewModel.selectedBottomTapName(name);
-        },
-      ),
-    );
-  }
-
-  Widget _buildBottomNav({
-    required MainState state,
-    required Function(BottomTapName name) onTap,
-  }) {
-    print("_buildBottomNav : ${state.selectedBottomTap}");
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(
-              Icons.book,
-              BottomTapName.diary,
-              state.selectedBottomTap == BottomTapName.diary,
-              () {
-                onTap(BottomTapName.diary);
-              },
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadiusGeometry.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: NavigationBar(
+          selectedIndex: currentIndex,
+          onDestinationSelected: (index) {
+            final selectedTap = _indexToBottomTap(index);
+            viewModel.selectedBottomTapName(selectedTap);
+          },
+          height: 80,
+          elevation: 6,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.book_outlined),
+              selectedIcon: Icon(Icons.book),
+              label: '일기',
             ),
-            _buildNavItem(
-              Icons.bar_chart,
-              BottomTapName.statistics,
-              state.selectedBottomTap == BottomTapName.statistics,
-              () {
-                onTap(BottomTapName.statistics);
-              },
+            const NavigationDestination(
+              icon: Icon(Icons.bar_chart_outlined),
+              selectedIcon: Icon(Icons.bar_chart),
+              label: '통계',
             ),
-            _buildNavItem(
-              Icons.flag,
-              BottomTapName.goal,
-              state.selectedBottomTap == BottomTapName.goal,
-              () {
-                onTap(BottomTapName.goal);
-              },
+            const NavigationDestination(
+              icon: Icon(Icons.flag_outlined),
+              selectedIcon: Icon(Icons.flag),
+              label: '목표',
             ),
-            _buildNavItem(
-              Icons.person,
-              BottomTapName.myinfo,
-              state.selectedBottomTap == BottomTapName.myinfo,
-              () {
-                onTap(BottomTapName.myinfo);
-              },
+            const NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: '내정보',
             ),
           ],
         ),
@@ -134,40 +106,31 @@ class _MainViewState extends ConsumerState<MainView>
     );
   }
 
-  Widget _buildNavItem(
-    IconData icon,
-    BottomTapName name,
-    bool isActive,
-    void Function() onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFEEF2FF) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: isActive ? AppTheme.primaryBlue : AppTheme.gray400,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              name.description,
-              style: AppTheme.labelMedium.copyWith(
-                color: isActive ? AppTheme.primaryBlue : AppTheme.gray600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  int _bottomTapToIndex(BottomTapName name) {
+    switch (name) {
+      case BottomTapName.diary:
+        return 0;
+      case BottomTapName.statistics:
+        return 1;
+      case BottomTapName.goal:
+        return 2;
+      case BottomTapName.myinfo:
+        return 3;
+    }
   }
 
-  void _onNavigationBarTab(BottomTapName name) {}
+  BottomTapName _indexToBottomTap(int index) {
+    switch (index) {
+      case 0:
+        return BottomTapName.diary;
+      case 1:
+        return BottomTapName.statistics;
+      case 2:
+        return BottomTapName.goal;
+      case 3:
+        return BottomTapName.myinfo;
+      default:
+        return BottomTapName.diary;
+    }
+  }
 }

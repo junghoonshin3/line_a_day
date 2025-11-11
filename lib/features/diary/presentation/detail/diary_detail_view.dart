@@ -7,7 +7,9 @@ import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/detail/diary_detail_view_model.dart';
+import 'package:line_a_day/widgets/common/custom_snackbar.dart';
 import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
+import 'package:line_a_day/widgets/common/loading_indicator.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class DiaryDetailView extends ConsumerStatefulWidget {
@@ -44,54 +46,18 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     ref.listen(diaryDetailViewModelProvider(widget.diaryId), (previous, next) {
       if (next.isDeleted && !(previous?.isDeleted ?? false)) {
         Navigator.of(context).pop(); // 삭제 성공 신호 전달
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text('일기가 삭제되었습니다'),
-              ],
-            ),
-            backgroundColor: AppTheme.primaryBlue,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showSuccess(context, "일기가 삭제되었습니다");
       }
 
       // 에러 발생
       if (next.errorMessage != null &&
           previous?.errorMessage != next.errorMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(next.errorMessage!)),
-              ],
-            ),
-            backgroundColor: AppTheme.errorRed,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showError(context, next.errorMessage!);
       }
     });
 
     if (state.isLoading) {
-      return Scaffold(
-        backgroundColor: AppTheme.gray50,
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-        body: const Center(child: CircularProgressIndicator()),
-      );
+      return const LoadingIndicator();
     }
 
     if (state.diary == null) {
@@ -213,7 +179,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
         ),
       ),
     );

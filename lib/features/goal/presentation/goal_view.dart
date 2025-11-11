@@ -4,6 +4,7 @@ import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/goal/domain/model/goal_model.dart';
 import 'package:line_a_day/features/goal/presentation/goal_view_model.dart';
 import 'package:line_a_day/features/goal/presentation/state/goal_state.dart';
+import 'package:line_a_day/widgets/common/loading_indicator.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class GoalView extends ConsumerStatefulWidget {
@@ -33,14 +34,10 @@ class _GoalViewState extends ConsumerState<GoalView>
     final viewModel = ref.read(goalViewModelProvider.notifier);
 
     if (state.isLoading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.gray50,
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const LoadingIndicator();
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
           _buildHeader(state),
@@ -56,10 +53,9 @@ class _GoalViewState extends ConsumerState<GoalView>
   Widget _buildHeader(state) {
     return SliverAppBar(
       expandedHeight: 170,
-      pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,11 +181,7 @@ class _GoalViewState extends ConsumerState<GoalView>
                   const SizedBox(width: 12),
                   const Text(
                     '진행 중인 목표',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.gray800,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
@@ -360,11 +352,7 @@ class _GoalViewState extends ConsumerState<GoalView>
                 const SizedBox(width: 12),
                 const Text(
                   '획득한 뱃지',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.gray800,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 ),
                 const Spacer(),
                 Text(
@@ -490,7 +478,6 @@ class _GoalViewState extends ConsumerState<GoalView>
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.gray800,
                 ),
                 textAlign: TextAlign.center,
               ),

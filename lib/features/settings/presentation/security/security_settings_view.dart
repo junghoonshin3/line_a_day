@@ -7,6 +7,7 @@ import 'package:line_a_day/core/services/auth_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/presentation/security/security_settings_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/security/state/security_settings_state.dart';
+import 'package:line_a_day/widgets/settings/card_section.dart';
 
 final securitySettingsViewModelProvider =
     StateNotifierProvider.autoDispose<
@@ -56,7 +57,6 @@ class SecuritySettingsView extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
       appBar: AppBar(
         title: const Text('보안'),
         backgroundColor: Colors.transparent,
@@ -71,13 +71,7 @@ class SecuritySettingsView extends ConsumerWidget {
           padding: const EdgeInsets.all(20),
           children: [
             // 앱 잠금
-            Container(
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: AppTheme.cardShadow,
-              ),
+            CardSection(
               child: Column(
                 children: [
                   SwitchListTile(
@@ -113,12 +107,7 @@ class SecuritySettingsView extends ConsumerWidget {
 
             if (state.isLockEnabled && state.isBiometricAvailable) ...[
               const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: AppTheme.cardShadow,
-                ),
+              CardSection(
                 child: SwitchListTile(
                   value: state.isBiometricEnabled,
                   onChanged: (value) => viewModel.toggleBiometric(value),
@@ -127,7 +116,7 @@ class SecuritySettingsView extends ConsumerWidget {
                     '지문 또는 얼굴 인식으로 잠금 해제',
                     style: AppTheme.bodyMedium,
                   ),
-                  secondary: const Icon(
+                  secondary: Icon(
                     Icons.fingerprint,
                     color: AppTheme.primaryBlue,
                   ),
@@ -145,7 +134,7 @@ class SecuritySettingsView extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: AppTheme.primaryBlue),
+                  Icon(Icons.info_outline, color: AppTheme.primaryBlue),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -296,7 +285,7 @@ class SecuritySettingsView extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             PassWordTextField(
-              currentController: currentController,
+              currentController: confirmController,
               labelText: "새 비밀번호 확인",
             ),
           ],

@@ -117,10 +117,20 @@ class _LineadayState extends ConsumerState<LineAday> {
     final prefs = ref.watch(sharedPreferencesProvider);
     final hasSeenIntro = prefs.getBool(StorageKeys.hasSeenIntro) ?? false;
 
+    // 테마 설정 감시
+    final themeState = ref.watch(themeViewModelProvider);
+    final colorTheme = themeState.settings.colorTheme;
+    final themeMode = themeState.settings.themeMode;
+
+    // 전역 테마 색상 업데이트
+    AppTheme.updateColorTheme(colorTheme);
+
     return MaterialApp(
       navigatorKey: _navigatorKey,
       title: 'Line A Day',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme(colorTheme),
+      darkTheme: AppTheme.darkTheme(colorTheme),
+      themeMode: themeMode,
       routes: AppRoutes.getRoutes(),
       onGenerateRoute: AppRoutes.onGenerateRoute,
       initialRoute: hasSeenIntro ? AppRoutes.main : AppRoutes.intro,

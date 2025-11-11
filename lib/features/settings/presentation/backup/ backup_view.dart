@@ -7,7 +7,10 @@ import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/backup/state/backup_state.dart';
+import 'package:line_a_day/widgets/common/custom_snackbar.dart';
 import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
+import 'package:line_a_day/widgets/common/empty_state_widget.dart';
+import 'package:line_a_day/widgets/common/loading_indicator.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/settings/backup_history_item.dart';
 import 'package:line_a_day/widgets/settings/backup_option_card.dart';
@@ -43,23 +46,7 @@ class _BackupViewState extends ConsumerState<BackupView>
       // 성공 메시지
       if (next.successMessage != null &&
           previous?.successMessage != next.successMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(next.successMessage!)),
-              ],
-            ),
-            backgroundColor: AppTheme.primaryBlue,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showSuccess(context, next.successMessage!);
         viewModel.clearMessages();
       }
 
@@ -88,7 +75,6 @@ class _BackupViewState extends ConsumerState<BackupView>
     });
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
       appBar: AppBar(
         title: const Text('백업 및 복원'),
         backgroundColor: Colors.transparent,
@@ -98,7 +84,6 @@ class _BackupViewState extends ConsumerState<BackupView>
         children: [
           CustomScrollView(
             slivers: [
-              // _buildHeader(),
               buildAnimatedSliverBox(
                 index: 3,
                 child: _buildBackupOptions(state, viewModel),
@@ -110,56 +95,20 @@ class _BackupViewState extends ConsumerState<BackupView>
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
-          if (state.isLoading) _buildLoadingOverlay(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return SliverAppBar(
-      expandedHeight: 140,
-      pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-          padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildFadeItem(
-                index: 0,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    const Text(
-                      '백업 및 복원',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+          Offstage(
+            offstage: !state.isLoading,
+            child: const Stack(
+              children: <Widget>[
+                //다시 stack
+                Opacity(
+                  opacity: 0.5,
+                  child: ModalBarrier(dismissible: false, color: Colors.black),
                 ),
-              ),
-              const Spacer(),
-              buildAnimatedItem(
-                index: 1,
-                child: const Text(
-                  '소중한 일기를 안전하게 보관하세요',
-                  style: TextStyle(fontSize: 14, color: Colors.white70),
-                ),
-              ),
-            ],
+                LoadingIndicator(),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -172,15 +121,6 @@ class _BackupViewState extends ConsumerState<BackupView>
         children: [
           const Text('백업 방법 선택', style: AppTheme.headlineMedium),
           const SizedBox(height: 16),
-          // BackupOptionCard(
-          //   icon: Icons.cloud,
-          //   title: '구글 드라이브',
-          //   description: '클라우드에 안전하게 저장',
-          //   iconColor: const Color(0xFF4285F4),
-          //   isConnected: state.isGoogleDriveConnected,
-          //   onTap: () => _onGoogleDriveBackup(viewModel),
-          // ),
-          // const SizedBox(height: 12),
           BackupOptionCard(
             icon: Icons.save_alt,
             title: '파일로 저장',
@@ -216,45 +156,10 @@ class _BackupViewState extends ConsumerState<BackupView>
     final internalBackups = state.backupHistory
         .where((b) => b.type == BackupType.appInternal)
         .toList();
-
-    if (internalBackups.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(20),
-        child: Container(
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
-            boxShadow: AppTheme.cardShadow,
-          ),
-          child: Column(
-            children: [
-              Text(
-                '💾',
-                style: TextStyle(
-                  fontSize: 64,
-                  color: AppTheme.gray300.withOpacity(0.3),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '앱 내 백업 데이터가 없습니다',
-                textAlign: TextAlign.center,
-                style: AppTheme.bodyLarge.copyWith(
-                  color: AppTheme.gray400,
-                  height: 1.6,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,36 +173,17 @@ class _BackupViewState extends ConsumerState<BackupView>
             ],
           ),
           const SizedBox(height: 16),
-          ...internalBackups.map((backup) {
-            return BackupHistoryItem(
-              backupInfo: backup,
-              onRestore: () => _onRestoreBackup(context, viewModel, backup),
-              onDelete: () => _onDeleteBackup(context, viewModel, backup),
-            );
-          }),
+          if (internalBackups.isEmpty)
+            const NoDataWidget()
+          else
+            ...internalBackups.map((backup) {
+              return BackupHistoryItem(
+                backupInfo: backup,
+                onRestore: () => _onRestoreBackup(context, viewModel, backup),
+                onDelete: () => _onDeleteBackup(context, viewModel, backup),
+              );
+            }),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLoadingOverlay() {
-    return Container(
-      color: Colors.black54,
-      child: const Center(
-        child: Card(
-          margin: EdgeInsets.all(40),
-          child: Padding(
-            padding: EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('처리 중...', style: AppTheme.titleMedium),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

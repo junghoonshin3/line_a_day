@@ -1,15 +1,15 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:line_a_day/features/settings/domain/model/theme_model.dart';
 
 class AppTheme {
-  // 주요 색상
-  static const primaryBlue = Color(0xFF3B82F6);
-  static const primaryPurple = Color(0xFF8B5CF6);
+  // 주요 색상 (동적으로 변경 가능)
+  static Color primaryBlue = const Color(0xFF3B82F6);
+  static Color primaryPurple = const Color(0xFF8B5CF6);
 
   // 그라데이션
-  static const primaryGradient = LinearGradient(
-    colors: [primaryBlue, primaryPurple],
+  static LinearGradient primaryGradient = const LinearGradient(
+    colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -31,20 +31,17 @@ class AppTheme {
   static const gray800 = Color(0xFF1F2937);
   static const gray900 = Color(0xFF111827);
 
+  // 다크모드 색상
+  static const darkGray800 = Color(0xFF1F2937);
+  static const darkGray700 = Color(0xFF374151);
+  static const darkGray600 = Color(0xFF4B5563);
+  static const darkGray500 = Color(0xFF6B7280);
+  static const darkGray400 = Color(0xFF9CA3AF);
+
   // 상태 색상
   static const successGreen = Color(0xFF059669);
   static const errorRed = Color(0xFFDC2626);
   static const warningYellow = Color(0xFFD97706);
-
-  // 기분 색상
-  static const happyYellow = Color(0xFFFEF3C7);
-  static const excitedOrange = Color(0xFFFED7AA);
-  static const calmBlue = Color(0xFFDBEAFE);
-  static const tiredPurple = Color(0xFFE9D5FF);
-  static const sadGray = Color(0xFFF3F4F6);
-  static const angryRed = Color(0xFFFECDD3);
-  static const gratefulPink = Color(0xFFFCE7F3);
-  static const anxiousIndigo = Color(0xFFE0E7FF);
 
   // 텍스트 스타일
   static const displayLarge = TextStyle(
@@ -71,7 +68,6 @@ class AppTheme {
   static const headlineMedium = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: gray800,
     height: 1.3,
   );
 
@@ -134,7 +130,7 @@ class AppTheme {
     ),
   ];
 
-  static final primaryShadow = [
+  static List<BoxShadow> get primaryShadow => [
     BoxShadow(
       color: primaryBlue.withOpacity(0.3),
       blurRadius: 12,
@@ -156,21 +152,28 @@ class AppTheme {
   static const spaceLarge = 24.0;
   static const spaceXLarge = 32.0;
 
-  // ThemeData
-  static ThemeData get lightTheme {
+  // 색상 테마 업데이트
+  static void updateColorTheme(AppColorTheme colorTheme) {
+    primaryBlue = colorTheme.primaryColor;
+    primaryPurple = colorTheme.secondaryColor;
+    primaryGradient = colorTheme.gradient;
+  }
+
+  // ThemeData 생성
+  static ThemeData lightTheme(AppColorTheme colorTheme) {
     return ThemeData(
       useMaterial3: true,
+      brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryBlue,
-        primary: primaryBlue,
-        secondary: primaryPurple,
+        seedColor: colorTheme.primaryColor,
+        primary: colorTheme.primaryColor,
+        secondary: colorTheme.secondaryColor,
         surface: Colors.white,
         background: gray50,
         error: errorRed,
       ),
       scaffoldBackgroundColor: gray50,
-      fontFamily: 'Pretendard', // 또는 원하는 폰트
-      // AppBar Theme
+      fontFamily: 'Pretendard',
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -178,8 +181,6 @@ class AppTheme {
         titleTextStyle: titleLarge,
         iconTheme: IconThemeData(color: gray600),
       ),
-
-      // Card Theme
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -187,11 +188,9 @@ class AppTheme {
         ),
         shadowColor: Colors.black.withOpacity(0.08),
       ),
-
-      // ElevatedButton Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryBlue,
+          backgroundColor: colorTheme.primaryColor,
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(
@@ -204,12 +203,10 @@ class AppTheme {
           textStyle: titleMedium.copyWith(color: Colors.white),
         ),
       ),
-
-      // OutlinedButton Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryBlue,
-          side: const BorderSide(color: primaryBlue, width: 2),
+          foregroundColor: colorTheme.primaryColor,
+          side: BorderSide(color: colorTheme.primaryColor, width: 2),
           padding: const EdgeInsets.symmetric(
             horizontal: spaceLarge,
             vertical: spaceMedium,
@@ -217,11 +214,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusLarge),
           ),
-          textStyle: titleMedium.copyWith(color: primaryBlue),
+          textStyle: titleMedium.copyWith(color: colorTheme.primaryColor),
         ),
       ),
-
-      // InputDecoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
@@ -235,10 +230,91 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: const BorderSide(color: primaryBlue, width: 2),
+          borderSide: BorderSide(color: colorTheme.primaryColor, width: 2),
         ),
         contentPadding: const EdgeInsets.all(spaceMedium),
         hintStyle: bodyMedium.copyWith(color: gray400),
+      ),
+    );
+  }
+
+  static ThemeData darkTheme(AppColorTheme colorTheme) {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: colorTheme.primaryColor,
+        primary: colorTheme.primaryColor,
+        secondary: colorTheme.secondaryColor,
+        surface: darkGray800,
+        background: darkGray800,
+        error: errorRed,
+        brightness: Brightness.dark,
+      ),
+      scaffoldBackgroundColor: darkGray800,
+      fontFamily: 'Pretendard',
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+        iconTheme: IconThemeData(color: darkGray400),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: darkGray700,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusXLarge),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colorTheme.primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 2,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spaceLarge,
+            vertical: spaceMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusLarge),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: colorTheme.primaryColor,
+          side: BorderSide(color: colorTheme.primaryColor, width: 2),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spaceLarge,
+            vertical: spaceMedium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusLarge),
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkGray700,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: BorderSide(color: colorTheme.primaryColor, width: 2),
+        ),
+        contentPadding: const EdgeInsets.all(spaceMedium),
+        hintStyle: const TextStyle(color: darkGray400),
       ),
     );
   }

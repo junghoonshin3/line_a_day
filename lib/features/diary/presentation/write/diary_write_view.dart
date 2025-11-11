@@ -7,6 +7,7 @@ import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_write_state.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view_model.dart';
+import 'package:line_a_day/widgets/common/custom_snackbar.dart';
 import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/diary/dialog/diary_dialogs.dart';
@@ -91,69 +92,19 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
       }
       // 저장 완료 감지
       if (next.isCompleted && !(previous?.isCompleted ?? false)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text('일기 저장되었습니다'),
-              ],
-            ),
-            backgroundColor: AppTheme.primaryBlue,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        CustomSnackBar.showSuccess(context, '일기가 저장되었습니다');
       }
 
       // 임시 저장 완료
       if (next.isDraftSavedCompleted &&
           !(previous?.isDraftSavedCompleted ?? false)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text('임시 저장되었습니다'),
-              ],
-            ),
-            backgroundColor: AppTheme.primaryBlue,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        CustomSnackBar.showSuccess(context, '임시 저장되었습니다');
       }
 
       // 에러 발생
       if (next.errorMessage != null &&
           previous?.errorMessage != next.errorMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(next.errorMessage!)),
-              ],
-            ),
-            backgroundColor: AppTheme.errorRed,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showError(context, next.errorMessage!);
       }
     });
 

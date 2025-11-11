@@ -10,6 +10,7 @@ import 'package:line_a_day/features/intro/presentation/intro_view.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view.dart';
 import 'package:line_a_day/features/settings/presentation/notification/notification_settings_view.dart';
 import 'package:line_a_day/features/settings/presentation/security/security_settings_view.dart';
+import 'package:line_a_day/features/settings/presentation/theme/theme_setting_view.dart';
 
 class AppRoutes {
   // Route names
@@ -22,6 +23,7 @@ class AppRoutes {
   static const String notification = 'notification';
   static const String security = 'security';
   static const String backup = 'backup';
+  static const String theme = 'theme';
 
   // Routes Map
   static Map<String, WidgetBuilder> getRoutes() {
@@ -34,6 +36,7 @@ class AppRoutes {
       notification: (context) => const NotificationSettingsView(),
       security: (context) => const SecuritySettingsView(),
       backup: (context) => const BackupView(),
+      theme: (context) => const ThemeSettingsView(),
     };
   }
 

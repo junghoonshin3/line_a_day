@@ -4,6 +4,8 @@ import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
+import 'package:line_a_day/widgets/common/custom_snackbar.dart';
+import 'package:line_a_day/widgets/common/loading_indicator.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class EmojiSelectView extends ConsumerStatefulWidget {
@@ -39,23 +41,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
     ) {
       if (next.errorMessage != null &&
           (previous?.errorMessage != next.errorMessage)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(next.errorMessage!)),
-              ],
-            ),
-            backgroundColor: const Color(0xFFDC2626),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showError(context, next.errorMessage!);
       }
       if (next.isCompleted) {
         _navigateToDiaryList();
@@ -277,14 +263,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
           ),
         ),
         child: state.isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
+            ? const LoadingIndicator(size: 24, color: Colors.white)
             : const Text(
                 '선택 완료',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

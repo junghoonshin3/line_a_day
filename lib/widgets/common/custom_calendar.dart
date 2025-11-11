@@ -60,7 +60,7 @@ class CalendarWidget extends StatelessWidget {
             border: Border.all(color: AppTheme.primaryBlue, width: 2),
             shape: BoxShape.circle,
           ),
-          selectedDecoration: const BoxDecoration(
+          selectedDecoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
             shape: BoxShape.circle,
           ),
@@ -83,7 +83,7 @@ class CalendarWidget extends StatelessWidget {
           outsideTextStyle: AppTheme.bodyMedium.copyWith(
             color: AppTheme.gray300,
           ),
-          markerDecoration: const BoxDecoration(
+          markerDecoration: BoxDecoration(
             color: AppTheme.primaryBlue,
             shape: BoxShape.circle,
           ),
@@ -95,7 +95,7 @@ class CalendarWidget extends StatelessWidget {
               return Container(
                 width: 4,
                 height: 4,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppTheme.primaryBlue,
                   shape: BoxShape.circle,
                 ),

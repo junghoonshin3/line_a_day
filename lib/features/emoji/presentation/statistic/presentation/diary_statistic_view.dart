@@ -6,6 +6,7 @@ import 'package:line_a_day/constant.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/emoji/presentation/statistic/presentation/diary_statistic_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/statistic/state/diary_statistic_state.dart';
+import 'package:line_a_day/widgets/common/empty_state_widget.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 
 class DiaryStatisticView extends ConsumerStatefulWidget {
@@ -35,7 +36,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     final viewModel = ref.read(emojiStatisticViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
+      // backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
           _buildHeader(state, viewModel),
@@ -87,10 +88,9 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
 
     return SliverAppBar(
       expandedHeight: 220,
-      pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +200,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
 
   Widget _buildChart(DiaryStatisticState state, DiaryStatisticViewModel vm) {
     if (state.chartData.isEmpty) {
-      return _buildEmptyChart();
+      return const NoDataWidget();
     }
 
     return Container(
@@ -360,7 +360,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     DiaryStatisticState state,
     DiaryStatisticViewModel vm,
   ) {
-    if (state.emotionCounts.isEmpty) return _buildEmptyChart();
+    if (state.emotionCounts.isEmpty) return const NoDataWidget();
 
     final entries = state.emotionCounts.entries.toList();
     final maxCount = entries
@@ -747,7 +747,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                       ),
                       child: Text(
                         '${stat.percentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryBlue,

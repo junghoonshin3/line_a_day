@@ -35,7 +35,6 @@ class _SettingViewState extends ConsumerState<SettingView>
     final viewModel = ref.read(settingViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
           _buildHeader(),
@@ -74,10 +73,9 @@ class _SettingViewState extends ConsumerState<SettingView>
   Widget _buildHeader() {
     return SliverAppBar(
       expandedHeight: 120,
-      pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +258,7 @@ class _SettingViewState extends ConsumerState<SettingView>
             title: '테마',
             subtitle: '다크모드, 색상 변경',
             onTap: () {
-              // TODO: 테마 설정 화면으로 이동
+              Navigator.pushNamed(context, AppRoutes.theme);
             },
           ),
         ],

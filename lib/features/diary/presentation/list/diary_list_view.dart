@@ -6,6 +6,7 @@ import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view_model.dart';
 import 'package:line_a_day/features/diary/presentation/state/diary_list_state.dart';
 import 'package:line_a_day/widgets/common/custom_calendar.dart';
+import 'package:line_a_day/widgets/common/empty_state_widget.dart';
 import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
 import 'package:line_a_day/widgets/diary/list/diary_card.dart';
 import 'package:line_a_day/widgets/diary/list/filter_tabs.dart';
@@ -59,7 +60,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
               scaleAnimation: true,
               child: _buildFAB(viewModel),
             ),
-      backgroundColor: AppTheme.gray50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // 헤더 (검색 모드에 따라 다르게 표시)
@@ -103,7 +104,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
                           AnimatedRotation(
                             turns: state.isCalendarExpanded ? 0.5 : 0,
                             duration: const Duration(milliseconds: 300),
-                            child: const Icon(
+                            child: Icon(
                               Icons.keyboard_arrow_down,
                               color: AppTheme.primaryBlue,
                             ),
@@ -130,7 +131,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
       expandedHeight: 220,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +188,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
       backgroundColor: AppTheme.primaryBlue,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,7 +306,7 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
     if (state.isSearchMode && state.searchQuery.isEmpty) {
       return buildAnimatedSliverBox(
         index: 5,
-        child: _buildEmptyState(
+        child: const EmptyStateWidget(
           icon: Icons.search,
           message: '제목, 내용, 태그로\n일기를 검색해보세요',
         ),
@@ -317,11 +318,8 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
       return buildAnimatedSliverBox(
         index: 5,
         child: state.isSearchMode
-            ? _buildEmptyState(
-                icon: Icons.search_off,
-                message: '검색 결과가 없습니다\n다른 키워드로 검색해보세요',
-              )
-            : _buildEmptyState(
+            ? const SearchEmptyWidget()
+            : const EmptyStateWidget(
                 icon: Icons.edit_note,
                 message: '아직 작성된 일기가 없습니다.\n오늘의 이야기를 기록해보세요!',
               ),
@@ -341,10 +339,6 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 검색 모드일 때만 날짜 섹션 표시
-                // if (state.isSearchMode ||
-                //     index == 0 ||
-                //     selectedEntries.keys.elementAt(index - 1) != dateKey)
                 const SizedBox(height: 12),
                 _buildDateSection(dateKey),
                 const SizedBox(height: 12),
@@ -372,9 +366,9 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
         Container(
           width: 4,
           height: 16,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: AppTheme.primaryGradient,
-            borderRadius: BorderRadius.all(Radius.circular(2)),
+            borderRadius: const BorderRadius.all(Radius.circular(2)),
           ),
         ),
         const SizedBox(width: 8),
@@ -383,26 +377,6 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
           style: AppTheme.labelLarge.copyWith(color: AppTheme.gray600),
         ),
       ],
-    );
-  }
-
-  Widget _buildEmptyState({required IconData icon, required String message}) {
-    return Padding(
-      padding: const EdgeInsets.all(60),
-      child: Column(
-        children: [
-          Icon(icon, size: 64, color: AppTheme.gray300.withOpacity(0.5)),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: AppTheme.bodyLarge.copyWith(
-              color: AppTheme.gray400,
-              height: 1.6,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/features/auth/presentation/lock_view_model.dart';
 import 'package:line_a_day/features/auth/presentation/state/lock_state.dart';
+import 'package:line_a_day/widgets/common/loading_indicator.dart';
 
 class LockView extends ConsumerStatefulWidget {
   final bool showBiometric;
@@ -101,7 +102,7 @@ class _LockScreenState extends ConsumerState<LockView>
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
           child: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -262,11 +263,7 @@ class _LockScreenState extends ConsumerState<LockView>
               ),
             ),
             child: state.isAuthenticating
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+                ? const LoadingIndicator(size: 20)
                 : const Text(
                     '확인',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

@@ -6,6 +6,7 @@ import 'package:line_a_day/core/services/notification_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/presentation/notification/state/notification_settings_state.dart';
 import 'package:line_a_day/features/settings/presentation/notification/notification_settings_view_model.dart';
+import 'package:line_a_day/widgets/settings/card_section.dart';
 
 final notificationSettingsViewModelProvider =
     StateNotifierProvider.autoDispose<
@@ -28,115 +29,106 @@ class NotificationSettingsView extends ConsumerWidget {
     final viewModel = ref.read(notificationSettingsViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
       appBar: AppBar(
         title: const Text('알림 설정'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // 알림 활성화 스위치
-          _buildCard(
-            child: SwitchListTile(
-              value: state.isEnabled,
-              onChanged: (value) => viewModel.toggleNotification(value),
-              title: const Text('일기 작성 알림', style: AppTheme.titleMedium),
-              subtitle: const Text(
-                '설정한 시간에 일기 작성을 알려드립니다',
-                style: AppTheme.bodyMedium,
-              ),
-              activeThumbColor: AppTheme.primaryBlue,
-            ),
-          ),
-
-          if (state.isEnabled) ...[
-            const SizedBox(height: 20),
-
-            // 알림 시간 설정
-            _buildCard(
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.access_time,
-                    color: AppTheme.primaryBlue,
-                  ),
+      body: Theme(
+        data: ThemeData(
+          highlightColor: Colors.white,
+          splashColor: Colors.transparent,
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            // 알림 활성화 스위치
+            CardSection(
+              child: SwitchListTile(
+                value: state.isEnabled,
+                onChanged: (value) => viewModel.toggleNotification(value),
+                title: const Text('일기 작성 알림', style: AppTheme.titleMedium),
+                subtitle: const Text(
+                  '설정한 시간에 일기 작성을 알려드립니다',
+                  style: AppTheme.bodyMedium,
                 ),
-                title: const Text('알림 시간', style: AppTheme.titleMedium),
-                subtitle: Text(
-                  _formatTime(state.reminderTime),
-                  style: AppTheme.bodyLarge.copyWith(
-                    color: AppTheme.primaryBlue,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    _selectTime(context, viewModel, state.reminderTime),
+                activeThumbColor: AppTheme.primaryBlue,
               ),
             ),
 
-            const SizedBox(height: 20),
+            if (state.isEnabled) ...[
+              const SizedBox(height: 20),
 
-            // 요일 선택
-            _buildCard(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              // 알림 시간 설정
+              CardSection(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.access_time, color: AppTheme.primaryBlue),
+                  ),
+                  title: const Text('알림 시간', style: AppTheme.titleMedium),
+                  subtitle: Text(
+                    _formatTime(state.reminderTime),
+                    style: AppTheme.bodyLarge.copyWith(
+                      color: AppTheme.primaryBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () =>
+                      _selectTime(context, viewModel, state.reminderTime),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 요일 선택
+              CardSection(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('알림 요일', style: AppTheme.titleMedium),
+                      const SizedBox(height: 16),
+                      _buildWeekdaySelector(state, viewModel),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+
+            if (state.errorMessage != null) ...[
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.errorRed.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
                   children: [
-                    const Text('알림 요일', style: AppTheme.titleMedium),
-                    const SizedBox(height: 16),
-                    _buildWeekdaySelector(state, viewModel),
+                    const Icon(Icons.error_outline, color: AppTheme.errorRed),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        state.errorMessage!,
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: AppTheme.errorRed,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
+            ],
           ],
-
-          if (state.errorMessage != null) ...[
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.errorRed.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.error_outline, color: AppTheme.errorRed),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      state.errorMessage!,
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.errorRed,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
-    );
-  }
-
-  Widget _buildCard({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: child,
     );
   }
 
