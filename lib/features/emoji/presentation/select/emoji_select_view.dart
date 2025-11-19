@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/core/app/config/routes.dart';
+import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
@@ -111,10 +112,8 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
         Container(
           width: 64,
           height: 64,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
-            ),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -155,13 +154,15 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3B82F6) : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
             width: 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.primary,
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -185,7 +186,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: isSelected
-                        ? const Color(0xFF3B82F6)
+                        ? Theme.of(context).colorScheme.primary
                         : const Color(0xFF374151),
                   ),
                 ),
@@ -193,8 +194,8 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                 if (isSelected)
                   Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF3B82F6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -254,7 +255,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
         onPressed: state.isLoading ? null : () => viewModel.confirmSelection(),
         style: ElevatedButton.styleFrom(
           backgroundColor: state.selectedStyle != null
-              ? const Color(0xFF3B82F6)
+              ? Theme.of(context).colorScheme.primary
               : const Color(0xFF9CA3AF),
           foregroundColor: Colors.white,
           elevation: state.selectedStyle != null ? 4 : 0,

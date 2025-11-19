@@ -170,8 +170,7 @@ class ThemeSettingsView extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: isSelected ? AppTheme.primaryGradient : null,
@@ -230,8 +229,7 @@ class ThemeSettingsView extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         decoration: BoxDecoration(
           gradient: colorTheme.gradient,
           borderRadius: BorderRadius.circular(12),

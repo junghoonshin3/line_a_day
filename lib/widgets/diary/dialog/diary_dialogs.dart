@@ -23,7 +23,7 @@ class DiaryDialogs {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1F2937),
+                // color: Color(0xFF1F2937),
               ),
             ),
             const SizedBox(height: 20),
@@ -91,14 +91,11 @@ class DiaryDialogs {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1F2937),
+                      // color: Color(0xFF1F2937),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    '날짜와 시간을 선택해주세요',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
-                  ),
+                  const Text('날짜와 시간을 선택해주세요', style: TextStyle(fontSize: 14)),
                   const SizedBox(height: 24),
 
                   // 캘린더
@@ -162,7 +159,7 @@ class DiaryDialogs {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF9FAFB),
+                        // color: const Color(0xFFF9FAFB),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: const Color(0xFFE5E7EB)),
                       ),
@@ -171,12 +168,11 @@ class DiaryDialogs {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.access_time,
-                              color: Color(0xFF3B82F6),
+                              color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                           ),
@@ -189,7 +185,7 @@ class DiaryDialogs {
                                   '시간',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF6B7280),
+                                    // color: Color(0xFF6B7280),
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -198,17 +194,13 @@ class DiaryDialogs {
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1F2937),
+                                    // color: Color(0xFF1F2937),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.chevron_right,
-                            color: Color(0xFF9CA3AF),
-                            size: 20,
-                          ),
+                          const Icon(Icons.chevron_right, size: 20),
                         ],
                       ),
                     ),
@@ -245,7 +237,9 @@ class DiaryDialogs {
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF3B82F6),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -329,12 +323,12 @@ class DiaryDialogs {
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF3B82F6).withOpacity(0.1)
+                            ? Theme.of(context).colorScheme.primary
                             : const Color(0xFFF9FAFB),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
-                              ? const Color(0xFF3B82F6)
+                              ? Theme.of(context).colorScheme.primary
                               : const Color(0xFFE5E7EB),
                           width: isSelected ? 2 : 1,
                         ),
@@ -355,7 +349,7 @@ class DiaryDialogs {
                                   ? FontWeight.w600
                                   : FontWeight.normal,
                               color: isSelected
-                                  ? const Color(0xFF3B82F6)
+                                  ? Theme.of(context).colorScheme.primary
                                   : const Color(0xFF6B7280),
                             ),
                             textAlign: TextAlign.center,
@@ -432,9 +426,9 @@ class DiaryDialogs {
                   decoration: InputDecoration(
                     hintText: '예: 서울 강남구 역삼동',
                     hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.location_on,
-                      color: Color(0xFF3B82F6),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -442,8 +436,8 @@ class DiaryDialogs {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF3B82F6),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
                         width: 2,
                       ),
                     ),
@@ -489,7 +483,9 @@ class DiaryDialogs {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -558,9 +554,9 @@ class DiaryDialogs {
                         decoration: InputDecoration(
                           hintText: '태그 입력',
                           hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.tag,
-                            color: Color(0xFF3B82F6),
+                            color: Theme.of(context).colorScheme.primary,
                             size: 20,
                           ),
                           border: OutlineInputBorder(
@@ -571,8 +567,8 @@ class DiaryDialogs {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF3B82F6),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
                               width: 2,
                             ),
                           ),
@@ -606,7 +602,7 @@ class DiaryDialogs {
                         }
                       },
                       style: IconButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -647,11 +643,13 @@ class DiaryDialogs {
                             backgroundColor: const Color(
                               0xFF3B82F6,
                             ).withOpacity(0.1),
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF3B82F6),
+                            labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w500,
                             ),
-                            deleteIconColor: const Color(0xFF3B82F6),
+                            deleteIconColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -692,7 +690,9 @@ class DiaryDialogs {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -882,7 +882,7 @@ class _ImagePickOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
+          // color: const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
@@ -890,11 +890,12 @@ class _ImagePickOption extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3B82F6).withOpacity(0.1),
-                shape: BoxShape.circle,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: Icon(
+                icon,
+                size: 32,
+                color: Theme.of(context).colorScheme.primary,
               ),
-              child: Icon(icon, size: 32, color: const Color(0xFF3B82F6)),
             ),
             const SizedBox(height: 12),
             Text(
@@ -902,7 +903,7 @@ class _ImagePickOption extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
+                // color: Color(0xFF374151),
               ),
             ),
           ],

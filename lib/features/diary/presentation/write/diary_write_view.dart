@@ -114,7 +114,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
         _contentFocusNode.unfocus();
       },
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(250, 250, 250, 1),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -124,11 +123,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           ),
           title: const Text(
             '오늘의 일기',
-            style: TextStyle(
-              color: Color(0xFF1F2937),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
           actions: [
@@ -198,7 +193,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -217,16 +211,18 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                           viewModel.saveDraft();
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF3B82F6)),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text(
+                        child: Text(
                           '임시저장',
                           style: TextStyle(
-                            color: Color(0xFF3B82F6),
+                            color: Theme.of(context).colorScheme.primary,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -244,7 +240,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                         Navigator.of(context).pop(true);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 2,
                         shape: RoundedRectangleBorder(
@@ -399,11 +395,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppTheme.primaryGradient,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -450,11 +442,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
       children: [
         const Text(
           '제목',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF374151),
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Container(
@@ -476,13 +464,12 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             onChanged: viewModel.updateTitle,
             decoration: const InputDecoration(
               hintText: '오늘의 제목을 입력해주세요',
-              hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
+              // hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.white,
               contentPadding: EdgeInsets.all(16),
             ),
             style: const TextStyle(fontSize: 16),
@@ -502,11 +489,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
       children: [
         const Text(
           '오늘의 이야기',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF374151),
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         if (state.diary.photoUrls.isNotEmpty)
@@ -576,13 +559,13 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
             onChanged: viewModel.updateContent,
             decoration: const InputDecoration(
               hintText: '오늘 있었던 일, 느낀 점, 감사한 일 등을 자유롭게 작성해보세요...',
-              hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
+              // hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.white,
+              // fillColor: Colors.white,
               contentPadding: EdgeInsets.all(16),
             ),
             style: const TextStyle(fontSize: 16, height: 1.5),
@@ -606,7 +589,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF374151),
+            // color: Color(0xFF374151),
           ),
         ),
         const SizedBox(height: 12),
@@ -730,7 +713,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: gradient,
-          color: gradient == null ? Colors.white : null,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: gradient == null
@@ -750,32 +732,22 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              size: 24,
-              color: gradient != null ? Colors.white : const Color(0xFF3B82F6),
-            ),
+            Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
             const SizedBox(height: 8),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: gradient != null
-                    ? Colors.white
-                    : const Color(0xFF374151),
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
-                color: gradient != null
-                    ? Colors.white.withOpacity(0.9)
-                    : const Color(0xFF9CA3AF),
+                // color: gradient != null
+                //     ? Colors.white.withOpacity(0.9)
+                //     : const Color(0xFF9CA3AF),
               ),
             ),
           ],

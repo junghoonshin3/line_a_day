@@ -105,12 +105,12 @@ class TagChip extends StatelessWidget {
         label: Text(tag),
         deleteIcon: const Icon(Icons.close, size: 16),
         onDeleted: onDelete,
-        backgroundColor: const Color(0xFF3B82F6).withOpacity(0.1),
-        labelStyle: const TextStyle(
-          color: Color(0xFF3B82F6),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        labelStyle: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.w500,
         ),
-        deleteIconColor: const Color(0xFF3B82F6),
+        deleteIconColor: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide.none,
       );

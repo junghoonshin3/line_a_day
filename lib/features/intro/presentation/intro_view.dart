@@ -1,6 +1,7 @@
 // views/intro/intro_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/core/app/config/routes.dart';
 import 'package:line_a_day/core/app/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view_model.dart';
@@ -35,7 +36,7 @@ class _IntroViewState extends ConsumerState<IntroView> {
     // 인트로 완료 상태 감지
     ref.listen<IntroState>(introViewModelProvider, (previous, next) {
       if (next.isCompleted && !(previous?.isCompleted ?? false)) {
-        _navigateToEmojiSelect();
+        _navigateToMain();
       }
     });
 
@@ -96,11 +97,9 @@ class _IntroViewState extends ConsumerState<IntroView> {
     );
   }
 
-  void _navigateToEmojiSelect() {
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed("emojiSelect");
-      }
-    });
+  void _navigateToMain() {
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.main);
+    }
   }
 }

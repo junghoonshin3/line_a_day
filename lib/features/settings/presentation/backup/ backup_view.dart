@@ -100,10 +100,7 @@ class _BackupViewState extends ConsumerState<BackupView>
             child: const Stack(
               children: <Widget>[
                 //다시 stack
-                Opacity(
-                  opacity: 0.5,
-                  child: ModalBarrier(dismissible: false, color: Colors.black),
-                ),
+                Opacity(opacity: 0.5, child: ModalBarrier(dismissible: false)),
                 LoadingIndicator(),
               ],
             ),
@@ -133,7 +130,7 @@ class _BackupViewState extends ConsumerState<BackupView>
             icon: Icons.phone_android,
             title: '앱 내 백업',
             description: '기기 내부에 백업 저장',
-            iconColor: const Color(0xFF8B5CF6),
+            iconColor: Theme.of(context).colorScheme.secondary,
             onTap: () => viewModel.backupToAppInternal(),
           ),
           const SizedBox(height: 24),

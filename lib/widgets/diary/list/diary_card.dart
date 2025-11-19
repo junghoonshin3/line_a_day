@@ -17,7 +17,7 @@ class DiaryCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
           boxShadow: AppTheme.cardShadow,
         ),
@@ -26,7 +26,7 @@ class DiaryCard extends StatelessWidget {
           children: [
             _buildHeader(model.emotion),
             const SizedBox(height: 12),
-            _buildTitle(),
+            _buildTitle(context),
             const SizedBox(height: 8),
             _buildPreview(),
             if (model.tags.isNotEmpty) ...[
@@ -56,10 +56,10 @@ class DiaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
     return Text(
       model.title,
-      style: AppTheme.titleLarge,
+      style: Theme.of(context).textTheme.titleLarge,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );

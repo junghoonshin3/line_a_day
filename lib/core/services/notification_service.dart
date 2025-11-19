@@ -59,7 +59,6 @@ class NotificationService {
     if (androidImplementation != null) {
       final granted = await androidImplementation
           .requestNotificationsPermission();
-      print('Android 알림 권한: $granted');
       return granted ?? false;
     }
 

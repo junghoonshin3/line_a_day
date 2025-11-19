@@ -98,7 +98,7 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.totalDiaries}',
                 '총 일기',
                 '📚',
-                const Color(0xFF3B82F6),
+                Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(width: 12),

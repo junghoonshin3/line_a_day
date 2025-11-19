@@ -21,7 +21,6 @@ class CustomBottomSheet extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       height: height,
       decoration: const BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppTheme.radiusXLarge),
         ),

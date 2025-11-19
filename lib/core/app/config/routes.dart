@@ -5,7 +5,6 @@ import 'package:line_a_day/features/diary/presentation/detail/diary_detail_view.
 import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
 import 'package:line_a_day/features/main/presentation/main_view.dart';
 import 'package:line_a_day/features/diary/presentation/write/diary_write_view.dart';
-import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view.dart';
 import 'package:line_a_day/features/settings/presentation/notification/notification_settings_view.dart';
@@ -15,7 +14,7 @@ import 'package:line_a_day/features/settings/presentation/theme/theme_setting_vi
 class AppRoutes {
   // Route names
   static const String intro = 'intro';
-  static const String emojiSelect = 'emojiSelect';
+  // static const String emojiSelect = 'emojiSelect';
   static const String main = 'main';
   static const String diaryList = 'diaryList';
   static const String diaryWrite = 'diaryWrite';
@@ -29,7 +28,7 @@ class AppRoutes {
   static Map<String, WidgetBuilder> getRoutes() {
     return {
       intro: (context) => const IntroView(),
-      emojiSelect: (context) => const EmojiSelectView(),
+      // emojiSelect: (context) => const EmojiSelectView(),
       main: (context) => const MainView(),
       diaryList: (context) => const DiaryListView(),
       diaryWrite: (context) => const DiaryWriteView(),

@@ -83,7 +83,6 @@ class DialogHelper {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => CustomBottomSheet(
         title: title,
         height: height,
