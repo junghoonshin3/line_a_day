@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_a_day/core/database/database_provider.dart';
 import 'package:line_a_day/core/services/backup_service.dart';
 import 'package:line_a_day/core/services/google_drive_service.dart';
 import 'package:line_a_day/core/storage/storage_service.dart';
@@ -19,24 +20,10 @@ import 'package:line_a_day/features/settings/presentation/theme/state/theme_stat
 import 'package:line_a_day/features/settings/presentation/theme/theme_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:isar_community/isar.dart';
-import 'package:line_a_day/core/database/isar_service.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view_model.dart';
 import 'package:line_a_day/features/intro/presentation/state/intro_state.dart';
-
-/// Isar Provider
-/// 앱 전체에서 동일한 Isar 인스턴스 사용
-final isarProvider = Provider<Isar>((ref) {
-  return IsarService.instance;
-});
-
-/// Isar 초기화 Provider
-/// FutureProvider로 비동기 초기화
-final isarInitProvider = FutureProvider<Isar>((ref) async {
-  return await IsarService.initialize();
-});
 
 //ViewModel
 //ViewModel - emoji

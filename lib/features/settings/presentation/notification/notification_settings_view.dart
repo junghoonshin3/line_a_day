@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/core/services/notification_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/presentation/notification/state/notification_settings_state.dart';
 import 'package:line_a_day/features/settings/presentation/notification/notification_settings_view_model.dart';
-import 'package:line_a_day/widgets/settings/card_section.dart';
+import 'package:line_a_day/features/settings/presentation/setting_home/widgets/card_section.dart';
 
 final notificationSettingsViewModelProvider =
     StateNotifierProvider.autoDispose<

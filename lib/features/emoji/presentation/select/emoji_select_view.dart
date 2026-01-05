@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/routes.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/routes.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
-import 'package:line_a_day/widgets/common/custom_snackbar.dart';
-import 'package:line_a_day/widgets/common/loading_indicator.dart';
-import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
+import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
+import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
+import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
 class EmojiSelectView extends ConsumerStatefulWidget {
   const EmojiSelectView({super.key});

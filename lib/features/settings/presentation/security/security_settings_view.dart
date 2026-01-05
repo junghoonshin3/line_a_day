@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/core/services/auth_service.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/presentation/security/security_settings_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/security/state/security_settings_state.dart';
-import 'package:line_a_day/widgets/settings/card_section.dart';
+import 'package:line_a_day/features/settings/presentation/setting_home/widgets/card_section.dart';
 
 final securitySettingsViewModelProvider =
     StateNotifierProvider.autoDispose<

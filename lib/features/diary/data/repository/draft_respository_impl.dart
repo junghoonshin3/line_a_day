@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:line_a_day/core/storage/storage_keys.dart';
-import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
+import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/draft_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

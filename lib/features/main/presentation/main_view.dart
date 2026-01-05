@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/constant.dart';
-import 'package:line_a_day/features/diary/presentation/list/diary_list_view.dart';
-import 'package:line_a_day/features/main/presentation/main_view_model.dart';
-import 'package:line_a_day/features/diary/presentation/state/main_state.dart';
-import 'package:line_a_day/features/emoji/presentation/statistic/presentation/diary_statistic_view.dart';
+import 'package:line_a_day/features/diary/presentation/diary_list/diary_list_view.dart';
+import 'package:line_a_day/features/main/presentation/view_model/main_view_model.dart';
+import 'package:line_a_day/features/main/presentation/state/main_state.dart';
+import 'package:line_a_day/features/emoji/presentation/statistic/diary_statistic_view.dart';
 import 'package:line_a_day/features/goal/presentation/goal_view.dart';
-import 'package:line_a_day/features/settings/presentation/setting_view.dart';
+import 'package:line_a_day/features/settings/presentation/setting_home/setting_view.dart';
+import 'package:line_a_day/shared/constants/bottom_tap_name.dart';
 
 class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});

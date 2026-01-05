@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' hide LockState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
-import 'package:line_a_day/features/auth/presentation/lock_view_model.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
+import 'package:line_a_day/features/auth/presentation/view_model/lock_view_model.dart';
 import 'package:line_a_day/features/auth/presentation/state/lock_state.dart';
-import 'package:line_a_day/widgets/common/loading_indicator.dart';
+import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 
 class LockView extends ConsumerStatefulWidget {
   final bool showBiometric;

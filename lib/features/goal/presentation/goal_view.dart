@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/features/goal/domain/model/goal_model.dart';
-import 'package:line_a_day/features/goal/presentation/goal_view_model.dart';
+import 'package:line_a_day/features/goal/presentation/view_model/goal_view_model.dart';
 import 'package:line_a_day/features/goal/presentation/state/goal_state.dart';
-import 'package:line_a_day/widgets/common/loading_indicator.dart';
-import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
+import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
+import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
 class GoalView extends ConsumerStatefulWidget {
   const GoalView({super.key});

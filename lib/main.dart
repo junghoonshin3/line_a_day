@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:line_a_day/core/app/config/routes.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/routes.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/core/database/isar_service.dart';
 import 'package:line_a_day/core/services/app_lifecycle_service.dart';
 import 'package:line_a_day/core/services/app_lock_manager.dart';

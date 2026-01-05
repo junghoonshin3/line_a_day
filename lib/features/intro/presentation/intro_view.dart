@@ -1,16 +1,16 @@
 // views/intro/intro_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/routes.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/routes.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/intro/presentation/intro_view_model.dart';
 import 'package:line_a_day/features/intro/presentation/state/intro_state.dart';
-import 'package:line_a_day/widgets/common/gradient_container.dart';
-import 'package:line_a_day/widgets/intro/intro_bottom_navigation.dart';
-import 'package:line_a_day/widgets/intro/intro_header.dart';
-import 'package:line_a_day/widgets/intro/intro_page_content.dart';
-import 'package:line_a_day/widgets/intro/intro_page_data.dart';
+import 'package:line_a_day/shared/widgets/gradient_container.dart';
+import 'package:line_a_day/features/intro/presentation/widgets/intro_bottom_button.dart';
+import 'package:line_a_day/features/intro/presentation/widgets/intro_header.dart';
+import 'package:line_a_day/features/intro/presentation/widgets/intro_page_content.dart';
+import 'package:line_a_day/features/intro/presentation/widgets/intro_page_data.dart';
 
 class IntroView extends ConsumerStatefulWidget {
   const IntroView({super.key});
@@ -65,7 +65,7 @@ class _IntroViewState extends ConsumerState<IntroView> {
               ),
 
               // 인디케이터 & 버튼
-              IntroBottomNavigation(
+              IntroBottomButton(
                 pageController: _pageController,
                 pageCount: IntroPageData.pages.length,
                 isLastPage: viewModel.isLastPage,

@@ -1,4 +1,4 @@
-import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/shared/constants/emotion_constants.dart';
 
 class DiaryStatisticState {
   final Map<EmotionType, int> emotionCounts;

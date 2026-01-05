@@ -3,12 +3,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
-import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/shared/constants/weather_constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:isar_community/isar.dart';
-import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
-import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
-import 'package:path/path.dart' as path;
+import 'package:line_a_day/core/database/diary_entity.dart';
+import 'package:line_a_day/features/diary/data/model/diary_model.dart';
+import 'package:path/path.dart' as p;
 
 class BackupService {
   final Isar _isar;
@@ -76,7 +76,7 @@ class BackupService {
       for (final imagePath in allImagePaths) {
         final imageFile = File(imagePath);
         if (await imageFile.exists()) {
-          final fileName = path.basename(imagePath);
+          final fileName = p.basename(imagePath);
           final destFile = File('${imagesBackupDir.path}/$fileName');
           await imageFile.copy(destFile.path);
           copiedCount++;
@@ -202,7 +202,7 @@ class BackupService {
       }
 
       final isarFile = File(isarFiles.first.path);
-      print('💾 Isar 파일 발견: ${path.basename(isarFile.path)}');
+      print('💾 Isar 파일 발견: ${p.basename(isarFile.path)}');
 
       // 4. Isar 파일을 적절한 위치로 복사
       final tempIsarFile = File('${extractDir.path}/restore_temp.isar');
@@ -222,7 +222,7 @@ class BackupService {
       // 6. 이미지 복원
       final imagesBackupDirs = extractDir
           .listSync(recursive: true)
-          .where((f) => f is Directory && path.basename(f.path) == 'images')
+          .where((f) => f is Directory && p.basename(f.path) == 'images')
           .toList();
 
       final appImagesDir = await getAppImagesDirectory();
@@ -237,7 +237,7 @@ class BackupService {
 
         for (final imageFile in imageFiles) {
           if (imageFile is File) {
-            final fileName = path.basename(imageFile.path);
+            final fileName = p.basename(imageFile.path);
             final newPath = '${appImagesDir.path}/$fileName';
 
             try {
@@ -246,7 +246,7 @@ class BackupService {
 
               // 경로 매핑 저장 (파일명으로 매칭)
               pathMapping[fileName] = newPath;
-              print('  ✓ $fileName → ${path.basename(newPath)}');
+              print('  ✓ $fileName → ${p.basename(newPath)}');
             } catch (e) {
               print('  ⚠️ 이미지 복사 실패: $fileName - $e');
             }
@@ -264,7 +264,7 @@ class BackupService {
 
         if (e.photoUrls != null) {
           for (final oldPath in e.photoUrls!) {
-            final fileName = path.basename(oldPath);
+            final fileName = p.basename(oldPath);
             final newPath = pathMapping[fileName];
 
             if (newPath != null) {

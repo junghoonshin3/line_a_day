@@ -2,18 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/theme/theme.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/backup/state/backup_state.dart';
-import 'package:line_a_day/widgets/common/custom_snackbar.dart';
-import 'package:line_a_day/widgets/common/dialog/dialog_helper.dart';
-import 'package:line_a_day/widgets/common/empty_state_widget.dart';
-import 'package:line_a_day/widgets/common/loading_indicator.dart';
-import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
-import 'package:line_a_day/widgets/settings/backup_history_item.dart';
-import 'package:line_a_day/widgets/settings/backup_option_card.dart';
+import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
+import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/empty_state_widget.dart';
+import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
+import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
+import 'package:line_a_day/features/settings/presentation/backup/widgets/backup_history_item.dart';
+import 'package:line_a_day/features/settings/presentation/backup/widgets/backup_option_card.dart';
 
 class BackupView extends ConsumerStatefulWidget {
   const BackupView({super.key});
