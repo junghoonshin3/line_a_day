@@ -1,9 +1,8 @@
+import 'package:line_a_day/core/base/base_state.dart';
 import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 
-class DiaryWriteState {
-  bool isLoading = false;
+class DiaryWriteState extends BaseState {
   DiaryModel diary;
-  String? errorMessage;
   String? successMessage;
   DateTime selectedDate;
   DateTime focusedDate;
@@ -15,10 +14,10 @@ class DiaryWriteState {
 
   DiaryWriteState({
     required this.diary,
-    this.isLoading = false,
+    super.isLoading = false,
     this.isCompleted = false,
     this.isDraftSaved = false,
-    this.errorMessage,
+    super.errorMessage,
     this.successMessage,
     this.isDraftPopUpShow = false,
     this.isDraftSavedCompleted = false,

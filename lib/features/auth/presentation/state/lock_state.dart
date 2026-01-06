@@ -1,16 +1,18 @@
-class LockState {
+import 'package:line_a_day/core/base/base_state.dart';
+
+class LockState extends BaseState {
   final bool isLocked;
   final bool isAuthenticating;
   final int failedAttempts;
   final DateTime? lockedUntil;
-  final String? errorMessage;
 
   LockState({
     this.isLocked = false,
     this.isAuthenticating = false,
     this.failedAttempts = 0,
     this.lockedUntil,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
   });
 
   LockState copyWith({
@@ -18,6 +20,7 @@ class LockState {
     bool? isAuthenticating,
     int? failedAttempts,
     DateTime? lockedUntil,
+    bool? isLoading,
     String? errorMessage,
     bool clearLockedUntil = false,
   }) {
@@ -27,6 +30,7 @@ class LockState {
       failedAttempts: failedAttempts ?? this.failedAttempts,
       lockedUntil: clearLockedUntil ? null : (lockedUntil ?? this.lockedUntil),
       errorMessage: errorMessage,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 

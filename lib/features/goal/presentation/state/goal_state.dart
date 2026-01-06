@@ -1,6 +1,7 @@
+import 'package:line_a_day/core/base/base_state.dart';
 import 'package:line_a_day/features/goal/domain/model/goal_model.dart';
 
-class GoalState {
+class GoalState extends BaseState {
   final List<GoalModel> activeGoals;
   final List<GoalModel> completedGoals;
   final List<Badge> unlockedBadges;
@@ -8,8 +9,6 @@ class GoalState {
   final int currentStreak;
   final int longestStreak;
   final double positiveEmotionRate;
-  final bool isLoading;
-  final String? errorMessage;
 
   GoalState({
     this.activeGoals = const [],
@@ -19,8 +18,8 @@ class GoalState {
     this.currentStreak = 0,
     this.longestStreak = 0,
     this.positiveEmotionRate = 0.0,
-    this.isLoading = false,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
   });
 
   GoalState copyWith({

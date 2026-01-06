@@ -1,18 +1,17 @@
+import 'package:line_a_day/core/base/base_state.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 
-class BackupState {
+class BackupState extends BaseState {
   final List<BackupInfo> backupHistory;
-  final bool isLoading;
   final bool isGoogleDriveConnected;
-  final String? errorMessage;
   final String? successMessage;
   final BackupInfo? lastBackup;
 
   BackupState({
     this.backupHistory = const [],
-    this.isLoading = false,
+    super.isLoading = false,
     this.isGoogleDriveConnected = false,
-    this.errorMessage,
+    super.errorMessage,
     this.successMessage,
     this.lastBackup,
   });

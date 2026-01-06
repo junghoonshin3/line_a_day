@@ -1,18 +1,17 @@
+import 'package:line_a_day/core/base/base_state.dart';
 import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 
-class DiaryDetailState {
+class DiaryDetailState extends BaseState {
   final DiaryModel? diary;
-  final bool isLoading;
   final bool isDeleting;
   final bool isDeleted;
-  final String? errorMessage;
 
   const DiaryDetailState({
     this.diary,
-    this.isLoading = false,
+    super.isLoading = false,
     this.isDeleting = false,
     this.isDeleted = false,
-    this.errorMessage,
+    super.errorMessage,
   });
 
   DiaryDetailState copyWith({

@@ -1,13 +1,12 @@
+import 'package:line_a_day/core/base/base_state.dart';
 import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 
-class DiaryListState {
+class DiaryListState extends BaseState {
   final List<DiaryModel> entries;
   final DateTime selectedDate;
   final DateTime focusedDate;
   final EmotionType? filterMood;
-  final bool isLoading;
-  final String? errorMessage;
   final DiaryListStats stats;
   final bool isSearchMode;
   final String searchQuery;
@@ -19,8 +18,8 @@ class DiaryListState {
     DateTime? selectedDate,
     DateTime? focusedDate,
     this.filterMood,
-    this.isLoading = false,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
     DiaryListStats? stats,
     this.isSearchMode = false,
     this.searchQuery = '',

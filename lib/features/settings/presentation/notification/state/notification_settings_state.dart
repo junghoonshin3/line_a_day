@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:line_a_day/core/base/base_state.dart';
 
-class NotificationSettingsState {
+class NotificationSettingsState extends BaseState {
   final bool isEnabled;
   final TimeOfDay reminderTime;
   final List<int> reminderDays; // 0=월, 1=화, ..., 6=일
-  final bool isLoading;
-  final String? errorMessage;
 
   NotificationSettingsState({
     this.isEnabled = false,
     TimeOfDay? reminderTime,
     this.reminderDays = const [0, 1, 2, 3, 4, 5, 6],
-    this.isLoading = false,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
   }) : reminderTime = reminderTime ?? const TimeOfDay(hour: 21, minute: 0);
 
   NotificationSettingsState copyWith({
