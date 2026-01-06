@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/database/database_provider.dart';
+import 'package:line_a_day/di/database_provider.dart';
 import 'package:line_a_day/core/services/backup_service.dart';
 import 'package:line_a_day/core/services/google_drive_service.dart';
 import 'package:line_a_day/core/storage/storage_service.dart';
