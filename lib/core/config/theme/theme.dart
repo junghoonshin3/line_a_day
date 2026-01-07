@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_a_day/features/settings/domain/model/theme_model.dart';
 
 class AppTheme {
-  // 주요 색상 (동적으로 변경 가능)
+  // 동적 색상 (ColorTheme에 따라 변경)
   static Color primaryBlue = const Color(0xFF3B82F6);
   static Color primaryPurple = const Color(0xFF8B5CF6);
 
@@ -19,7 +19,7 @@ class AppTheme {
     end: Alignment.bottomRight,
   );
 
-  // 중립 색상
+  // Light Mode 중립 색상
   static const gray50 = Color(0xFFFAFAFA);
   static const gray100 = Color(0xFFF3F4F6);
   static const gray200 = Color(0xFFE5E7EB);
@@ -30,19 +30,22 @@ class AppTheme {
   static const gray800 = Color(0xFF1F2937);
   static const gray900 = Color(0xFF111827);
 
-  // 다크모드 색상
-  static const darkGray800 = Color(0xFF1F2937);
-  static const darkGray700 = Color(0xFF374151);
-  static const darkGray600 = Color(0xFF4B5563);
-  static const darkGray500 = Color(0xFF6B7280);
-  static const darkGray400 = Color(0xFF9CA3AF);
+  // Dark Mode 중립 색상
+  static const darkGray900 = Color(0xFF0F172A);
+  static const darkGray800 = Color(0xFF1E293B);
+  static const darkGray700 = Color(0xFF334155);
+  static const darkGray600 = Color(0xFF475569);
+  static const darkGray500 = Color(0xFF64748B);
+  static const darkGray400 = Color(0xFF94A3B8);
+  static const darkGray300 = Color(0xFFCBD5E1);
+  static const darkGray200 = Color(0xFFE2E8F0);
 
   // 상태 색상
-  static const successGreen = Color(0xFF059669);
-  static const errorRed = Color(0xFFDC2626);
-  static const warningYellow = Color(0xFFD97706);
+  static const successGreen = Color(0xFF10B981);
+  static const errorRed = Color(0xFFEF4444);
+  static const warningYellow = Color(0xFFF59E0B);
 
-  // 텍스트 스타일
+  // 텍스트 스타일 (Light Mode)
   static const displayLarge = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w800,
@@ -158,40 +161,56 @@ class AppTheme {
     primaryGradient = colorTheme.gradient;
   }
 
-  // ThemeData 생성
+  // Light Theme 생성
   static ThemeData lightTheme(AppColorTheme colorTheme) {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: colorTheme.primaryColor,
+
+      // 색상 스키마
+      colorScheme: ColorScheme.light(
         primary: colorTheme.primaryColor,
         secondary: colorTheme.secondaryColor,
         surface: Colors.white,
-        background: gray50,
+        surfaceContainerHighest: gray100,
+        onSurface: gray900,
+        onSurfaceVariant: gray600,
         error: errorRed,
+        onError: Colors.white,
+        outline: gray300,
+        outlineVariant: gray200,
       ),
+
       scaffoldBackgroundColor: gray50,
       fontFamily: 'Pretendard',
+
+      // 앱바 테마
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: titleLarge,
         iconTheme: IconThemeData(color: gray600),
+        surfaceTintColor: Colors.transparent,
       ),
+
+      // 카드 테마
       cardTheme: CardThemeData(
         elevation: 0,
+        color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusXLarge),
         ),
         shadowColor: Colors.black.withOpacity(0.08),
       ),
+
+      // 버튼 테마
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorTheme.primaryColor,
           foregroundColor: Colors.white,
           elevation: 2,
+          shadowColor: colorTheme.primaryColor.withOpacity(0.3),
           padding: const EdgeInsets.symmetric(
             horizontal: spaceLarge,
             vertical: spaceMedium,
@@ -202,6 +221,7 @@ class AppTheme {
           textStyle: titleMedium.copyWith(color: Colors.white),
         ),
       ),
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colorTheme.primaryColor,
@@ -213,9 +233,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusLarge),
           ),
-          textStyle: titleMedium.copyWith(color: colorTheme.primaryColor),
         ),
       ),
+
+      // 입력 필드 테마
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
@@ -225,33 +246,91 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: gray200),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(color: colorTheme.primaryColor, width: 2),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: const BorderSide(color: errorRed),
+        ),
         contentPadding: const EdgeInsets.all(spaceMedium),
         hintStyle: bodyMedium.copyWith(color: gray400),
+      ),
+
+      // 스위치 테마
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorTheme.primaryColor;
+          }
+          return gray400;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorTheme.primaryColor.withOpacity(0.5);
+          }
+          return gray300;
+        }),
+      ),
+
+      // 다이얼로그 테마
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusXLarge),
+        ),
+        elevation: 8,
+      ),
+
+      // Bottom Sheet 테마
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(radiusXLarge),
+          ),
+        ),
+      ),
+
+      // 칩 테마
+      chipTheme: ChipThemeData(
+        backgroundColor: colorTheme.primaryColor.withOpacity(0.1),
+        labelStyle: labelMedium.copyWith(color: colorTheme.primaryColor),
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+        ),
       ),
     );
   }
 
+  // Dark Theme 생성
   static ThemeData darkTheme(AppColorTheme colorTheme) {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: colorTheme.primaryColor,
+
+      // 색상 스키마
+      colorScheme: ColorScheme.dark(
         primary: colorTheme.primaryColor,
         secondary: colorTheme.secondaryColor,
         surface: darkGray800,
-        background: darkGray800,
+        surfaceContainerHighest: darkGray700,
+        onSurface: darkGray200,
+        onSurfaceVariant: darkGray400,
         error: errorRed,
-        brightness: Brightness.dark,
+        onError: Colors.white,
+        outline: darkGray600,
+        outlineVariant: darkGray700,
       ),
-      scaffoldBackgroundColor: darkGray800,
+
+      scaffoldBackgroundColor: darkGray900,
       fontFamily: 'Pretendard',
+
+      // 앱바 테마
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -259,22 +338,28 @@ class AppTheme {
         titleTextStyle: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: darkGray200,
         ),
         iconTheme: IconThemeData(color: darkGray400),
+        surfaceTintColor: Colors.transparent,
       ),
+
+      // 카드 테마
       cardTheme: CardThemeData(
         elevation: 0,
-        color: darkGray700,
+        color: darkGray800,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusXLarge),
         ),
       ),
+
+      // 버튼 테마
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorTheme.primaryColor,
           foregroundColor: Colors.white,
           elevation: 2,
+          shadowColor: colorTheme.primaryColor.withOpacity(0.3),
           padding: const EdgeInsets.symmetric(
             horizontal: spaceLarge,
             vertical: spaceMedium,
@@ -284,6 +369,7 @@ class AppTheme {
           ),
         ),
       ),
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colorTheme.primaryColor,
@@ -297,6 +383,8 @@ class AppTheme {
           ),
         ),
       ),
+
+      // 입력 필드 테마
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: darkGray700,
@@ -306,15 +394,71 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: darkGray600),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(color: colorTheme.primaryColor, width: 2),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: const BorderSide(color: errorRed),
+        ),
         contentPadding: const EdgeInsets.all(spaceMedium),
         hintStyle: const TextStyle(color: darkGray400),
       ),
+
+      // 스위치 테마
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorTheme.primaryColor;
+          }
+          return darkGray500;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorTheme.primaryColor.withOpacity(0.5);
+          }
+          return darkGray600;
+        }),
+      ),
+
+      // 다이얼로그 테마
+      dialogTheme: DialogThemeData(
+        backgroundColor: darkGray800,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusXLarge),
+        ),
+        elevation: 8,
+      ),
+
+      // Bottom Sheet 테마
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: darkGray800,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(radiusXLarge),
+          ),
+        ),
+      ),
+
+      // 칩 테마
+      chipTheme: ChipThemeData(
+        backgroundColor: colorTheme.primaryColor.withOpacity(0.2),
+        labelStyle: TextStyle(
+          color: colorTheme.primaryColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+        ),
+      ),
+
+      // 분할선 테마
+      dividerTheme: const DividerThemeData(color: darkGray700, thickness: 1),
     );
   }
 }

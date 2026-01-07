@@ -2,18 +2,13 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/state/setting_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingViewModel extends StateNotifier<SettingState> {
   final DiaryRepository _diaryRepository;
-  final SharedPreferences _prefs;
 
-  SettingViewModel({
-    required DiaryRepository diaryRepository,
-    required SharedPreferences prefs,
-  }) : _diaryRepository = diaryRepository,
-       _prefs = prefs,
-       super(SettingState()) {
+  SettingViewModel({required DiaryRepository diaryRepository})
+    : _diaryRepository = diaryRepository,
+      super(SettingState()) {
     _loadStatistics();
   }
 
@@ -58,6 +53,5 @@ class SettingViewModel extends StateNotifier<SettingState> {
 final settingViewModelProvider =
     StateNotifierProvider.autoDispose<SettingViewModel, SettingState>((ref) {
       final diaryRepository = ref.watch(diaryRepositoryProvider);
-      final prefs = ref.watch(sharedPreferencesProvider);
-      return SettingViewModel(diaryRepository: diaryRepository, prefs: prefs);
+      return SettingViewModel(diaryRepository: diaryRepository);
     });

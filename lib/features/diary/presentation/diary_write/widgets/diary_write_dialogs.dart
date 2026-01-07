@@ -350,7 +350,7 @@ class DiaryDialogs {
                                   ? FontWeight.w600
                                   : FontWeight.normal,
                               color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
+                                  ? Theme.of(context).colorScheme.onPrimary
                                   : const Color(0xFF6B7280),
                             ),
                             textAlign: TextAlign.center,
