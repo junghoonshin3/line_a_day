@@ -1,4 +1,4 @@
-import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
+import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 
 abstract class DraftRepository {
   Future<bool> saveDraft(DiaryModel diary);

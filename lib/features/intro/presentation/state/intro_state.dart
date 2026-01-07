@@ -1,4 +1,6 @@
-class IntroState {
+import 'package:line_a_day/core/base/base_state.dart';
+
+class IntroState extends BaseState {
   final int currentPage;
   final bool isCompleted;
 

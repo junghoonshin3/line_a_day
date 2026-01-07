@@ -1,11 +1,10 @@
-import 'package:line_a_day/constant.dart';
+import 'package:line_a_day/core/base/base_state.dart';
+import 'package:line_a_day/shared/constants/emotion_constants.dart';
 
-class DiaryStatisticState {
+class DiaryStatisticState extends BaseState {
   final Map<EmotionType, int> emotionCounts;
   final int totalDiaries;
   final EmotionType? mostFrequentEmotion;
-  final bool isLoading;
-  final String? errorMessage;
   final DateTime selectedDate;
   final PeriodType selectedPeriod;
   final List<ChartDataPoint> chartData;
@@ -14,12 +13,12 @@ class DiaryStatisticState {
     this.emotionCounts = const {},
     this.totalDiaries = 0,
     this.mostFrequentEmotion,
-    this.isLoading = false,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
     DateTime? selectedDate,
     this.selectedPeriod = PeriodType.month,
     this.chartData = const [],
-  }) : selectedDate = selectedDate ?? DateTime(2025, 10, 24);
+  }) : selectedDate = selectedDate ?? DateTime.now();
 
   DiaryStatisticState copyWith({
     Map<EmotionType, int>? emotionCounts,

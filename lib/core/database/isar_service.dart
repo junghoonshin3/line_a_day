@@ -1,5 +1,5 @@
 import 'package:isar_community/isar.dart';
-import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
+import 'package:line_a_day/core/database/diary_entity.dart';
 import 'package:path_provider/path_provider.dart';
 
 class IsarService {

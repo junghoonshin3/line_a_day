@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_a_day/core/app/config/routes.dart';
+import 'package:line_a_day/core/config/routes.dart';
+import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/emoji/presentation/select/emoji_select_view_model.dart';
 import 'package:line_a_day/features/emoji/presentation/select/state/emoji_select_state.dart';
-import 'package:line_a_day/widgets/common/staggered_animation/staggered_animation_mixin.dart';
+import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
+import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
+import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
 class EmojiSelectView extends ConsumerStatefulWidget {
   const EmojiSelectView({super.key});
@@ -39,23 +42,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
     ) {
       if (next.errorMessage != null &&
           (previous?.errorMessage != next.errorMessage)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(next.errorMessage!)),
-              ],
-            ),
-            backgroundColor: const Color(0xFFDC2626),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        CustomSnackBar.showError(context, next.errorMessage!);
       }
       if (next.isCompleted) {
         _navigateToDiaryList();
@@ -125,10 +112,8 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
         Container(
           width: 64,
           height: 64,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
-            ),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -169,13 +154,15 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3B82F6) : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
             width: 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.primary,
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -199,7 +186,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: isSelected
-                        ? const Color(0xFF3B82F6)
+                        ? Theme.of(context).colorScheme.primary
                         : const Color(0xFF374151),
                   ),
                 ),
@@ -207,8 +194,8 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
                 if (isSelected)
                   Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF3B82F6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -268,7 +255,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
         onPressed: state.isLoading ? null : () => viewModel.confirmSelection(),
         style: ElevatedButton.styleFrom(
           backgroundColor: state.selectedStyle != null
-              ? const Color(0xFF3B82F6)
+              ? Theme.of(context).colorScheme.primary
               : const Color(0xFF9CA3AF),
           foregroundColor: Colors.white,
           elevation: state.selectedStyle != null ? 4 : 0,
@@ -277,14 +264,7 @@ class _EmojiSelectViewState extends ConsumerState<EmojiSelectView>
           ),
         ),
         child: state.isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
+            ? const LoadingIndicator(size: 24, color: Colors.white)
             : const Text(
                 '선택 완료',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

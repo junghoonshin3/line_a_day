@@ -1,13 +1,13 @@
-class EmojiSelectState {
+import 'package:line_a_day/core/base/base_state.dart';
+
+class EmojiSelectState extends BaseState {
   final EmojiStyle? selectedStyle;
-  final bool isLoading;
-  final String? errorMessage;
   final bool isCompleted;
 
   EmojiSelectState({
     this.selectedStyle,
-    this.isLoading = false,
-    this.errorMessage,
+    super.isLoading = false,
+    super.errorMessage,
     this.isCompleted = false,
   });
 

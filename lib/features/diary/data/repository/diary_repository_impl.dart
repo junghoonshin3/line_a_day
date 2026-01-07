@@ -1,8 +1,8 @@
 import 'package:isar_community/isar.dart';
-import 'package:line_a_day/features/diary/data/model/diary_entity.dart';
-import 'package:line_a_day/features/diary/domain/model/diary_model.dart';
+import 'package:line_a_day/core/database/diary_entity.dart';
+import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
-import 'package:line_a_day/features/diary/mapper/diary_mapper.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/diary_mapper.dart';
 
 class DiaryRepositoryImpl extends DiaryRepository {
   final Isar _isar;
