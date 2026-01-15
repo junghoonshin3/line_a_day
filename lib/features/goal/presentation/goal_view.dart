@@ -86,7 +86,7 @@ class _GoalViewState extends ConsumerState<GoalView>
     );
   }
 
-  Widget _buildStatsCards(state) {
+  Widget _buildStatsCards(GoalState state) {
     return buildAnimatedSliverBox(
       index: 2,
       child: Padding(
@@ -98,7 +98,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.totalDiaries}',
                 '총 일기',
                 '📚',
-                Theme.of(context).colorScheme.primary,
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
             const SizedBox(width: 12),
@@ -107,7 +109,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.currentStreak}일',
                 '연속 작성',
                 '🔥',
-                const Color(0xFFFB923C),
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
             const SizedBox(width: 12),
@@ -116,7 +120,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.positiveEmotionRate.toStringAsFixed(0)}%',
                 '긍정 비율',
                 '😊',
-                const Color(0xFFFCD34D),
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
           ],
@@ -129,7 +135,9 @@ class _GoalViewState extends ConsumerState<GoalView>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -148,7 +156,12 @@ class _GoalViewState extends ConsumerState<GoalView>
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: AppTheme.gray600),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray700,
+            ),
           ),
         ],
       ),
@@ -210,7 +223,9 @@ class _GoalViewState extends ConsumerState<GoalView>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray200,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -240,18 +255,22 @@ class _GoalViewState extends ConsumerState<GoalView>
                   children: [
                     Text(
                       goal.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.gray800,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       goal.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.gray600,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                   ],
@@ -301,10 +320,12 @@ class _GoalViewState extends ConsumerState<GoalView>
               const SizedBox(width: 12),
               Text(
                 '${goal.currentValue}/${goal.targetValue}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.gray600,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
                 ),
               ),
             ],
@@ -313,11 +334,22 @@ class _GoalViewState extends ConsumerState<GoalView>
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.schedule, size: 14, color: AppTheme.gray400),
+                Icon(
+                  Icons.schedule,
+                  size: 14,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.gray400,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '${goal.remainingDays}일 남음',
-                  style: const TextStyle(fontSize: 12, color: AppTheme.gray400),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray700,
+                  ),
                 ),
               ],
             ),
@@ -396,15 +428,11 @@ class _GoalViewState extends ConsumerState<GoalView>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isUnlocked ? Colors.white : AppTheme.gray100,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.darkGray700
+              : AppTheme.gray100,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: isUnlocked ? AppTheme.cardShadow : null,
-          border: Border.all(
-            color: isUnlocked
-                ? Color(badge.colorCode).withOpacity(0.3)
-                : AppTheme.gray200,
-            width: 2,
-          ),
+          boxShadow: AppTheme.cardShadow,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -434,7 +462,11 @@ class _GoalViewState extends ConsumerState<GoalView>
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isUnlocked ? AppTheme.gray800 : AppTheme.gray400,
+                color: isUnlocked
+                    ? Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray800
+                    : AppTheme.gray400,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -492,21 +524,28 @@ class _GoalViewState extends ConsumerState<GoalView>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.gray100,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.darkGray700
+                        : AppTheme.gray100,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.lock_outline,
                         size: 16,
                         color: AppTheme.gray600,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         '아직 획득하지 못한 뱃지입니다',
-                        style: TextStyle(fontSize: 12, color: AppTheme.gray600),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                        ),
                       ),
                     ],
                   ),

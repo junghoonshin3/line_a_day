@@ -107,7 +107,9 @@ class _SettingViewState extends ConsumerState<SettingView>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -122,14 +124,23 @@ class _SettingViewState extends ConsumerState<SettingView>
                   gradient: AppTheme.primaryGradient,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.bar_chart,
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('나의 기록', style: AppTheme.titleLarge),
+              Text(
+                '나의 기록',
+                style: AppTheme.titleLarge.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -220,7 +231,9 @@ class _SettingViewState extends ConsumerState<SettingView>
   Widget _buildSettingsSection(SettingViewModel viewModel) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -269,7 +282,9 @@ class _SettingViewState extends ConsumerState<SettingView>
   Widget _buildAppInfoSection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -329,23 +344,40 @@ class _SettingViewState extends ConsumerState<SettingView>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.gray100,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkGray700
+                    : AppTheme.gray100,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: AppTheme.gray600, size: 22),
+              child: Icon(
+                icon,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTheme.titleMedium),
+                  Text(
+                    title,
+                    style: AppTheme.titleMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.gray400,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                   ],

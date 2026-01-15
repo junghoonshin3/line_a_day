@@ -31,7 +31,9 @@ class CalendarWidget extends StatelessWidget {
       margin: margin ?? const EdgeInsets.all(20),
       padding: padding ?? const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : Colors.white,
         borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -65,7 +67,9 @@ class CalendarWidget extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           todayTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppTheme.gray300
+                : AppTheme.darkGray700,
             fontWeight: FontWeight.w600,
           ),
           selectedTextStyle: AppTheme.bodyMedium.copyWith(
@@ -73,11 +77,15 @@ class CalendarWidget extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
           defaultTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : AppTheme.darkGray700,
             fontWeight: FontWeight.w600,
           ),
           weekendTextStyle: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.gray700,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : AppTheme.darkGray700,
             fontWeight: FontWeight.w600,
           ),
           outsideTextStyle: AppTheme.bodyMedium.copyWith(
@@ -107,7 +115,11 @@ class CalendarWidget extends StatelessWidget {
             return Center(
               child: Text(
                 DateFormat("yyyy년 MM월", "ko").format(day),
-                style: AppTheme.titleLarge,
+                style: AppTheme.titleLarge.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : AppTheme.darkGray700,
+                ),
               ),
             );
           },

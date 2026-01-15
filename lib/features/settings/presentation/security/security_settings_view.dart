@@ -72,6 +72,9 @@ class SecuritySettingsView extends ConsumerWidget {
           children: [
             // 앱 잠금
             CardSection(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.darkGray700
+                  : AppTheme.gray200,
               child: Column(
                 children: [
                   SwitchListTile(
@@ -83,10 +86,21 @@ class SecuritySettingsView extends ConsumerWidget {
                         _showDisableLockDialog(context, viewModel);
                       }
                     },
-                    title: const Text('앱 잠금', style: AppTheme.titleMedium),
-                    subtitle: const Text(
+                    title: Text(
+                      '앱 잠금',
+                      style: AppTheme.titleMedium.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
+                      ),
+                    ),
+                    subtitle: Text(
                       '비밀번호로 일기를 보호합니다',
-                      style: AppTheme.bodyMedium,
+                      style: AppTheme.bodyMedium.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
+                      ),
                     ),
                     activeThumbColor: AppTheme.primaryBlue,
                   ),
@@ -95,8 +109,20 @@ class SecuritySettingsView extends ConsumerWidget {
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.key, color: AppTheme.gray600),
-                      title: const Text('비밀번호 변경'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: Text(
+                        '비밀번호 변경',
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.primaryBlue.withOpacity(1.0)
+                            : AppTheme.primaryBlue,
+                      ),
                       onTap: () =>
                           _showChangePasswordDialog(context, viewModel),
                     ),
@@ -111,10 +137,21 @@ class SecuritySettingsView extends ConsumerWidget {
                 child: SwitchListTile(
                   value: state.isBiometricEnabled,
                   onChanged: (value) => viewModel.toggleBiometric(value),
-                  title: const Text('생체 인증', style: AppTheme.titleMedium),
-                  subtitle: const Text(
+                  title: Text(
+                    '생체 인증',
+                    style: AppTheme.titleMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
+                  subtitle: Text(
                     '지문 또는 얼굴 인식으로 잠금 해제',
-                    style: AppTheme.bodyMedium,
+                    style: AppTheme.bodyMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
                   ),
                   secondary: Icon(
                     Icons.fingerprint,

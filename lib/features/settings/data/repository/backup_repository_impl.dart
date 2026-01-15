@@ -1,15 +1,12 @@
 // lib/features/settings/data/repository/backup_repository_impl.dart
 
-import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:line_a_day/core/services/backup_service.dart';
 import 'package:line_a_day/core/services/google_drive_service.dart';
-import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/domain/repository/backup_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class BackupRepositoryImpl implements BackupRepository {

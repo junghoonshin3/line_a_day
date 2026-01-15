@@ -87,7 +87,9 @@ class _DiaryListViewState extends ConsumerState<DiaryListView>
                       margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.darkGray700
+                            : AppTheme.gray100,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: AppTheme.cardShadow,
                       ),

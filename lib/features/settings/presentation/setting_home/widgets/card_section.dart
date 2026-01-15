@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:line_a_day/core/config/theme/theme.dart';
 
 class CardSection extends StatelessWidget {
-  const CardSection({super.key, required this.child});
-
+  const CardSection({super.key, required this.child, this.color});
+  final Color? color;
   final Widget child;
 
   @override
@@ -11,7 +11,7 @@ class CardSection extends StatelessWidget {
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),

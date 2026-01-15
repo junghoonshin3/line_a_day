@@ -110,7 +110,7 @@ class _BackupViewState extends ConsumerState<BackupView>
     );
   }
 
-  Widget _buildBackupOptions(BackupState state, viewModel) {
+  Widget _buildBackupOptions(BackupState state, BackupViewModel viewModel) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -133,6 +133,15 @@ class _BackupViewState extends ConsumerState<BackupView>
             iconColor: Theme.of(context).colorScheme.secondary,
             onTap: () => viewModel.backupToAppInternal(),
           ),
+          // const SizedBox(height: 12),
+          // BackupOptionCard(
+          //   icon: Icons.cloud,
+          //   title: '구글 드라이브',
+          //   description: '클라우드에 안전하게 저장',
+          //   iconColor: const Color(0xFF4285F4),
+          //   isConnected: state.isGoogleDriveConnected,
+          //   onTap: () => _onGoogleDriveBackup(viewModel),
+          // ),
           const SizedBox(height: 24),
           const Text('복원하기', style: AppTheme.headlineMedium),
           const SizedBox(height: 16),
@@ -143,7 +152,6 @@ class _BackupViewState extends ConsumerState<BackupView>
             iconColor: const Color(0xFF10B981),
             onTap: () => _onRestoreFromFile(viewModel),
           ),
-          const SizedBox(height: 12),
         ],
       ),
     );
@@ -186,7 +194,7 @@ class _BackupViewState extends ConsumerState<BackupView>
   }
 
   // Actions
-  void _onGoogleDriveBackup(viewModel) async {
+  void _onGoogleDriveBackup(BackupViewModel viewModel) async {
     if (!ref.read(backupViewModelProvider).isGoogleDriveConnected) {
       await DialogHelper.showConfirm(
         context,

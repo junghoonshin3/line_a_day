@@ -185,7 +185,7 @@ class ThemeSettingsView extends ConsumerWidget {
                 ? Colors.transparent
                 : Theme.of(context).brightness == Brightness.dark
                 ? AppTheme.darkGray600
-                : AppTheme.gray300,
+                : const Color.fromARGB(255, 13, 15, 18),
           ),
         ),
         child: Row(

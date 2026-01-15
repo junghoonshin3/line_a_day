@@ -36,7 +36,6 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     final viewModel = ref.read(emojiStatisticViewModelProvider.notifier);
 
     return Scaffold(
-      // backgroundColor: AppTheme.gray50,
       body: CustomScrollView(
         slivers: [
           _buildHeader(state, viewModel),
@@ -160,7 +159,9 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray200,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -183,11 +184,13 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: state.selectedPeriod == period
-                        ? FontWeight.w600
+                        ? FontWeight.w800
                         : FontWeight.normal,
                     color: state.selectedPeriod == period
                         ? Colors.white
-                        : AppTheme.gray600,
+                        : Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray800,
                   ),
                 ),
               ),
@@ -207,19 +210,23 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray800
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '일기작성 횟수',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray800,
             ),
           ),
           const SizedBox(height: 24),
@@ -246,8 +253,10 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                       final data = state.chartData[group.x.toInt()];
                       return BarTooltipItem(
                         '${data.count}회',
-                        const TextStyle(
-                          color: Colors.white,
+                        TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -268,10 +277,14 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                             state.chartData[value.toInt()].label,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: AppTheme.gray600,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppTheme.gray100
+                                  : AppTheme.darkGray800,
                             ),
                           ),
                         );
@@ -287,9 +300,12 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                       getTitlesWidget: (value, meta) {
                         return Text(
                           value.toInt().toString(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppTheme.gray600,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? AppTheme.gray100
+                                : AppTheme.darkGray700,
                           ),
                         );
                       },
@@ -371,19 +387,23 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray800
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '감정 그래프',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray800,
             ),
           ),
           const SizedBox(height: 24),
@@ -413,8 +433,10 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
 
                       return BarTooltipItem(
                         '${mood?.emoji ?? ''} ${mood?.label ?? ''}\n$count회',
-                        const TextStyle(
-                          color: Colors.white,
+                        TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray800,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -445,10 +467,14 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                               const SizedBox(height: 2),
                               Text(
                                 mood?.label ?? '',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w500,
-                                  color: AppTheme.gray600,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppTheme.gray100
+                                      : AppTheme.darkGray800,
                                 ),
                               ),
                             ],
@@ -466,9 +492,12 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                       getTitlesWidget: (value, meta) {
                         return Text(
                           value.toInt().toString(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppTheme.gray600,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? AppTheme.gray100
+                                : AppTheme.darkGray800,
                           ),
                         );
                       },
@@ -547,7 +576,9 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(60),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray800
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -574,65 +605,65 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     );
   }
 
-  Widget _buildEmotionLegend() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '감정 범례',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: Emotion.emotions.map((emotion) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(emotion.colorCode).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Color(emotion.colorCode).withOpacity(0.4),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(emotion.emoji, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(width: 6),
-                    Text(
-                      emotion.label,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildEmotionLegend() {
+  //   return Container(
+  //     margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: AppTheme.cardShadow,
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text(
+  //           '감정 범례',
+  //           style: TextStyle(
+  //             fontSize: 16,
+  //             fontWeight: FontWeight.w600,
+  //             color: Color(0xFF1F2937),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         Wrap(
+  //           spacing: 12,
+  //           runSpacing: 12,
+  //           children: Emotion.emotions.map((emotion) {
+  //             return Container(
+  //               padding: const EdgeInsets.symmetric(
+  //                 horizontal: 12,
+  //                 vertical: 8,
+  //               ),
+  //               decoration: BoxDecoration(
+  //                 color: Color(emotion.colorCode).withOpacity(0.2),
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 border: Border.all(
+  //                   color: Color(emotion.colorCode).withOpacity(0.4),
+  //                 ),
+  //               ),
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Text(emotion.emoji, style: const TextStyle(fontSize: 16)),
+  //                   const SizedBox(width: 6),
+  //                   Text(
+  //                     emotion.label,
+  //                     style: const TextStyle(
+  //                       fontSize: 12,
+  //                       fontWeight: FontWeight.w500,
+  //                       color: Color(0xFF1F2937),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           }).toList(),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildTopEmotions(
     DiaryStatisticState state,
@@ -651,12 +682,14 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'TOP 3 감정',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray800,
             ),
           ),
           const SizedBox(height: 16),
@@ -686,7 +719,9 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray800
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -719,10 +754,12 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
               children: [
                 Text(
                   emotion.label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1F2937),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray800,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -730,9 +767,11 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
                   children: [
                     Text(
                       '${stat.count}회',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF6B7280),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray800,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -763,7 +802,7 @@ class _EmojiStatisticViewState extends ConsumerState<DiaryStatisticView>
             width: 60,
             height: 8,
             decoration: BoxDecoration(
-              color: AppTheme.gray100,
+              color: AppTheme.gray400,
               borderRadius: BorderRadius.circular(4),
             ),
             child: FractionallySizedBox(

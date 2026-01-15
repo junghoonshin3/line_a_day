@@ -26,7 +26,9 @@ class BackupOptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.darkGray700
+              : AppTheme.gray100,
           borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
           boxShadow: AppTheme.cardShadow,
           border: Border.all(
@@ -58,7 +60,14 @@ class BackupOptionCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(title, style: AppTheme.titleMedium),
+                      Text(
+                        title,
+                        style: AppTheme.titleMedium.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                        ),
+                      ),
                       if (isConnected) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -73,7 +82,11 @@ class BackupOptionCard extends StatelessWidget {
                           child: Text(
                             '연결됨',
                             style: AppTheme.labelMedium.copyWith(
-                              color: AppTheme.primaryBlue,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppTheme.gray100
+                                  : AppTheme.darkGray700,
                             ),
                           ),
                         ),
@@ -84,13 +97,21 @@ class BackupOptionCard extends StatelessWidget {
                   Text(
                     description,
                     style: AppTheme.bodyMedium.copyWith(
-                      color: AppTheme.gray600,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppTheme.gray400, size: 24),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray700,
+              size: 24,
+            ),
           ],
         ),
       ),

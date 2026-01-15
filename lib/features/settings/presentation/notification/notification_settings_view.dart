@@ -44,13 +44,27 @@ class NotificationSettingsView extends ConsumerWidget {
           children: [
             // 알림 활성화 스위치
             CardSection(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.darkGray700
+                  : AppTheme.gray200,
               child: SwitchListTile(
                 value: state.isEnabled,
                 onChanged: (value) => viewModel.toggleNotification(value),
-                title: const Text('일기 작성 알림', style: AppTheme.titleMedium),
-                subtitle: const Text(
+                title: Text(
+                  '일기 작성 알림',
+                  style: AppTheme.titleMedium.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray700,
+                  ),
+                ),
+                subtitle: Text(
                   '설정한 시간에 일기 작성을 알려드립니다',
-                  style: AppTheme.bodyMedium,
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray700,
+                  ),
                 ),
                 activeThumbColor: AppTheme.primaryBlue,
               ),
@@ -70,7 +84,14 @@ class NotificationSettingsView extends ConsumerWidget {
                     ),
                     child: Icon(Icons.access_time, color: AppTheme.primaryBlue),
                   ),
-                  title: const Text('알림 시간', style: AppTheme.titleMedium),
+                  title: Text(
+                    '알림 시간',
+                    style: AppTheme.titleMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
                   subtitle: Text(
                     _formatTime(state.reminderTime),
                     style: AppTheme.bodyLarge.copyWith(
@@ -78,7 +99,12 @@ class NotificationSettingsView extends ConsumerWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.primaryBlue.withOpacity(1.0)
+                        : AppTheme.primaryBlue,
+                  ),
                   onTap: () =>
                       _selectTime(context, viewModel, state.reminderTime),
                 ),
@@ -93,7 +119,14 @@ class NotificationSettingsView extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('알림 요일', style: AppTheme.titleMedium),
+                      Text(
+                        '알림 요일',
+                        style: AppTheme.titleMedium.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       _buildWeekdaySelector(state, viewModel),
                     ],

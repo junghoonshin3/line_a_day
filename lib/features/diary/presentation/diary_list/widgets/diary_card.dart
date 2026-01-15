@@ -44,7 +44,7 @@ class DiaryCard extends StatelessWidget {
     return Row(
       children: [
         Text(
-          "${Emotion.getMoodByType(type)?.emoji}",
+          Emotion.getMoodByType(type)!.emoji,
           style: const TextStyle(fontSize: 32),
         ),
         const Spacer(),
