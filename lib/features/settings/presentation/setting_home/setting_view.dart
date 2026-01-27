@@ -298,27 +298,27 @@ class _SettingViewState extends ConsumerState<SettingView>
               _showAppInfoDialog();
             },
           ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.article_outlined,
-            title: '이용약관',
-            onTap: () {
-              // TODO: 이용약관 화면으로 이동
-            },
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.privacy_tip_outlined,
-            title: '개인정보 처리방침',
-            onTap: () {
-              // TODO: 개인정보 처리방침 화면으로 이동
-            },
-          ),
+          // _buildDivider(),
+          // _buildSettingItem(
+          //   icon: Icons.article_outlined,
+          //   title: '이용약관',
+          //   onTap: () {
+          //     // TODO: 이용약관 화면으로 이동
+          //   },
+          // ),
+          // _buildDivider(),
+          // _buildSettingItem(
+          //   icon: Icons.privacy_tip_outlined,
+          //   title: '개인정보 처리방침',
+          //   onTap: () {
+          //     // TODO: 개인정보 처리방침 화면으로 이동
+          //   },
+          // ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.mail_outlined,
             title: '문의하기',
-            subtitle: 'support@lineaday.com',
+            subtitle: 'sjh0826kr@gmail.com',
             onTap: () {
               // TODO: 문의하기 기능
             },

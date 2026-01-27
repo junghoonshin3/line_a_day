@@ -9,6 +9,7 @@ import 'package:line_a_day/features/diary/presentation/diary_write/diary_write_v
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/emotion_dialog_content.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/image_pick_sheet_content.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/location_sheet_content.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/tag_dialog_content.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/weather_dialog_content.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
@@ -699,12 +700,12 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '태그 추가',
                 subtitle: '키워드로 분류',
                 onTap: () {
-                  DiaryDialogs.showTagDialog(
+                  OverlayHelper.showDialog(
                     context,
-                    onTagsUpdated: (tags) {
-                      viewModel.updateTags(tags);
-                    },
-                    currentTags: state.diary.tags,
+                    content: TagDialogContent(
+                      initialTags: state.diary.tags,
+                      onConfirm: (tags) => {},
+                    ),
                   );
                 },
               ),

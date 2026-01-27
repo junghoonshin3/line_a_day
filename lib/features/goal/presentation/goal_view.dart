@@ -31,7 +31,6 @@ class _GoalViewState extends ConsumerState<GoalView>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(goalViewModelProvider);
-    final viewModel = ref.read(goalViewModelProvider.notifier);
 
     if (state.isLoading) {
       return const LoadingIndicator();

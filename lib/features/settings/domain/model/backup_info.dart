@@ -5,7 +5,7 @@ class BackupInfo {
   final DateTime createdAt;
   final BackupType type;
   final String location;
-  final int diaryCount;
+  final int? diaryCount;
   final int fileSize; // bytes
   final BackupStatus status;
   final bool canRestore; // 복원 가능 여부
@@ -15,7 +15,7 @@ class BackupInfo {
     required this.createdAt,
     required this.type,
     required this.location,
-    required this.diaryCount,
+    this.diaryCount,
     required this.fileSize,
     this.status = BackupStatus.completed,
     this.canRestore = true,

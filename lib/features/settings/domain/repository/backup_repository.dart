@@ -30,4 +30,7 @@ abstract class BackupRepository {
 
   /// 구글 드라이브 로그아웃
   Future<void> signOutFromGoogleDrive();
+
+  // 구글 드라이브에 저장된 백업 히스토리 조회
+  Future<List<BackupInfo>> getGoogleDriveBackupHistory();
 }

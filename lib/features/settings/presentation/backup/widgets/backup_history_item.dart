@@ -23,7 +23,9 @@ class BackupHistoryItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -38,14 +40,23 @@ class BackupHistoryItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(backupInfo.type.label, style: AppTheme.titleMedium),
+                    Text(
+                      backupInfo.type.label,
+                      style: AppTheme.titleMedium.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray900,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       DateFormat(
                         'yyyy.MM.dd HH:mm',
                       ).format(backupInfo.createdAt),
                       style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.gray600,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray900,
                       ),
                     ),
                   ],
