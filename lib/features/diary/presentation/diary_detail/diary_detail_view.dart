@@ -8,7 +8,7 @@ import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/diary_detail/diary_detail_view_model.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
@@ -62,7 +62,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
 
     if (state.diary == null) {
       return Scaffold(
-        backgroundColor: AppTheme.gray50,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
         body: Center(
           child: Column(
@@ -87,7 +87,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     final diary = state.diary!;
 
     return Scaffold(
-      backgroundColor: AppTheme.gray50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // 헤더 - 날짜와 액션 버튼
@@ -189,7 +189,9 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -201,10 +203,12 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
       ),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1F2937),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.gray100
+              : AppTheme.darkGray700,
           height: 1.4,
         ),
       ),
@@ -338,7 +342,9 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
       return Container(
         padding: const EdgeInsets.all(40),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.darkGray700
+              : AppTheme.gray100,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
@@ -354,7 +360,9 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -366,10 +374,12 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
       ),
       child: Text(
         content,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           height: 1.8,
-          color: Color(0xFF374151),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.gray100
+              : AppTheme.darkGray700,
         ),
       ),
     );
@@ -400,7 +410,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
   }
 
   void _onDelete(BuildContext context, viewModel) async {
-    await DialogHelper.showConfirm(
+    await AppDialogHelper.showConfirm(
       context,
       title: '일기 삭제',
       message: '정말로 이 일기를 삭제하시겠습니까?\n삭제된 일기는 복구할 수 없습니다.',

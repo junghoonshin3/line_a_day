@@ -1,5 +1,3 @@
-// lib/features/settings/presentation/theme/theme_settings_view.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_a_day/core/config/theme/theme.dart';
@@ -185,7 +183,7 @@ class ThemeSettingsView extends ConsumerWidget {
                 ? Colors.transparent
                 : Theme.of(context).brightness == Brightness.dark
                 ? AppTheme.darkGray600
-                : AppTheme.gray300,
+                : const Color.fromARGB(255, 13, 15, 18),
           ),
         ),
         child: Row(

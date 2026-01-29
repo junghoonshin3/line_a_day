@@ -39,7 +39,7 @@ class BackupService {
 
     // 2. 메타데이터 생성
     final metadata = {
-      'version': '1.0.0',
+      'version': "1.0.0",
       'appName': 'LineADay',
       'createdAt': DateTime.now().toIso8601String(),
       'diaryCount': diaryCount,
@@ -87,7 +87,9 @@ class BackupService {
     }
 
     // 6. ZIP으로 압축
-    final zipFile = File('${tempDir.path}/LineADay_Backup_$timestamp.zip');
+    final zipFile = File(
+      "${tempDir.path}/LineADay_Backup_${timestamp}_count$diaryCount.zip",
+    );
 
     // 전체 디렉토리를 ZIP으로 압축
     final encoder = ZipFileEncoder();

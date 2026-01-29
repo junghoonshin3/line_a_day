@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:line_a_day/core/config/theme/theme.dart';
 
-class CustomDialog extends StatelessWidget {
+class BackupRestoreDialogContent extends StatelessWidget {
   final String? title;
   final String? message;
   final Widget? content;
-  final String? confirmText;
-  final String? cancelText;
+  final String confirmText;
+  final String cancelText;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
-  final bool showCloseButton;
   final Color? confirmColor;
   final IconData? icon;
   final Color? iconColor;
 
-  const CustomDialog({
+  const BackupRestoreDialogContent({
     super.key,
     this.title,
     this.message,
@@ -23,7 +22,6 @@ class CustomDialog extends StatelessWidget {
     this.cancelText = '취소',
     this.onConfirm,
     this.onCancel,
-    this.showCloseButton = true,
     this.confirmColor,
     this.icon,
     this.iconColor,
@@ -31,63 +29,60 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
+    // Dialog 위젯으로 감싸서 기본적인 다이얼로그 스타일을 적용합니다.
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
       ),
-      elevation: 8,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 340),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppTheme.radiusXLarge),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 헤더
-            if (title != null || showCloseButton) _buildHeader(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) _buildIcon(),
 
-            // 아이콘
-            if (icon != null) _buildIcon(),
-
-            // 컨텐츠
-            Padding(
-              padding: EdgeInsets.fromLTRB(24, icon != null ? 16 : 24, 24, 24),
-              child:
-                  content ??
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (message != null)
-                        Text(
-                          message!,
-                          style: AppTheme.bodyLarge.copyWith(
-                            color: AppTheme.gray700,
-                            height: 1.6,
-                          ),
-                          textAlign: TextAlign.center,
+          // 3. 컨텐츠 (커스텀 위젯 우선, 없으면 기본 메시지)
+          Padding(
+            padding: EdgeInsets.fromLTRB(24, icon != null ? 16 : 24, 24, 24),
+            child:
+                content ??
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (message != null)
+                      Text(
+                        message!,
+                        style: AppTheme.bodyLarge.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                          height: 1.6,
                         ),
-                    ],
-                  ),
-            ),
+                        textAlign: TextAlign.center,
+                      ),
+                  ],
+                ),
+          ),
 
-            // 버튼들
-            if (onConfirm != null || onCancel != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: _buildButtons(context),
-              ),
-          ],
-        ),
+          // 4. 하단 버튼 영역
+          if (onConfirm != null || onCancel != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: _buildButtons(context),
+            ),
+        ],
       ),
     );
   }
 
+  // --- 내부 빌드 메서드들 ---
+
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 24, 16, 16),
+      padding: const EdgeInsets.fromLTRB(24, 16, 8, 0), // 닫기 버튼 배치를 고려한 패딩
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           if (title != null)
             Expanded(child: Text(title!, style: AppTheme.headlineMedium)),
@@ -115,39 +110,40 @@ class CustomDialog extends StatelessWidget {
   }
 
   Widget _buildButtons(BuildContext context) {
+    // 취소 버튼이 없는 경우 (확인 버튼만 꽉 차게 표시)
     if (onCancel == null) {
-      // 확인 버튼만
       return SizedBox(
         width: double.infinity,
+        height: 52,
         child: ElevatedButton(
           onPressed: () {
             onConfirm?.call();
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: confirmColor ?? AppTheme.primaryBlue,
-            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
             ),
           ),
           child: Text(
-            confirmText!,
+            confirmText,
             style: AppTheme.titleMedium.copyWith(color: Colors.white),
           ),
         ),
       );
     }
 
-    // 취소 + 확인 버튼
+    // 취소 + 확인 버튼 나란히 배치
     return Row(
       children: [
         Expanded(
           child: SizedBox(
+            height: 52,
             child: OutlinedButton(
               onPressed: () {
                 onCancel?.call();
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppTheme.gray300),
@@ -156,8 +152,12 @@ class CustomDialog extends StatelessWidget {
                 ),
               ),
               child: Text(
-                cancelText!,
-                style: AppTheme.titleMedium.copyWith(color: AppTheme.gray600),
+                cancelText,
+                style: AppTheme.titleMedium.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray900,
+                ),
               ),
             ),
           ),
@@ -165,20 +165,20 @@ class CustomDialog extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: SizedBox(
+            height: 52,
             child: ElevatedButton(
               onPressed: () {
                 onConfirm?.call();
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: confirmColor ?? AppTheme.primaryBlue,
-                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
                 ),
               ),
               child: Text(
-                confirmText!,
+                confirmText,
                 style: AppTheme.titleMedium.copyWith(color: Colors.white),
               ),
             ),

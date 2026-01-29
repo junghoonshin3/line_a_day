@@ -6,6 +6,7 @@ import 'package:line_a_day/features/goal/presentation/view_model/goal_view_model
 import 'package:line_a_day/features/goal/presentation/state/goal_state.dart';
 import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 
 class GoalView extends ConsumerStatefulWidget {
   const GoalView({super.key});
@@ -31,7 +32,6 @@ class _GoalViewState extends ConsumerState<GoalView>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(goalViewModelProvider);
-    final viewModel = ref.read(goalViewModelProvider.notifier);
 
     if (state.isLoading) {
       return const LoadingIndicator();
@@ -86,7 +86,7 @@ class _GoalViewState extends ConsumerState<GoalView>
     );
   }
 
-  Widget _buildStatsCards(state) {
+  Widget _buildStatsCards(GoalState state) {
     return buildAnimatedSliverBox(
       index: 2,
       child: Padding(
@@ -98,7 +98,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.totalDiaries}',
                 '총 일기',
                 '📚',
-                Theme.of(context).colorScheme.primary,
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
             const SizedBox(width: 12),
@@ -107,7 +109,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.currentStreak}일',
                 '연속 작성',
                 '🔥',
-                const Color(0xFFFB923C),
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
             const SizedBox(width: 12),
@@ -116,7 +120,9 @@ class _GoalViewState extends ConsumerState<GoalView>
                 '${state.positiveEmotionRate.toStringAsFixed(0)}%',
                 '긍정 비율',
                 '😊',
-                const Color(0xFFFCD34D),
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
               ),
             ),
           ],
@@ -129,7 +135,9 @@ class _GoalViewState extends ConsumerState<GoalView>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -148,7 +156,12 @@ class _GoalViewState extends ConsumerState<GoalView>
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: AppTheme.gray600),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.gray100
+                  : AppTheme.darkGray700,
+            ),
           ),
         ],
       ),
@@ -210,7 +223,9 @@ class _GoalViewState extends ConsumerState<GoalView>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray200,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -240,18 +255,22 @@ class _GoalViewState extends ConsumerState<GoalView>
                   children: [
                     Text(
                       goal.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.gray800,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       goal.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.gray600,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                   ],
@@ -301,10 +320,12 @@ class _GoalViewState extends ConsumerState<GoalView>
               const SizedBox(width: 12),
               Text(
                 '${goal.currentValue}/${goal.targetValue}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.gray600,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
                 ),
               ),
             ],
@@ -313,11 +334,22 @@ class _GoalViewState extends ConsumerState<GoalView>
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.schedule, size: 14, color: AppTheme.gray400),
+                Icon(
+                  Icons.schedule,
+                  size: 14,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.gray400,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '${goal.remainingDays}일 남음',
-                  style: const TextStyle(fontSize: 12, color: AppTheme.gray400),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.gray100
+                        : AppTheme.darkGray700,
+                  ),
                 ),
               ],
             ),
@@ -396,15 +428,11 @@ class _GoalViewState extends ConsumerState<GoalView>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isUnlocked ? Colors.white : AppTheme.gray100,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppTheme.darkGray700
+              : AppTheme.gray100,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: isUnlocked ? AppTheme.cardShadow : null,
-          border: Border.all(
-            color: isUnlocked
-                ? Color(badge.colorCode).withOpacity(0.3)
-                : AppTheme.gray200,
-            width: 2,
-          ),
+          boxShadow: AppTheme.cardShadow,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -434,7 +462,11 @@ class _GoalViewState extends ConsumerState<GoalView>
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isUnlocked ? AppTheme.gray800 : AppTheme.gray400,
+                color: isUnlocked
+                    ? Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray800
+                    : AppTheme.gray400,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -447,93 +479,87 @@ class _GoalViewState extends ConsumerState<GoalView>
   }
 
   void _showBadgeDetail(Badge badge, bool isUnlocked) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: isUnlocked
-                      ? Color(badge.colorCode).withOpacity(0.2)
-                      : AppTheme.gray200,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    isUnlocked ? badge.emoji : '🔒',
-                    style: const TextStyle(fontSize: 48),
-                  ),
-                ),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: badge.title,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: isUnlocked
+                  ? Color(badge.colorCode).withOpacity(0.2)
+                  : AppTheme.gray200,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                isUnlocked ? badge.emoji : '🔒',
+                style: const TextStyle(fontSize: 48),
               ),
-              const SizedBox(height: 16),
-              Text(
-                badge.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                badge.description,
-                style: const TextStyle(fontSize: 14, color: AppTheme.gray600),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              if (!isUnlocked)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.gray100,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.lock_outline,
-                        size: 16,
-                        color: AppTheme.gray600,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '아직 획득하지 못한 뱃지입니다',
-                        style: TextStyle(fontSize: 12, color: AppTheme.gray600),
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: const Text(
-                    '확인',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(height: 16),
+          Text(
+            badge.description,
+            style: const TextStyle(fontSize: 14, color: AppTheme.gray600),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          if (!isUnlocked)
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkGray700
+                    : AppTheme.gray100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.lock_outline,
+                    size: 16,
+                    color: AppTheme.gray600,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '아직 획득하지 못한 뱃지입니다',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text(
+                '확인',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
       ),
+      showCloseButton: false,
     );
   }
 }

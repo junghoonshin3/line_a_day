@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "527736804612",
+    "project_id": "line-a-day-d8fe5",
+    "storage_bucket": "line-a-day-d8fe5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527736804612:android:cfcabcc8f0f12bd108ac51",
+        "android_client_info": {
+          "package_name": "com.example.line_a_day"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjN5lnH1NE15CLigW3ZOaAXRqicq4e8bY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

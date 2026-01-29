@@ -6,9 +6,14 @@ import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/state/diary_write_state.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/diary_write_view_model.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/emotion_dialog_content.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/image_pick_sheet_content.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/location_sheet_content.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/tag_dialog_content.dart';
+import 'package:line_a_day/features/diary/presentation/diary_write/widgets/weather_dialog_content.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/diary_write_dialogs.dart';
 
@@ -53,7 +58,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
 
   void _draftPopUp(DiaryWriteState state, DiaryWriteViewModel viewModel) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await DialogHelper.showConfirm(
+      await AppDialogHelper.showConfirm(
         context,
         title: '임시 저장된 일기',
         message: '작성 중이던 일기가 있습니다.\n이어서 작성하시겠습니까?',
@@ -308,7 +313,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
     );
 
     // 감정 추가
-    final emoji = "${Emotion.getMoodByType(emotion)?.emoji}";
+    final emoji = Emotion.getMoodByType(emotion)?.emoji;
     final text = emotionTexts[emotion.name] ?? '특별한';
     sentenceParts.add(
       TextSpan(
@@ -589,7 +594,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            // color: Color(0xFF374151),
+            color: Color(0xFF374151),
           ),
         ),
         const SizedBox(height: 12),
@@ -602,12 +607,15 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '감정 기록',
                 subtitle: '지금 기분은?',
                 onTap: () {
-                  DiaryDialogs.showEmotionDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
-                    onEmotionSelected: (emotion) {
-                      viewModel.setEmotion(emotion);
-                    },
-                    currentEmotion: state.diary.emotion,
+                    title: '오늘의 감정',
+                    content: EmotionDialogContent(
+                      currentEmotion: state.diary.emotion,
+                      onSelect: (Emotion emotion) => {
+                        viewModel.setEmotion(emotion),
+                      },
+                    ),
                   );
                 },
               ),
@@ -621,14 +629,12 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '사진 추가',
                 subtitle: '추억을 남겨보세요',
                 onTap: () {
-                  DiaryDialogs.showImagePickerBottomSheet(
+                  AppDialogHelper.showBottomSheet(
                     context,
-                    onCamera: () async {
-                      await viewModel.takePhoto();
-                    },
-                    onGallery: () async {
-                      await viewModel.pickFromGallery();
-                    },
+                    content: ImagePickerSheetContent(
+                      onCamera: () => {viewModel.takePhoto()},
+                      onGallery: () => {viewModel.pickFromGallery()},
+                    ),
                   );
                 },
               ),
@@ -642,12 +648,13 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '날씨 기록',
                 subtitle: '오늘의 날씨',
                 onTap: () {
-                  DiaryDialogs.showWeatherDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
-                    onWeatherSelected: (weather) {
-                      viewModel.setWeather(weather);
-                    },
-                    currentWeather: state.diary.weather,
+                    title: '날씨 기록',
+                    content: WeatherDialogContent(
+                      onSelect: (weather) => {viewModel.setWeather(weather)},
+                      current: state.diary.weather,
+                    ),
                   );
                 },
               ),
@@ -664,12 +671,14 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '위치 추가',
                 subtitle: '특별한 장소',
                 onTap: () {
-                  DiaryDialogs.showLocationBottomSheet(
+                  AppDialogHelper.showBottomSheet(
                     context,
-                    onLocationAdded: (location) {
-                      viewModel.setLocation(location);
-                    },
-                    currentLocation: state.diary.location,
+                    content: LocationSheetContent(
+                      initialLocation: state.diary.location,
+                      onConfirm: (location) => {
+                        viewModel.setLocation(location),
+                      },
+                    ),
                   );
                 },
               ),
@@ -683,12 +692,12 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '태그 추가',
                 subtitle: '키워드로 분류',
                 onTap: () {
-                  DiaryDialogs.showTagDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
-                    onTagsUpdated: (tags) {
-                      viewModel.updateTags(tags);
-                    },
-                    currentTags: state.diary.tags,
+                    content: TagDialogContent(
+                      initialTags: state.diary.tags,
+                      onConfirm: (tags) => {},
+                    ),
                   );
                 },
               ),

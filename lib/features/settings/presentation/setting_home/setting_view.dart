@@ -5,7 +5,7 @@ import 'package:line_a_day/core/config/routes.dart';
 import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/setting_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/state/setting_state.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
 class SettingView extends ConsumerStatefulWidget {
@@ -107,7 +107,9 @@ class _SettingViewState extends ConsumerState<SettingView>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -122,14 +124,23 @@ class _SettingViewState extends ConsumerState<SettingView>
                   gradient: AppTheme.primaryGradient,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.bar_chart,
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('나의 기록', style: AppTheme.titleLarge),
+              Text(
+                '나의 기록',
+                style: AppTheme.titleLarge.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.gray100
+                      : AppTheme.darkGray700,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -220,7 +231,9 @@ class _SettingViewState extends ConsumerState<SettingView>
   Widget _buildSettingsSection(SettingViewModel viewModel) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -269,7 +282,9 @@ class _SettingViewState extends ConsumerState<SettingView>
   Widget _buildAppInfoSection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppTheme.darkGray700
+            : AppTheme.gray100,
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.cardShadow,
       ),
@@ -283,27 +298,27 @@ class _SettingViewState extends ConsumerState<SettingView>
               _showAppInfoDialog();
             },
           ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.article_outlined,
-            title: '이용약관',
-            onTap: () {
-              // TODO: 이용약관 화면으로 이동
-            },
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.privacy_tip_outlined,
-            title: '개인정보 처리방침',
-            onTap: () {
-              // TODO: 개인정보 처리방침 화면으로 이동
-            },
-          ),
+          // _buildDivider(),
+          // _buildSettingItem(
+          //   icon: Icons.article_outlined,
+          //   title: '이용약관',
+          //   onTap: () {
+          //     // TODO: 이용약관 화면으로 이동
+          //   },
+          // ),
+          // _buildDivider(),
+          // _buildSettingItem(
+          //   icon: Icons.privacy_tip_outlined,
+          //   title: '개인정보 처리방침',
+          //   onTap: () {
+          //     // TODO: 개인정보 처리방침 화면으로 이동
+          //   },
+          // ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.mail_outlined,
             title: '문의하기',
-            subtitle: 'support@lineaday.com',
+            subtitle: 'sjh0826kr@gmail.com',
             onTap: () {
               // TODO: 문의하기 기능
             },
@@ -329,23 +344,40 @@ class _SettingViewState extends ConsumerState<SettingView>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.gray100,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkGray700
+                    : AppTheme.gray100,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: AppTheme.gray600, size: 22),
+              child: Icon(
+                icon,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.gray100
+                    : AppTheme.darkGray700,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTheme.titleMedium),
+                  Text(
+                    title,
+                    style: AppTheme.titleMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.gray400,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
                       ),
                     ),
                   ],
@@ -370,10 +402,10 @@ class _SettingViewState extends ConsumerState<SettingView>
   void _showEditNameDialog(String currentName, viewModel) {
     final controller = TextEditingController(text: currentName);
 
-    DialogHelper.showBottomSheetDialog(
+    AppDialogHelper.showBottomSheet(
       context,
       title: '이름 변경',
-      child: Padding(
+      content: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -426,29 +458,20 @@ class _SettingViewState extends ConsumerState<SettingView>
   }
 
   void _showAppInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Line A Day'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('버전: 1.0.0'),
-            const SizedBox(height: 8),
-            const Text('개발자: Line A Day Team'),
-            const SizedBox(height: 8),
-            Text(
-              '매일의 감정을 기록하고\n소중한 추억을 남기세요',
-              style: AppTheme.bodyMedium.copyWith(color: AppTheme.gray600),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: 'Line A Day',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('버전: 1.0.0'),
+          const SizedBox(height: 8),
+          const Text('개발자: Line A Day Team'),
+          const SizedBox(height: 8),
+          Text(
+            '매일의 감정을 기록하고\n소중한 추억을 남기세요',
+            style: AppTheme.bodyMedium.copyWith(color: AppTheme.gray600),
           ),
         ],
       ),

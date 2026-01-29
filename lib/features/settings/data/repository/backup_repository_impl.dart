@@ -1,15 +1,15 @@
 // lib/features/settings/data/repository/backup_repository_impl.dart
 
-import 'dart:convert';
 import 'dart:io';
+import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:line_a_day/core/services/backup_service.dart';
 import 'package:line_a_day/core/services/google_drive_service.dart';
-import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/domain/repository/diary_repository.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/domain/repository/backup_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:line_a_day/shared/constants/app_constants.dart';
 import 'package:uuid/uuid.dart';
 
 class BackupRepositoryImpl implements BackupRepository {
@@ -25,24 +25,38 @@ class BackupRepositoryImpl implements BackupRepository {
        _driveService = driveService,
        _backupService = backupService;
 
+  int extractDiaryCount(String fileName) {
+    try {
+      // 1. 정규식 정의 (count 뒤에 오는 숫자들을 그룹으로 지정)
+      final regExp = RegExp(r"count(\d+)");
+
+      // 2. 파일명에서 매칭되는 부분 찾기
+      final match = regExp.firstMatch(fileName);
+
+      // 3. 매칭 결과가 있다면 첫 번째 그룹(숫자 부분)을 가져옴
+      if (match != null) {
+        final countString = match.group(1); // (\d+)에 해당하는 부분
+        return int.parse(countString ?? '0');
+      }
+    } catch (e) {
+      print('개수 추출 실패: $e');
+    }
+    return 0; // 매칭 실패 시 기본값
+  }
+
   @override
   Future<BackupInfo> backupToGoogleDrive() async {
     try {
-      // 모든 일기 가져오기
-      final diaries = await _diaryRepository.getAllDiaries();
-
       // 백업 파일 생성 (이미지 포함)
       final backupFile = await _backupService.createIsarBackupWithImages();
       final stat = await backupFile.stat();
 
       // 구글 드라이브에 업로드
       final folderId = await _driveService.getOrCreateAppFolder();
-      final fileName =
-          'LineADay_Backup_${DateTime.now().millisecondsSinceEpoch}.zip';
 
       final fileId = await _driveService.uploadFile(
         file: backupFile,
-        fileName: fileName,
+        fileName: backupFile.path,
         folderId: folderId,
       );
 
@@ -54,14 +68,11 @@ class BackupRepositoryImpl implements BackupRepository {
         id: fileId,
         createdAt: DateTime.now(),
         type: BackupType.googleDrive,
-        location: 'Google Drive: $fileName',
-        diaryCount: diaries.length,
+        location: backupFile.path,
+        diaryCount: extractDiaryCount(backupFile.path),
         fileSize: stat.size,
         status: BackupStatus.completed,
       );
-
-      // 히스토리에 저장
-      await _saveBackupHistory(backupInfo);
 
       return backupInfo;
     } catch (e) {
@@ -82,7 +93,7 @@ class BackupRepositoryImpl implements BackupRepository {
 
       // 파일 저장 위치 선택
       final fileName =
-          'LineADay_Backup_${DateTime.now().millisecondsSinceEpoch}.zip';
+          'LineADay_Backup_${DateTime.now().millisecondsSinceEpoch}_count${diaries.length}{AppConstants.backupFileExtension}';
       final outputPath = await FilePicker.platform.saveFile(
         dialogTitle: '백업 파일 저장',
         fileName: fileName,
@@ -126,7 +137,7 @@ class BackupRepositoryImpl implements BackupRepository {
       final result = await FilePicker.platform.pickFiles(
         dialogTitle: '복원할 백업 파일 선택',
         type: FileType.custom,
-        allowedExtensions: ['zip'],
+        allowedExtensions: ['db'],
         allowMultiple: false,
       );
 
@@ -210,7 +221,9 @@ class BackupRepositoryImpl implements BackupRepository {
           // 구글 드라이브에서 다운로드
           final data = await _driveService.downloadFile(backupInfo.id);
           final tempDir = await Directory.systemTemp.createTemp();
-          backupFile = File('${tempDir.path}/restore.zip');
+          backupFile = File(
+            '${tempDir.path}/restore${AppConstants.backupFileExtension}',
+          );
           await backupFile.writeAsBytes(data);
           break;
 
@@ -298,7 +311,9 @@ class BackupRepositoryImpl implements BackupRepository {
           backupDir
               .listSync()
               .whereType<File>()
-              .where((file) => file.path.endsWith('.zip'))
+              .where(
+                (file) => file.path.endsWith(AppConstants.backupFileExtension),
+              )
               .toList()
             ..sort(
               (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
@@ -325,6 +340,40 @@ class BackupRepositoryImpl implements BackupRepository {
       return history;
     } catch (e) {
       throw Exception('앱 내부 백업 목록 불러오기 실패: $e');
+    }
+  }
+
+  @override
+  Future<List<BackupInfo>> getGoogleDriveBackupHistory() async {
+    try {
+      // drive.File 리스트를 가져옵니다.
+      final List<drive.File> backupFiles = await _driveService
+          .listBackupFiles();
+
+      final List<BackupInfo> history = [];
+
+      for (final file in backupFiles) {
+        print("file.size : ${file.size}");
+        history.add(
+          BackupInfo(
+            id: file.id ?? const Uuid().v4(), // API가 준 파일 ID 사용
+            createdAt: (file.createdTime ?? DateTime.now())
+                .toLocal(), // API가 준 생성 시간
+            type: BackupType.googleDrive,
+            location: file.name ?? 'Unknown', // 드라이브는 경로 대신 이름 사용
+            // 주의: 구글 드라이브 파일의 크기는 String 타입입니다.
+            fileSize: int.parse(file.size ?? '0'),
+            diaryCount: extractDiaryCount(
+              file.name!,
+            ), // 임시 처리 혹은 메타데이터 파싱 로직 필요
+            status: BackupStatus.completed,
+          ),
+        );
+      }
+      print(history.length);
+      return history;
+    } catch (e) {
+      throw Exception('구글 드라이브 백업 목록 변환 실패: $e');
     }
   }
 }

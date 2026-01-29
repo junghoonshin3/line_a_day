@@ -4,7 +4,7 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
 
 class GoogleDriveService {
-  static const _scopes = [drive.DriveApi.driveFileScope];
+  static const _scopes = [drive.DriveApi.driveAppdataScope];
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: _scopes);
 
@@ -59,7 +59,6 @@ class GoogleDriveService {
     if (_driveApi == null) {
       throw Exception('Drive API가 초기화되지 않았습니다');
     }
-
     try {
       final driveFile = drive.File();
       driveFile.name = fileName;
@@ -135,7 +134,6 @@ class GoogleDriveService {
       final folder = drive.File();
       folder.name = 'LineADay_Backups';
       folder.mimeType = 'application/vnd.google-apps.folder';
-
       final createdFolder = await _driveApi!.files.create(folder);
       return createdFolder.id!;
     } catch (e) {
@@ -160,6 +158,7 @@ class GoogleDriveService {
         q: "'$folderId' in parents and trashed=false",
         orderBy: 'createdTime desc',
         spaces: 'drive',
+        $fields: "files(id, name, size, createdTime, modifiedTime, mimeType)",
       );
 
       return fileList.files ?? [];

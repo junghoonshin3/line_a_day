@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:line_a_day/features/auth/presentation/lock_view.dart';
 import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/diary_detail/diary_detail_view.dart';
 import 'package:line_a_day/features/diary/presentation/diary_list/diary_list_view.dart';

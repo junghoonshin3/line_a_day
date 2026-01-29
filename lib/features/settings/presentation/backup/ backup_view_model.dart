@@ -16,12 +16,22 @@ class BackupViewModel extends StateNotifier<BackupState> {
     try {
       final isConnected = await _repository.isGoogleDriveConnected();
       final history = await _repository.getBackupHistory();
+
+      // 구글 드라이브 연결 시 드라이브 백업도 조회
+      if (isConnected) {
+        final driveHistory = await _repository.getGoogleDriveBackupHistory();
+        history.addAll(driveHistory);
+      }
+
+      if (!mounted) return;
+
       state = state.copyWith(
         isGoogleDriveConnected: isConnected,
         backupHistory: history,
         isLoading: false,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, errorMessage: '초기화 실패: $e');
     }
   }
@@ -36,13 +46,14 @@ class BackupViewModel extends StateNotifier<BackupState> {
         state = state.copyWith(isGoogleDriveConnected: true);
       }
 
-      final backupInfo = await _repository.backupToGoogleDrive();
-      final updatedHistory = [backupInfo, ...state.backupHistory];
+      await _repository.backupToGoogleDrive();
+      final historyBackupInfo = await _repository.getGoogleDriveBackupHistory();
+      final history = await _repository.getBackupHistory();
+      final updatedHistory = historyBackupInfo + history;
 
       state = state.copyWith(
         isLoading: false,
         backupHistory: updatedHistory,
-        lastBackup: backupInfo,
         successMessage: '구글 드라이브 백업 완료',
       );
     } catch (e) {
@@ -58,15 +69,9 @@ class BackupViewModel extends StateNotifier<BackupState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final backupInfo = await _repository.saveBackupFile();
-      final updatedHistory = [backupInfo, ...state.backupHistory];
+      await _repository.saveBackupFile();
 
-      state = state.copyWith(
-        isLoading: false,
-        backupHistory: updatedHistory,
-        lastBackup: backupInfo,
-        successMessage: '백업 파일 저장 완료',
-      );
+      state = state.copyWith(isLoading: false, successMessage: '백업 파일 저장 완료');
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -83,7 +88,6 @@ class BackupViewModel extends StateNotifier<BackupState> {
 
     try {
       await _repository.restoreFromFile();
-
       state = state.copyWith(isLoading: false, successMessage: '백업 파일 복원 완료');
     } catch (e) {
       state = state.copyWith(
@@ -138,10 +142,12 @@ class BackupViewModel extends StateNotifier<BackupState> {
       await _repository.deleteBackup(backup);
 
       final newHistory = await _repository.getBackupHistory();
+      final newGoogleDriveHistory = await _repository
+          .getGoogleDriveBackupHistory();
 
       state = state.copyWith(
         isLoading: false,
-        backupHistory: newHistory,
+        backupHistory: newHistory + newGoogleDriveHistory,
         successMessage: '백업 삭제 완료',
       );
     } catch (e) {
@@ -188,7 +194,12 @@ class BackupViewModel extends StateNotifier<BackupState> {
     state = state.copyWith(isLoading: true);
     try {
       final history = await _repository.getBackupHistory();
-      state = state.copyWith(backupHistory: history, isLoading: false);
+      final driveHistoty = await _repository.getGoogleDriveBackupHistory();
+
+      state = state.copyWith(
+        backupHistory: history + driveHistoty,
+        isLoading: false,
+      );
     } catch (e) {
       state = state.copyWith(
         errorMessage: '히스토리 새로고침 실패: $e',

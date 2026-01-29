@@ -7,8 +7,9 @@ import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/backup/state/backup_state.dart';
+import 'package:line_a_day/features/settings/presentation/backup/widgets/backup_restore_dialog_content.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/empty_state_widget.dart';
 import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
@@ -110,7 +111,7 @@ class _BackupViewState extends ConsumerState<BackupView>
     );
   }
 
-  Widget _buildBackupOptions(BackupState state, viewModel) {
+  Widget _buildBackupOptions(BackupState state, BackupViewModel viewModel) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -133,6 +134,15 @@ class _BackupViewState extends ConsumerState<BackupView>
             iconColor: Theme.of(context).colorScheme.secondary,
             onTap: () => viewModel.backupToAppInternal(),
           ),
+          const SizedBox(height: 12),
+          BackupOptionCard(
+            icon: Icons.cloud,
+            title: '구글 드라이브',
+            description: '클라우드에 안전하게 저장',
+            iconColor: const Color(0xFF4285F4),
+            isConnected: state.isGoogleDriveConnected,
+            onTap: () => _onGoogleDriveBackup(viewModel),
+          ),
           const SizedBox(height: 24),
           const Text('복원하기', style: AppTheme.headlineMedium),
           const SizedBox(height: 16),
@@ -143,25 +153,22 @@ class _BackupViewState extends ConsumerState<BackupView>
             iconColor: const Color(0xFF10B981),
             onTap: () => _onRestoreFromFile(viewModel),
           ),
-          const SizedBox(height: 12),
         ],
       ),
     );
   }
 
   Widget _buildBackupHistory(BackupState state, BackupViewModel viewModel) {
-    final internalBackups = state.backupHistory
-        .where((b) => b.type == BackupType.appInternal)
-        .toList();
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start, // 중앙 정렬에서 시작 정렬로 변경
+        mainAxisSize: MainAxisSize.min, // 중요: 자식 크기만큼만 차지하도록 설정
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('앱 내 백업 기록', style: AppTheme.headlineMedium),
+              const Text('백업 기록', style: AppTheme.headlineMedium),
               TextButton.icon(
                 onPressed: () => viewModel.refreshHistory(),
                 icon: const Icon(Icons.refresh, size: 18),
@@ -170,25 +177,39 @@ class _BackupViewState extends ConsumerState<BackupView>
             ],
           ),
           const SizedBox(height: 16),
-          if (internalBackups.isEmpty)
-            const NoDataWidget()
+
+          if (state.backupHistory.isEmpty)
+            const Center(child: NoDataWidget())
           else
-            ...internalBackups.map((backup) {
-              return BackupHistoryItem(
-                backupInfo: backup,
-                onRestore: () => _onRestoreBackup(context, viewModel, backup),
-                onDelete: () => _onDeleteBackup(context, viewModel, backup),
-              );
-            }),
+            // CustomScrollView 내부에 이미 있으므로 별도의 ListView가 필요 없습니다.
+            Column(
+              children: List.generate(state.backupHistory.length, (index) {
+                final backup = state.backupHistory[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  // 아이템 하나하나에도 애니메이션을 주고 싶다면 믹스인 사용
+                  child: buildAnimatedItem(
+                    index: index + 5, // 앞선 요소들 이후에 시작되도록 index 조정
+                    child: BackupHistoryItem(
+                      backupInfo: backup,
+                      onRestore: () =>
+                          _onRestoreBackup(context, viewModel, backup),
+                      onDelete: () =>
+                          _onDeleteBackup(context, viewModel, backup),
+                    ),
+                  ),
+                );
+              }),
+            ),
         ],
       ),
     );
   }
 
   // Actions
-  void _onGoogleDriveBackup(viewModel) async {
+  void _onGoogleDriveBackup(BackupViewModel viewModel) async {
     if (!ref.read(backupViewModelProvider).isGoogleDriveConnected) {
-      await DialogHelper.showConfirm(
+      await AppDialogHelper.showConfirm(
         context,
         title: '구글 드라이브 연결',
         message: '구글 드라이브에 백업하려면 로그인이 필요합니다.\n지금 로그인하시겠습니까?',
@@ -208,24 +229,22 @@ class _BackupViewState extends ConsumerState<BackupView>
   }
 
   void _onRestoreFromFile(BackupViewModel viewModel) async {
-    final confirmed = await DialogHelper.showConfirm(
+    await AppDialogHelper.showCustomDialog(
       context,
-      title: '파일에서 복원',
-      message:
-          '저장된 백업 파일을 선택하여 복원합니다.\n현재 저장된 모든 일기가 백업 내용으로 교체됩니다.\n계속하시겠습니까?',
-      icon: Icons.folder_open,
-      iconColor: const Color(0xFF10B981),
-      confirmText: '파일 선택',
-      cancelText: '취소',
-      onConfirm: () {
-        viewModel.restoreFromFile();
-      },
-      onCancel: () {},
+      title: "파일 복원",
+      content: BackupRestoreDialogContent(
+        message:
+            '저장된 백업 파일을 선택하여 복원합니다.\n현재 저장된 모든 일기가 백업 내용으로 교체됩니다.\n계속하시겠습니까?',
+        icon: Icons.folder_open,
+        iconColor: const Color(0xFF10B981),
+        confirmText: '파일 선택',
+        cancelText: '취소',
+        onConfirm: () {
+          viewModel.restoreFromFile();
+        },
+        onCancel: () {},
+      ),
     );
-
-    if (confirmed) {
-      await viewModel.restoreFromFile();
-    }
   }
 
   void _onRestoreBackup(BuildContext context, viewModel, backup) async {
@@ -250,16 +269,18 @@ class _BackupViewState extends ConsumerState<BackupView>
       return;
     }
 
-    await DialogHelper.showConfirm(
+    await AppDialogHelper.showCustomDialog(
       context,
       title: '백업 복원',
-      message:
-          '이 백업을 복원하시겠습니까?\n\n⚠️ 현재 저장된 모든 일기가 백업 내용으로 교체됩니다.\n\n백업 정보:\n• ${backup.diaryCount}개의 일기\n• ${backup.formattedSize}',
-      icon: Icons.warning,
-      iconColor: AppTheme.warningYellow,
-      confirmText: '복원하기',
-      cancelText: '취소',
-      onConfirm: () => viewModel.restoreFromBackup(backup),
+      content: BackupRestoreDialogContent(
+        message:
+            '이 백업을 복원하시겠습니까?\n\n⚠️ 현재 저장된 모든 일기가 백업 내용으로 교체됩니다.\n\n백업 정보:\n• ${backup.diaryCount}개의 일기\n• ${backup.formattedSize}',
+        icon: Icons.warning,
+        iconColor: AppTheme.warningYellow,
+        confirmText: '복원하기',
+        cancelText: '취소',
+        onConfirm: () => viewModel.restoreFromBackup(backup),
+      ),
     );
   }
 
@@ -268,15 +289,18 @@ class _BackupViewState extends ConsumerState<BackupView>
     BackupViewModel viewModel,
     BackupInfo backup,
   ) async {
-    await DialogHelper.showConfirm(
+    AppDialogHelper.showCustomDialog(
       context,
       title: '백업 삭제',
-      message: '이 백업을 삭제하시겠습니까?\n삭제된 백업은 복구할 수 없습니다.',
-      icon: Icons.delete_forever,
-      iconColor: AppTheme.errorRed,
-      confirmText: '삭제',
-      cancelText: '취소',
-      onConfirm: () => viewModel.deleteBackup(backup),
+      content: BackupRestoreDialogContent(
+        title: '백업 삭제',
+        message: '이 백업을 삭제하시겠습니까?\n삭제된 백업은 복구할 수 없습니다.',
+        icon: Icons.delete_forever,
+        iconColor: AppTheme.errorRed,
+        confirmText: '삭제',
+        cancelText: '취소',
+        onConfirm: () => viewModel.deleteBackup(backup),
+      ),
     );
   }
 }

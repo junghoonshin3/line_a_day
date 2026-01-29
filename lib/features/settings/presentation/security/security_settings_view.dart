@@ -8,6 +8,7 @@ import 'package:line_a_day/di/providers.dart';
 import 'package:line_a_day/features/settings/presentation/security/security_settings_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/security/state/security_settings_state.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/widgets/card_section.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 
 final securitySettingsViewModelProvider =
     StateNotifierProvider.autoDispose<
@@ -72,6 +73,9 @@ class SecuritySettingsView extends ConsumerWidget {
           children: [
             // 앱 잠금
             CardSection(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppTheme.darkGray700
+                  : AppTheme.gray200,
               child: Column(
                 children: [
                   SwitchListTile(
@@ -83,10 +87,21 @@ class SecuritySettingsView extends ConsumerWidget {
                         _showDisableLockDialog(context, viewModel);
                       }
                     },
-                    title: const Text('앱 잠금', style: AppTheme.titleMedium),
-                    subtitle: const Text(
+                    title: Text(
+                      '앱 잠금',
+                      style: AppTheme.titleMedium.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
+                      ),
+                    ),
+                    subtitle: Text(
                       '비밀번호로 일기를 보호합니다',
-                      style: AppTheme.bodyMedium,
+                      style: AppTheme.bodyMedium.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.gray100
+                            : AppTheme.darkGray700,
+                      ),
                     ),
                     activeThumbColor: AppTheme.primaryBlue,
                   ),
@@ -95,8 +110,20 @@ class SecuritySettingsView extends ConsumerWidget {
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.key, color: AppTheme.gray600),
-                      title: const Text('비밀번호 변경'),
-                      trailing: const Icon(Icons.chevron_right),
+                      title: Text(
+                        '비밀번호 변경',
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.gray100
+                              : AppTheme.darkGray700,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.primaryBlue.withOpacity(1.0)
+                            : AppTheme.primaryBlue,
+                      ),
                       onTap: () =>
                           _showChangePasswordDialog(context, viewModel),
                     ),
@@ -111,10 +138,21 @@ class SecuritySettingsView extends ConsumerWidget {
                 child: SwitchListTile(
                   value: state.isBiometricEnabled,
                   onChanged: (value) => viewModel.toggleBiometric(value),
-                  title: const Text('생체 인증', style: AppTheme.titleMedium),
-                  subtitle: const Text(
+                  title: Text(
+                    '생체 인증',
+                    style: AppTheme.titleMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
+                  ),
+                  subtitle: Text(
                     '지문 또는 얼굴 인식으로 잠금 해제',
-                    style: AppTheme.bodyMedium,
+                    style: AppTheme.bodyMedium.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.gray100
+                          : AppTheme.darkGray700,
+                    ),
                   ),
                   secondary: Icon(
                     Icons.fingerprint,
@@ -159,53 +197,78 @@ class SecuritySettingsView extends ConsumerWidget {
   ) {
     final passwordController = TextEditingController();
     final confirmController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('비밀번호 설정'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PassWordTextField(
-              currentController: passwordController,
-              labelText: '비밀번호 입력',
-            ),
-            const SizedBox(height: 16),
-            PassWordTextField(
-              currentController: confirmController,
-              labelText: '비밀번호 확인',
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: '비밀번호 설정',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PassWordTextField(
+            currentController: passwordController,
+            labelText: '비밀번호 입력',
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (passwordController.text.length < 4) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('비밀번호는 4자리 이상 입력해주세요')),
-                );
-                return;
-              }
+          const SizedBox(height: 16),
+          PassWordTextField(
+            currentController: confirmController,
+            labelText: '비밀번호 확인',
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppTheme.gray300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '취소',
+                    style: AppTheme.titleMedium.copyWith(color: AppTheme.gray600),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (passwordController.text.length < 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호는 4자리 이상 입력해주세요')),
+                      );
+                      return;
+                    }
 
-              if (passwordController.text != confirmController.text) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
-                );
-                return;
-              }
+                    if (passwordController.text != confirmController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
+                      );
+                      return;
+                    }
 
-              await viewModel.enableLock(passwordController.text);
-              Navigator.pop(context);
-            },
-            child: const Text('확인'),
+                    await viewModel.enableLock(passwordController.text);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '확인',
+                    style: AppTheme.titleMedium.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+      showCloseButton: false,
     );
   }
 
@@ -215,46 +278,71 @@ class SecuritySettingsView extends ConsumerWidget {
   ) {
     final passwordController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('앱 잠금 해제'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('비밀번호를 입력하여 앱 잠금을 해제합니다.'),
-            const SizedBox(height: 16),
-            PassWordTextField(
-              currentController: passwordController,
-              labelText: '비밀번호',
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: '앱 잠금 해제',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('비밀번호를 입력하여 앱 잠금을 해제합니다.'),
+          const SizedBox(height: 16),
+          PassWordTextField(
+            currentController: passwordController,
+            labelText: '비밀번호',
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final isValid = await viewModel.verifyPassword(
-                passwordController.text,
-              );
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppTheme.gray300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '취소',
+                    style: AppTheme.titleMedium.copyWith(color: AppTheme.gray600),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final isValid = await viewModel.verifyPassword(
+                      passwordController.text,
+                    );
 
-              if (isValid) {
-                await viewModel.disableLock();
-                Navigator.pop(context);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
-                );
-              }
-            },
-            child: const Text('확인'),
+                    if (isValid) {
+                      await viewModel.disableLock();
+                      Navigator.pop(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '확인',
+                    style: AppTheme.titleMedium.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+      showCloseButton: false,
     );
   }
 
@@ -266,72 +354,97 @@ class SecuritySettingsView extends ConsumerWidget {
     final newController = TextEditingController();
     final confirmController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('비밀번호 변경'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PassWordTextField(
-              currentController: currentController,
-              labelText: "현재 비밀번호",
-            ),
-            const SizedBox(height: 16),
-            PassWordTextField(
-              currentController: newController,
-              labelText: "새 비밀번호",
-            ),
-            const SizedBox(height: 16),
-            PassWordTextField(
-              currentController: confirmController,
-              labelText: "새 비밀번호 확인",
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: '비밀번호 변경',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PassWordTextField(
+            currentController: currentController,
+            labelText: "현재 비밀번호",
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final isValid = await viewModel.verifyPassword(
-                currentController.text,
-              );
+          const SizedBox(height: 16),
+          PassWordTextField(
+            currentController: newController,
+            labelText: "새 비밀번호",
+          ),
+          const SizedBox(height: 16),
+          PassWordTextField(
+            currentController: confirmController,
+            labelText: "새 비밀번호 확인",
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppTheme.gray300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '취소',
+                    style: AppTheme.titleMedium.copyWith(color: AppTheme.gray600),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final isValid = await viewModel.verifyPassword(
+                      currentController.text,
+                    );
 
-              if (!isValid) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('현재 비밀번호가 일치하지 않습니다')),
-                );
-                return;
-              }
+                    if (!isValid) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('현재 비밀번호가 일치하지 않습니다')),
+                      );
+                      return;
+                    }
 
-              if (newController.text.length < 4) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('비밀번호는 4자리 이상 입력해주세요')),
-                );
-                return;
-              }
+                    if (newController.text.length < 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호는 4자리 이상 입력해주세요')),
+                      );
+                      return;
+                    }
 
-              if (newController.text != confirmController.text) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
-                );
-                return;
-              }
+                    if (newController.text != confirmController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호가 일치하지 않습니다')),
+                      );
+                      return;
+                    }
 
-              await viewModel.enableLock(newController.text);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('비밀번호가 변경되었습니다')));
-            },
-            child: const Text('확인'),
+                    await viewModel.enableLock(newController.text);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('비밀번호가 변경되었습니다')));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    ),
+                  ),
+                  child: Text(
+                    '확인',
+                    style: AppTheme.titleMedium.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+      showCloseButton: false,
     );
   }
 }

@@ -55,7 +55,7 @@ class Emotion {
       type: EmotionType.sad,
       emoji: '😢',
       label: '슬픔',
-      colorCode: 0xFFF3F4F6,
+      colorCode: 0x3B5BDBFF,
     ),
     Emotion(
       type: EmotionType.angry,
