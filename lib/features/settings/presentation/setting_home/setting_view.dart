@@ -5,7 +5,7 @@ import 'package:line_a_day/core/config/routes.dart';
 import 'package:line_a_day/core/config/theme/theme.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/setting_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/setting_home/state/setting_state.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
 class SettingView extends ConsumerStatefulWidget {
@@ -402,10 +402,10 @@ class _SettingViewState extends ConsumerState<SettingView>
   void _showEditNameDialog(String currentName, viewModel) {
     final controller = TextEditingController(text: currentName);
 
-    DialogHelper.showBottomSheetDialog(
+    AppDialogHelper.showBottomSheet(
       context,
       title: '이름 변경',
-      child: Padding(
+      content: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -458,29 +458,20 @@ class _SettingViewState extends ConsumerState<SettingView>
   }
 
   void _showAppInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Line A Day'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('버전: 1.0.0'),
-            const SizedBox(height: 8),
-            const Text('개발자: Line A Day Team'),
-            const SizedBox(height: 8),
-            Text(
-              '매일의 감정을 기록하고\n소중한 추억을 남기세요',
-              style: AppTheme.bodyMedium.copyWith(color: AppTheme.gray600),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
+    AppDialogHelper.showCustomDialog(
+      context,
+      title: 'Line A Day',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('버전: 1.0.0'),
+          const SizedBox(height: 8),
+          const Text('개발자: Line A Day Team'),
+          const SizedBox(height: 8),
+          Text(
+            '매일의 감정을 기록하고\n소중한 추억을 남기세요',
+            style: AppTheme.bodyMedium.copyWith(color: AppTheme.gray600),
           ),
         ],
       ),

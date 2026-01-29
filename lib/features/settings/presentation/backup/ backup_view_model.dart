@@ -23,12 +23,15 @@ class BackupViewModel extends StateNotifier<BackupState> {
         history.addAll(driveHistory);
       }
 
+      if (!mounted) return;
+
       state = state.copyWith(
         isGoogleDriveConnected: isConnected,
         backupHistory: history,
         isLoading: false,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, errorMessage: '초기화 실패: $e');
     }
   }

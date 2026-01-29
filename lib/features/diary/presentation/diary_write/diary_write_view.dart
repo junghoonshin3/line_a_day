@@ -13,10 +13,9 @@ import 'package:line_a_day/features/diary/presentation/diary_write/widgets/tag_d
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/weather_dialog_content.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 import 'package:line_a_day/features/diary/presentation/diary_write/widgets/diary_write_dialogs.dart';
-import 'package:line_a_day/shared/widgets/dialogs/overlay_helper.dart';
 
 class DiaryWriteView extends ConsumerStatefulWidget {
   const DiaryWriteView({super.key});
@@ -59,7 +58,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
 
   void _draftPopUp(DiaryWriteState state, DiaryWriteViewModel viewModel) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await DialogHelper.showConfirm(
+      await AppDialogHelper.showConfirm(
         context,
         title: '임시 저장된 일기',
         message: '작성 중이던 일기가 있습니다.\n이어서 작성하시겠습니까?',
@@ -608,7 +607,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '감정 기록',
                 subtitle: '지금 기분은?',
                 onTap: () {
-                  OverlayHelper.showDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
                     title: '오늘의 감정',
                     content: EmotionDialogContent(
@@ -630,7 +629,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '사진 추가',
                 subtitle: '추억을 남겨보세요',
                 onTap: () {
-                  OverlayHelper.showBottomSheet(
+                  AppDialogHelper.showBottomSheet(
                     context,
                     content: ImagePickerSheetContent(
                       onCamera: () => {viewModel.takePhoto()},
@@ -649,7 +648,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '날씨 기록',
                 subtitle: '오늘의 날씨',
                 onTap: () {
-                  OverlayHelper.showDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
                     title: '날씨 기록',
                     content: WeatherDialogContent(
@@ -672,7 +671,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '위치 추가',
                 subtitle: '특별한 장소',
                 onTap: () {
-                  OverlayHelper.showBottomSheet(
+                  AppDialogHelper.showBottomSheet(
                     context,
                     content: LocationSheetContent(
                       initialLocation: state.diary.location,
@@ -681,13 +680,6 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                       },
                     ),
                   );
-                  // DiaryDialogs.showLocationBottomSheet(
-                  //   context,
-                  //   onLocationAdded: (location) {
-                  //     viewModel.setLocation(location);
-                  //   },
-                  //   currentLocation: state.diary.location,
-                  // );
                 },
               ),
             ),
@@ -700,7 +692,7 @@ class _DiaryWriteViewState extends ConsumerState<DiaryWriteView>
                 title: '태그 추가',
                 subtitle: '키워드로 분류',
                 onTap: () {
-                  OverlayHelper.showDialog(
+                  AppDialogHelper.showCustomDialog(
                     context,
                     content: TagDialogContent(
                       initialTags: state.diary.tags,
