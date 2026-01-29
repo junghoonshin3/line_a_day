@@ -8,7 +8,7 @@ import 'package:line_a_day/features/diary/data/model/diary_model.dart';
 import 'package:line_a_day/features/diary/presentation/diary_detail/diary_detail_view_model.dart';
 import 'package:line_a_day/shared/constants/emotion_constants.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
 
@@ -410,7 +410,7 @@ class _DiaryDetailViewState extends ConsumerState<DiaryDetailView>
   }
 
   void _onDelete(BuildContext context, viewModel) async {
-    await DialogHelper.showConfirm(
+    await AppDialogHelper.showConfirm(
       context,
       title: '일기 삭제',
       message: '정말로 이 일기를 삭제하시겠습니까?\n삭제된 일기는 복구할 수 없습니다.',

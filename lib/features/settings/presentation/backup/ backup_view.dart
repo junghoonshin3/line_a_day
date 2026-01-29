@@ -8,10 +8,8 @@ import 'package:line_a_day/features/settings/domain/model/backup_info.dart';
 import 'package:line_a_day/features/settings/presentation/backup/%20backup_view_model.dart';
 import 'package:line_a_day/features/settings/presentation/backup/state/backup_state.dart';
 import 'package:line_a_day/features/settings/presentation/backup/widgets/backup_restore_dialog_content.dart';
-import 'package:line_a_day/shared/widgets/dialogs/custom_dialog.dart';
 import 'package:line_a_day/shared/widgets/dialogs/custom_snackbar.dart';
-import 'package:line_a_day/shared/widgets/dialogs/dialog_helper.dart';
-import 'package:line_a_day/shared/widgets/dialogs/overlay_helper.dart';
+import 'package:line_a_day/shared/widgets/dialogs/app_dialog_helper.dart';
 import 'package:line_a_day/shared/widgets/empty_state_widget.dart';
 import 'package:line_a_day/shared/widgets/indicators/loading_indicator.dart';
 import 'package:line_a_day/shared/widgets/animtation/staggered_animation_mixin.dart';
@@ -211,7 +209,7 @@ class _BackupViewState extends ConsumerState<BackupView>
   // Actions
   void _onGoogleDriveBackup(BackupViewModel viewModel) async {
     if (!ref.read(backupViewModelProvider).isGoogleDriveConnected) {
-      await DialogHelper.showConfirm(
+      await AppDialogHelper.showConfirm(
         context,
         title: '구글 드라이브 연결',
         message: '구글 드라이브에 백업하려면 로그인이 필요합니다.\n지금 로그인하시겠습니까?',
@@ -231,7 +229,7 @@ class _BackupViewState extends ConsumerState<BackupView>
   }
 
   void _onRestoreFromFile(BackupViewModel viewModel) async {
-    await OverlayHelper.showDialog(
+    await AppDialogHelper.showCustomDialog(
       context,
       title: "파일 복원",
       content: BackupRestoreDialogContent(
@@ -271,7 +269,7 @@ class _BackupViewState extends ConsumerState<BackupView>
       return;
     }
 
-    await OverlayHelper.showDialog(
+    await AppDialogHelper.showCustomDialog(
       context,
       title: '백업 복원',
       content: BackupRestoreDialogContent(
@@ -291,8 +289,9 @@ class _BackupViewState extends ConsumerState<BackupView>
     BackupViewModel viewModel,
     BackupInfo backup,
   ) async {
-    OverlayHelper.showDialog(
+    AppDialogHelper.showCustomDialog(
       context,
+      title: '백업 삭제',
       content: BackupRestoreDialogContent(
         title: '백업 삭제',
         message: '이 백업을 삭제하시겠습니까?\n삭제된 백업은 복구할 수 없습니다.',
@@ -302,7 +301,6 @@ class _BackupViewState extends ConsumerState<BackupView>
         cancelText: '취소',
         onConfirm: () => viewModel.deleteBackup(backup),
       ),
-      title: '백업 삭제',
     );
   }
 }
